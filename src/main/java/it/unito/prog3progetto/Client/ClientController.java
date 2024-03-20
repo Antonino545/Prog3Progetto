@@ -28,12 +28,14 @@ public class ClientController {
             new Mail("sender3@example.com", "Subject 3", "Content 3"),
             new Mail("sender4@example.com", "Subject 4", "Content 4"),
             new Mail("sender5@example.com", "Subject 5", "Content 5")
+
     );
 
     mailListView.setItems(items);
 
     // Personalizzazione della visualizzazione delle celle
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
+
   }
 
   public void setPrimaryStage(Stage primaryStage) {

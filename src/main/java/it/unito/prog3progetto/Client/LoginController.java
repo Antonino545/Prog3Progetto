@@ -30,6 +30,7 @@ public class LoginController {
     }
 
    public void initialize() {
+
        // Creazione della lista di oggetti MailItem
    }
 
@@ -45,40 +46,58 @@ public class LoginController {
         String mail = emailTextField.getText();
         String password = passwordTextField.getText();
 
+      Client c = new Client(0);
+      if(      c.communicate("127.0.0.1", 4445)) {
+        System.out.println("Connessione riuscita");
+
         if (!Objects.equals(mail, "") && !Objects.equals(password, "")) {
-            try {
-                System.out.println("Email: " + mail);
-                System.out.println("Password: " + password);
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
 
-              Parent root = loader.load();
+          try {
+            System.out.println("Email: " + mail);
+            System.out.println("Password: " + password);
 
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+            primaryStage.setScene(scene);
+            primaryStage.setResizable(false); // Imposta le dimensioni della finestra come non modificabili
+            primaryStage.show();
 
-
-                Scene scene = new Scene(root);
-              scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
-
-              primaryStage.setScene(scene);
-                primaryStage.setResizable(false); // Imposta le dimensioni della finestra come non modificabili
-                primaryStage.show();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Handle exception accordingly
-            }
+          } catch (IOException e) {
+            e.printStackTrace();
+            // Handle exception accordingly
+          }
         } else {
+          // Handle unsuccessful login
+          System.out.println("Login failed");
+
+          // Creazione di un Alert di tipo ERROR
+          Alert alert = new Alert(Alert.AlertType.ERROR);
+          alert.setTitle("Errore di accesso");
+          alert.setHeaderText(null);
+          alert.setContentText("Inserisci le credenziali");
+
+          // Mostra l'Alert e attendi la risposta dell'utente
+          alert.showAndWait();
+        }
+      }
+        else {
             // Handle unsuccessful login
             // Handle unsuccessful login
             System.out.println("Login failed");
 
             // Creazione di un Alert di tipo ERROR
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Errore di accesso");
+            alert.setTitle("Errore di Connessione al server");
             alert.setHeaderText(null);
-            alert.setContentText("Accesso non riuscito. Controlla le credenziali e riprova.");
+            alert.setContentText("Errore di connessione al server, riprova più tardi o contatta l'assistenza");
 
             // Mostra l'Alert e attendi la risposta dell'utente
-            alert.showAndWait();    }
+            alert.showAndWait();
+        }
     }
+
 }
+
 // Classe per personalizzare la visualizzazione delle celle

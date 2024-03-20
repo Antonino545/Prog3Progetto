@@ -24,7 +24,7 @@ public class ServerApplication extends Application {
         Scene scene = new Scene(root, 500, 500);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("server.css")).toExternalForm());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
+        primaryStage.setTitle("Email Server - Progetto di Programmazione 3");
         primaryStage.show();
     }
 
