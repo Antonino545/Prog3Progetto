@@ -1,3 +1,27 @@
+
+.Listmail {
+    -fx-background-color: #44475A;
+    -fx-border-color: #BD93F9;
+    -fx-text-fill: #F8F8F2;
+    -fx-border-radius: 5;
+    -fx-control-inner-background: #44475A;
+}
+.emailitem:pressed {
+    -fx-background-color: #44475A;
+    -fx-border-color: #BD93F9;
+    -fx-text-fill: #F8F8F2;
+    -fx-border-radius: 5;
+    -fx-control-inner-background: #44475A;
+}
+.emailitem:selected {
+    -fx-background-color: #44475A;
+    -fx-border-color: #BD93F9;
+    -fx-text-fill: #F8F8F2;
+    -fx-border-radius: 5;
+    -fx-control-inner-background: #44475A;
+}
+
+
 .button-primary {
     -fx-background-color: #BD93F9;
     -fx-border-color: #BD93F9;
@@ -17,3 +41,16 @@
     -fx-text-fill: #F8F8F2;
     -fx-border-radius: 5;
 }
+.pannel {
+    -fx-background-color: #282A36;
+    -fx-text-fill: #F8F8F2;
+}
+.left-pannel {
+    -fx-background-color: #282A36;
+    -fx-border-color: #44475A;
+    -fx-border-width: 0 2px 0 0; /* solo bordo destro */
+    -fx-text-fill: #F8F8F2;
+
+}
+
+

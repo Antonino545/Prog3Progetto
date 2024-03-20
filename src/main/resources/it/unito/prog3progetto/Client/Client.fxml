@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.ClientController">
+   <left>
+      <VBox prefHeight="835.0" prefWidth="198.0" spacing="10.0" styleClass="left-pannel" stylesheets="@style.css" BorderPane.alignment="CENTER">
+         <children>
+            <Label prefHeight="35.0" prefWidth="82.0" text="Inbox " textFill="WHITE">
+               <VBox.margin>
+                  <Insets left="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <VBox prefHeight="244.0" prefWidth="198.0">
+               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="180.0" spacing="10.0">
+                  <children>
+                     <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@img/plus-sign-icon-free-png-PhotoRoom.png-PhotoRoom.png" />
+                        </image>
+                     </ImageView>
+                     <Label text="Nuova  e-mail" textFill="WHITE">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                  </children>
+                  <VBox.margin>
+                     <Insets left="10.0" />
+                  </VBox.margin>
+               </HBox>
+               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="180.0" spacing="10.0">
+                  <children>
+                     <ImageView fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@img/png-transparent-account-icon-man-icon-person-icon-profile-icon-user-icon-circle-oval-symbol-PhotoRoom.png-PhotoRoom.png" />
+                        </image>
+                     </ImageView>
+                     <Label alignment="CENTER" prefHeight="18.0" prefWidth="117.0" text="MyEmai@prog3.it " textFill="WHITE">
+                        <font>
+                           <Font size="11.0" />
+                        </font>
+                     </Label>
+                     <Label text="411" textFill="WHITE">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                  </children>
+                  <VBox.margin>
+                     <Insets left="10.0" />
+                  </VBox.margin>
+               </HBox>
+               <VBox prefHeight="145.0" prefWidth="198.0">
+                  <children>
+                     <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0">
+                        <children>
+                           <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="33.0" prefWidth="37.0" text="Index" textAlignment="CENTER" textFill="WHITE" />
+                           <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="134.0" text="1" textFill="WHITE">
+                              <font>
+                                 <Font name="System Bold" size="12.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </HBox>
+                     <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0">
+                        <children>
+                           <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="33.0" prefWidth="67.0" text="Mail Inviate" textFill="WHITE" />
+                           <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="103.0" text="1" textFill="WHITE">
+                              <font>
+                                 <Font name="System Bold" size="12.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </HBox>
+                  </children>
+               </VBox>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <ListView fx:id="mailListView" prefHeight="400" prefWidth="600" styleClass="Listmail" />
+   </center>
+</BorderPane>
