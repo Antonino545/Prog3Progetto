@@ -40,6 +40,7 @@ class MailItemCell extends ListCell<Mail> {
           Stage stage = new Stage();
           stage.setScene(new Scene(root));
           stage.setTitle("Dettagli Email");
+          stage.setResizable(false);
           stage.show();
         } catch (IOException e) {
           e.printStackTrace();
