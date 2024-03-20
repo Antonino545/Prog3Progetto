@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="561.0" prefWidth="935.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <VBox prefHeight="835.0" prefWidth="198.0" spacing="10.0" style="-fx-background-color: #1D70A2;" BorderPane.alignment="CENTER">
+         <children>
+            <Label prefHeight="35.0" prefWidth="82.0" text="Inbox " textFill="WHITE">
+               <VBox.margin>
+                  <Insets left="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <VBox prefHeight="244.0" prefWidth="198.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="180.0" spacing="10.0">
+                     <children>
+                        <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/plus-sign-icon-free-png-PhotoRoom.png-PhotoRoom.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="New mail" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="180.0" spacing="10.0">
+                     <children>
+                        <ImageView fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/png-transparent-account-icon-man-icon-person-icon-profile-icon-user-icon-circle-oval-symbol-PhotoRoom.png-PhotoRoom.png" />
+                           </image>
+                        </ImageView>
+                        <Label alignment="CENTER" prefHeight="18.0" prefWidth="117.0" text="MyEmai@prog3.it " textFill="WHITE">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Label>
+                        <Label text="411" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <VBox prefHeight="145.0" prefWidth="198.0">
+                     <children>
+                        <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="33.0" prefWidth="37.0" text="Index" textFill="WHITE" />
+                              <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="134.0" text="1" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="33.0" prefWidth="37.0" text="Bozza" textFill="WHITE" />
+                              <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="134.0" text="1" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="33.0" prefWidth="67.0" text="Mail Inviate" textFill="WHITE" />
+                              <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="103.0" text="1" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <Pane prefHeight="74.0" prefWidth="198.0" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <VBox prefHeight="561.0" prefWidth="297.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="51.0" prefWidth="266.0">
+               <children>
+                  <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="40.0" prefWidth="212.0">
+                     <children>
+                        <TextField prefHeight="26.0" prefWidth="177.0" style="-fx-border-color: #D2D2D2;" />
+                        <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/lente-PhotoRoom.png-PhotoRoom.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </center>
+   <right>
+      <VBox prefHeight="200.0" prefWidth="470.0" BorderPane.alignment="CENTER" />
+   </right>
+</BorderPane>

@@ -1,0 +1,19 @@
+.button-primary {
+    -fx-background-color: #BD93F9;
+    -fx-border-color: #BD93F9;
+    -fx-border-radius: 5;
+    -fx-text-fill: #282A36;
+}
+
+.button-primary:pressed {
+    -fx-background-color: #282A36;
+    -fx-border-color: #BD93F9;
+    -fx-text-fill: #F8F8F2;
+}
+
+.text-field{
+-fx-background-color: #44475A;
+    -fx-border-color: #BD93F9;
+    -fx-text-fill: #F8F8F2;
+    -fx-border-radius: 5;
+}
