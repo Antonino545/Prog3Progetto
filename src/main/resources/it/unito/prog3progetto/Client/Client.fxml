@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.image.Image?>
@@ -22,11 +23,15 @@
             <VBox prefHeight="244.0" prefWidth="198.0">
                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="180.0" spacing="10.0">
                   <children>
-                     <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                           <Image url="@img/plus-sign-icon-free-png-PhotoRoom.png-PhotoRoom.png" />
-                        </image>
-                     </ImageView>
+                     <Button mnemonicParsing="false" onAction="#NewEmail" styleClass="button-primary">
+                        <graphic>
+                           <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@img/plus-sign-icon-free-png-PhotoRoom.png-PhotoRoom.png" />
+                              </image>
+                           </ImageView>
+                        </graphic>
+                     </Button>
                      <Label text="Nuova  e-mail" textFill="WHITE">
                         <font>
                            <Font name="System Bold" size="12.0" />

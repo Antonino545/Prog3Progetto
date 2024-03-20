@@ -43,7 +43,7 @@ class MailItemCell extends ListCell<Mail> {
           stage.setResizable(false);
           stage.show();
         } catch (IOException e) {
-          e.printStackTrace();
+    System.out.println("Errore durante l'apertura della finestra di dettaglio email");
         }
       });
 

@@ -44,6 +44,7 @@
 .pannel {
     -fx-background-color: #282A36;
     -fx-text-fill: #F8F8F2;
+    -fx-border-radius: 0;
 }
 .left-pannel {
     -fx-background-color: #282A36;

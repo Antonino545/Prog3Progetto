@@ -2,6 +2,7 @@ package it.unito.prog3progetto.Client;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -37,5 +38,21 @@ public class ClientController {
 
   public void setPrimaryStage(Stage primaryStage) {
     this.primaryStage = primaryStage;
+  }
+
+  public void NewEmail(ActionEvent actionEvent) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("Newemail.fxml"));
+      Parent root = loader.load();
+
+      NewMailController controller = loader.getController();
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Dettagli Email");
+      stage.setResizable(false);
+      stage.show();
+    } catch (IOException e) {
+      System.out.println("Errore durante l'apertura della finestra di dettaglio email");
+    }
   }
 }
