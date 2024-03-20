@@ -1,4 +1,4 @@
-package it.unito.prog3progetto;
+package it.unito.prog3progetto.Client;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

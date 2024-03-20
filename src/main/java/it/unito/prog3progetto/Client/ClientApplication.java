@@ -1,4 +1,4 @@
-package it.unito.prog3progetto;
+package it.unito.prog3progetto.Client;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +12,7 @@ import java.util.Objects;
 public class ClientApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Server.fxml"));
 
         Parent root = loader.load();
 
@@ -23,7 +23,7 @@ public class ClientApplication extends Application {
         controller.setPrimaryStage(primaryStage);
 
         Scene scene = new Scene(root, 500, 500);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("server.css")).toExternalForm());
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
