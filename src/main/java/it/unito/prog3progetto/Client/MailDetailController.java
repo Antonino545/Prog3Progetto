@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Client;
 
+import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 
 public class MailDetailController {
@@ -12,5 +13,13 @@ public class MailDetailController {
     subjectLabel.setText(subject);
     contentLabel.setText(content);
   }
-  
+
+  public void handleReply(ActionEvent actionEvent) {
+  }
+
+  public void handleReplyAll(ActionEvent actionEvent) {
+  }
+
+  public void handleForward(ActionEvent actionEvent) {
+  }
 }

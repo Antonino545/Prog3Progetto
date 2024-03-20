@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.unito.prog3progetto.Client.MailDetailController"
-      prefWidth="600" prefHeight="400"
-      alignment="CENTER">
+<BorderPane prefHeight="400" prefWidth="600" styleClass="pannel" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.MailDetailController">
+    <center>
 
-    <Label text="Mittente:"/>
-    <Label fx:id="senderLabel"/>
+        <VBox>
+            <HBox spacing="10">
+                <Button onAction="#handleReply" styleClass="button-primary" text="Reply" />
+                <Button onAction="#handleReplyAll" styleClass="button-primary" text="Reply-All" />
+                <Button onAction="#handleForward" styleClass="button-primary" text="Forward" />
+            </HBox>
 
-    <Label text="Oggetto:"/>
-    <Label fx:id="subjectLabel"/>
+            <HBox>
+                <Label text="Mittente: " textFill="WHITE" />
+                <Label fx:id="senderLabel" textFill="WHITE" />
+            </HBox>
+            <HBox>
+                <Label text="Oggetto: " textFill="WHITE" />
+                <Label fx:id="subjectLabel" textFill="WHITE" />
+            </HBox>
+            <VBox>
+                <Label text="Contenuto:" textFill="WHITE" />
+                <Label fx:id="contentLabel" alignment="TOP_LEFT" prefHeight="351.0" prefWidth="643.0" style="-fx-background-color: #44475A;" textFill="WHITE" VBox.vgrow="ALWAYS" />
+            </VBox>
 
-    <Label text="Contenuto:"/>
-    <Label fx:id="contentLabel"/>
 
-</VBox>
+        </VBox>
+    </center>
+</BorderPane>

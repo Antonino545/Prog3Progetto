@@ -22,7 +22,7 @@ public class ClientController {
   public void initialize() {
     // Creazione della lista di oggetti MailItem
     ObservableList<Mail> items = FXCollections.observableArrayList(
-            new Mail("sender1@example.com", "Subject 1", "Content 1"),
+            new Mail("sender1@example.com", "Subject 1", "Ciao come stai?\nIo bene ragazzi! Voi? Spero bene!"),
             new Mail("sender2@example.com", "Subject 2", "Content 2"),
             new Mail("sender3@example.com", "Subject 3", "Content 3"),
             new Mail("sender4@example.com", "Subject 4", "Content 4"),
