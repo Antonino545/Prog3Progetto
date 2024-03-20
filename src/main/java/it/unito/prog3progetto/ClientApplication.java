@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
-public class HelloApplication extends Application {
+public class ClientApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
@@ -17,7 +17,7 @@ public class HelloApplication extends Application {
         Parent root = loader.load();
 
         // Get the controller instance
-        HelloController controller = loader.getController();
+        ClientController controller = loader.getController();
 
         // Set the primaryStage reference
         controller.setPrimaryStage(primaryStage);
