@@ -17,14 +17,27 @@ public class ServerController {
     server = new Server(logTextArea);
   }
 
+  // Dichiarazione della variabile di stato del server
+  private boolean serverAvviato = false;
+
   @FXML
   public void startServer(ActionEvent event) {
-    // Avvia il server sulla porta 4445 in un thread separato
-    Thread serverThread = new Thread(() -> server.listen(4445));
-    serverThread.setDaemon(true);
-    serverThread.start();
+    if (!serverAvviato) {
+      // Avvia il server sulla porta 4445 in un thread separato
+      Thread serverThread = new Thread(() -> server.listen(4445));
+      serverThread.setDaemon(true);
+      serverThread.start();
 
-    // Aggiungi un messaggio di avvio alla TextArea
-    logTextArea.appendText("Server avviato su porta 4445\n");
+      // Aggiungi un messaggio di avvio alla TextArea
+      logTextArea.appendText("Server avviato su porta 4445\n");
+
+      // Imposta lo stato del server come avviato
+      serverAvviato = true;
+    } else {
+      // Se il server è già avviato, segnala che è già in esecuzione
+      logTextArea.appendText("Il server è già avviato.\n");
+    }
   }
+
+
 }
