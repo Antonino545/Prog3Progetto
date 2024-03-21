@@ -12,11 +12,13 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ClientController {
   @FXML
   private ListView<Mail> mailListView;
   private Stage primaryStage;
+  private Client c;
 
   public void initialize() {
     // Creazione della lista di oggetti MailItem
@@ -54,5 +56,35 @@ public class ClientController {
     } catch (IOException e) {
       System.out.println("Errore durante l'apertura della finestra di dettaglio email");
     }
+  }
+
+  public void logout(ActionEvent actionEvent) {
+    try {
+      c.closeConnections();
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+      Parent root = loader.load();
+
+      LoginController controller = loader.getController();
+      // Assuming primaryStage is properly initialized before calling logout
+      if (primaryStage != null) {
+        controller.setPrimaryStage(primaryStage);
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        primaryStage.setScene(scene);
+
+
+        primaryStage.setTitle("Login");
+        primaryStage.setResizable(false);
+        primaryStage.show();
+      } else {
+        System.out.println("Primary stage is null. Cannot set scene.");
+      }
+    } catch (IOException e) {
+      System.out.println("Error opening login window: " + e.getMessage());
+    }
+  }
+
+  public void setCredentials(Client c) {
+    this.c =c;
   }
 }

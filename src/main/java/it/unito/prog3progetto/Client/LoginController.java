@@ -57,7 +57,6 @@ public class LoginController {
     int port= 4445;
     if(c.connectToServer(host, port)){
       System.out.println("Connessione al server riuscita");
-      c.closeConnections();
     }else{
       System.out.println("Connessione al server non riuscita");
       alert("Connessione al server non riuscita");
@@ -69,6 +68,11 @@ public class LoginController {
       try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();
+        ClientController controller = loader.getController();
+        controller.setPrimaryStage(primaryStage);
+
+        // Imposta le credenziali nel controller
+        controller.setCredentials(c);
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
         primaryStage.setScene(scene);

@@ -70,9 +70,6 @@ public class Client {
   }
 
   public boolean sendAndCheckCredentials(String host, int port, String email, String password) {
-    if (!connectToServer(host, port)) {
-      return false;
-    }
     try {
       User user = new User(email, password);
       outputStream.writeObject(user);
@@ -81,12 +78,12 @@ public class Client {
       return (boolean) inputStream.readObject();
     } catch (SocketTimeoutException e) {
       System.out.println("Timeout di connessione");
+      closeConnections();
       return false;
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
-      return false;
-    } finally {
       closeConnections();
+      return false;
     }
   }
 }

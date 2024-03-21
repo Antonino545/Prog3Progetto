@@ -8,12 +8,20 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
+import javafx.scene.control.TextArea;
+
 public class Server {
 
 	Socket socket = null;
 	ObjectInputStream inStream = null;
 	ObjectOutputStream outStream = null;
 	private final String DATABASE_FILE = "database.txt";
+	private TextArea textArea; // TextArea per visualizzare l'output
+
+	public Server(TextArea textArea) {
+		this.textArea = textArea;
+	}
 
 	public void listen(int port) {
 		try {
@@ -50,8 +58,10 @@ public class Server {
 			e.printStackTrace();
 		} finally {
 			closeStreams();
+			Platform.runLater(() -> textArea.appendText("Client disconnesso.\n")); // Aggiungi testo alla TextArea usando Platform.runLater per l'aggiornamento sicuro dell'interfaccia utente JavaFX
 		}
 	}
+
 
 	private void closeStreams() {
 		try {
@@ -69,7 +79,7 @@ public class Server {
 
 	private void openStreams(ServerSocket serverSocket) throws IOException {
 		socket = serverSocket.accept();
-		System.out.println("Server Connesso");
+		Platform.runLater(() -> textArea.appendText("Server Connesso\n")); // Aggiungi testo alla TextArea usando Platform.runLater per l'aggiornamento sicuro dell'interfaccia utente JavaFX
 
 		inStream = new ObjectInputStream(socket.getInputStream());
 		outStream = new ObjectOutputStream(socket.getOutputStream());
@@ -90,7 +100,7 @@ public class Server {
 		return false;
 	}
 
-	private static List<String> readDatabaseFromFile() {
+	private List<String> readDatabaseFromFile() {
 		List<String> database = new ArrayList<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader("/Users/antonino/Documents/Project/Unito/Prog3Progetto/src/main/resources/it/unito/prog3progetto/Server/database.txt"))) {
@@ -104,9 +114,5 @@ public class Server {
 		return database;
 	}
 
-	public static void main(String[] args) {
-		Server server = new Server();
-		server.listen(4445);
-		System.out.println("Server in ascolto sulla porta 4445");
-	}
 }
+

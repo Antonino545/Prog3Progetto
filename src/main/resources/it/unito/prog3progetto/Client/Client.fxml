@@ -64,7 +64,7 @@
                      <Insets left="10.0" />
                   </VBox.margin>
                </HBox>
-               <VBox prefHeight="145.0" prefWidth="198.0">
+               <VBox prefHeight="145.0" prefWidth="196.0">
                   <children>
                      <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0">
                         <children>
@@ -86,6 +86,7 @@
                            </Label>
                         </children>
                      </HBox>
+                     <Button onAction="#logout" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Logout" />
                   </children>
                </VBox>
             </VBox>
