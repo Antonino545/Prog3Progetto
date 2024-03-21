@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Lib.Mail;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -7,10 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -23,11 +21,11 @@ public class ClientController {
   public void initialize() {
     // Creazione della lista di oggetti MailItem
     ObservableList<Mail> items = FXCollections.observableArrayList(
-            new Mail("sender1@example.com", "Subject 1", "Ciao come stai?\nIo bene ragazzi! Voi? Spero bene!"),
-            new Mail("sender2@example.com", "Subject 2", "Content 2"),
-            new Mail("sender3@example.com", "Subject 3", "Content 3"),
-            new Mail("sender4@example.com", "Subject 4", "Content 4"),
-            new Mail("sender5@example.com", "Subject 5", "Content 5")
+            new Mail("sender1@example.com","mario.rossi@progmail.com", "Subject 1", "Ciao come stai?\nIo bene ragazzi! Voi? Spero bene!"),
+            new Mail("sender2@example.com","mario.rossi@progmail.com", "Subject 2", "Content 2"),
+            new Mail("sender3@example.com","mario.rossi@progmail.com", "Subject 3", "Content 3"),
+            new Mail("sender4@example.com","mario.rossi@progmail.com", "Subject 4", "Content 4"),
+            new Mail("sender5@example.com","mario.rossi@progmail.com", "Subject 5", "Content 5")
 
     );
 

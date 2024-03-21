@@ -1,13 +1,14 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Lib.User;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.net.SocketTimeoutException;
+import java.net.SocketTimeoutException;
 
 public class Client {
   Socket socket = null;
@@ -19,6 +20,7 @@ public class Client {
 
   /**
    * Costruisce un nuovo client.
+   *
    * @param id identificatore numerico, utile solamente per la stampa dei messaggi.
    */
   public Client(int id) {
@@ -28,10 +30,11 @@ public class Client {
   /**
    * Fa fino a 5 tentativi per comunicare con il server. Dopo ogni tentativo fallito
    * aspetta 1 secondo.
+   *
    * @param host l'indirizzo sul quale il server è in ascolto.
    * @param port la porta su cui il server è in ascolto.
    */
-  public boolean communicate(String host, int port) {
+  public boolean connectToServer(String host, int port) {
     int attempts = 0;
     boolean success = false;
 
@@ -52,25 +55,32 @@ public class Client {
     return success;
   }
 
-
-  // Tenta di comunicare con il server. Restituisce true se ha successo, false altrimenti
-  private boolean tryCommunication(String host, int port) {
+  /**
+   * Tenta di comunicare con il server. Restituisce true se ha successo, false altrimenti
+   */
+  boolean tryCommunication(String host, int port) {
     try {
-      connectToServer(host, port);
-      sendUserCredentials("admin", "admin");
-      return CheckCredentials();
+      socket = new Socket(host, port);
+      outputStream = new ObjectOutputStream(socket.getOutputStream());
+      // Dalla documentazione di ObjectOutputStream
+      // callers may wish to flush the stream immediately to ensure that constructors for receiving
+      // ObjectInputStreams will not block when reading the header.
+      outputStream.flush();
+      inputStream = new ObjectInputStream(socket.getInputStream());
+      return true;
     } catch (ConnectException e) {
-      System.out.println("[Client "+ this.id +"] Server non raggiungibile");
+      System.out.println("[Client " + this.id + "] Server non raggiungibile");
       return false;
     } catch (IOException e) {
       e.printStackTrace();
       return false;
-    } finally {
-      closeConnections();
     }
   }
 
-  private void closeConnections() {
+  /**
+   * Chiude le connessioni.
+   */
+  public void closeConnections() {
     if (socket != null) {
       try {
         inputStream.close();
@@ -82,34 +92,36 @@ public class Client {
     }
   }
 
-  public void sendUserCredentials(String email, String password) {
+  /**
+   * Invia le credenziali dell'utente al server e verifica se sono corrette.
+   *
+   * @param email    l'email dell'utente.
+   * @param password la password dell'utente.
+   * @return true se le credenziali sono corrette, false altrimenti.
+   */
+
+  public boolean sendAndCheckCredentials(String host, int port, String email, String password) {
+    if (!connectToServer(host, port)) {
+      return false; // Connessione fallita
+    }
+
     try {
       User user = new User(email, password);
       outputStream.writeObject(user);
       outputStream.flush();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-  public boolean CheckCredentials() {
-    try {
-      return (boolean) inputStream.readObject();
+
+      // Imposta un timeout per la lettura della risposta
+      socket.setSoTimeout(5000); // Timeout di 5 secondi
+
+      return (boolean) inputStream.readObject(); // Restituisce la risposta del server
+    } catch (SocketTimeoutException e) {
+      System.out.println("Timeout di connessione");
+      return false;
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
       return false;
+    } finally {
+      closeConnections();
     }
-  }
-  private void connectToServer(String host, int port) throws IOException {
-    socket = new Socket(host, port);
-    outputStream = new ObjectOutputStream(socket.getOutputStream());
-
-    // Dalla documentazione di ObjectOutputStream
-    // callers may wish to flush the stream immediately to ensure that constructors for receiving
-    // ObjectInputStreams will not block when reading the header.
-    outputStream.flush();
-
-    inputStream = new ObjectInputStream(socket.getInputStream());
-
-    System.out.println("[Client "+ this.id + "] Connesso");
   }
 }

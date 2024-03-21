@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Lib.Mail;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -46,9 +47,6 @@ class MailItemCell extends ListCell<Mail> {
     System.out.println("Errore durante l'apertura della finestra di dettaglio email");
         }
       });
-
-
-
     } else {
       setText(null);
       setGraphic(null);
