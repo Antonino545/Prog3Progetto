@@ -85,15 +85,9 @@ public class LoginController {
       }
     } else {
       // Handle unsuccessful login
-      System.out.println("Login failed");
-      // Creazione di un Alert di tipo ERROR
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Errore di accesso");
-      alert.setHeaderText(null);
-      alert.setContentText("Email o password errate! Riprova");
-
-      // Mostra l'Alert e attendi la risposta dell'utente
-      alert.showAndWait();
+      alert("Credenziali non valide");
+      c.closeConnections();
+      return;
     }
 
 
