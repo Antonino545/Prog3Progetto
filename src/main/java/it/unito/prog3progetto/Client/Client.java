@@ -55,9 +55,12 @@ public class Client {
       return false;
     }
   }
-
   public void closeConnections() {
     try {
+      if (outputStream != null) {
+        outputStream.writeObject("CLOSE_CONNECTION");
+        outputStream.flush();
+      }
       if (inputStream != null)
         inputStream.close();
       if (outputStream != null)
@@ -68,6 +71,7 @@ public class Client {
       e.printStackTrace();
     }
   }
+
 
   public boolean sendAndCheckCredentials(String host, int port, String email, String password) {
     try {

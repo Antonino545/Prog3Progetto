@@ -54,13 +54,23 @@ public class Server {
 			outStream.writeObject(isAuthenticated);
 			outStream.flush();
 
+			// Gestisci la chiusura del client
+			Object clientMessage = inStream.readObject();
+			if (clientMessage instanceof String && clientMessage.equals("CLOSE_CONNECTION")) {
+				Platform.runLater(() -> textArea.appendText("Client disconnesso.\n"));
+				closeStreams();
+			}
+
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
+			Platform.runLater(() -> textArea.appendText("Errore durante la comunicazione con il client.\n"));
 		} finally {
 			closeStreams();
-			Platform.runLater(() -> textArea.appendText("Client disconnesso.\n")); // Aggiungi testo alla TextArea usando Platform.runLater per l'aggiornamento sicuro dell'interfaccia utente JavaFX
 		}
 	}
+
+
+
 
 
 	private void closeStreams() {
@@ -79,7 +89,7 @@ public class Server {
 
 	private void openStreams(ServerSocket serverSocket) throws IOException {
 		socket = serverSocket.accept();
-		Platform.runLater(() -> textArea.appendText("Server Connesso\n")); // Aggiungi testo alla TextArea usando Platform.runLater per l'aggiornamento sicuro dell'interfaccia utente JavaFX
+		Platform.runLater(() -> textArea.appendText("Client  Connesso\n")); // Aggiungi testo alla TextArea usando Platform.runLater per l'aggiornamento sicuro dell'interfaccia utente JavaFX
 
 		inStream = new ObjectInputStream(socket.getInputStream());
 		outStream = new ObjectOutputStream(socket.getOutputStream());
