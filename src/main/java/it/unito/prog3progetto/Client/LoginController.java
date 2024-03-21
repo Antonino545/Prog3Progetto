@@ -1,14 +1,10 @@
 package it.unito.prog3progetto.Client;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -52,7 +48,7 @@ public class LoginController {
         alert("Inserire email e password");
         return;
       }
-    Client c = new Client(0);
+    Client c = new Client(mail);
     String host= "127.0.0.1";
     int port= 4445;
     if(c.connectToServer(host, port)){
@@ -72,7 +68,7 @@ public class LoginController {
         controller.setPrimaryStage(primaryStage);
 
         // Imposta le credenziali nel controller
-        controller.setCredentials(c);
+        controller.setClient(c);
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
         primaryStage.setScene(scene);

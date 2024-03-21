@@ -84,7 +84,7 @@ public class ClientController {
     }
   }
 
-  public void setCredentials(Client c) {
+  public void setClient(Client c) {
     this.c =c;
   }
 }

@@ -11,11 +11,11 @@ public class Client {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
-  private int id;
+  private String id;
 
   private final int MAX_ATTEMPTS = 3;
 
-  public Client(int id) {
+  public Client(String id) {
     this.id = id;
   }
 
