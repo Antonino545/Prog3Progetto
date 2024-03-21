@@ -29,7 +29,6 @@ public class ServerController {
       serverThread.start();
 
       // Aggiungi un messaggio di avvio alla TextArea
-      logTextArea.appendText("Server avviato su porta 4445\n");
 
       // Imposta lo stato del server come avviato
       serverAvviato = true;
