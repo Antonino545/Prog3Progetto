@@ -48,12 +48,24 @@ public class LoginController {
   private void Login() {
     String mail = emailTextField.getText();
     String password = passwordTextField.getText();
-
+      if(Objects.equals(mail, "") || Objects.equals(password, "")){
+        alert("Inserire email e password");
+        return;
+      }
     Client c = new Client(0);
     String host= "127.0.0.1";
     int port= 4445;
+    if(c.connectToServer(host, port)){
+      System.out.println("Connessione al server riuscita");
+      c.closeConnections();
+    }else{
+      System.out.println("Connessione al server non riuscita");
+      alert("Connessione al server non riuscita");
+      return;
+    }
 
-    if ((!Objects.equals(mail, "") && !Objects.equals(password, ""))&&(c.sendAndCheckCredentials(host,port,mail,password))) {
+
+    if (c.sendAndCheckCredentials(host,port,mail,password)) {
       try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();
@@ -70,17 +82,24 @@ public class LoginController {
     } else {
       // Handle unsuccessful login
       System.out.println("Login failed");
-
       // Creazione di un Alert di tipo ERROR
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Errore di accesso");
       alert.setHeaderText(null);
-      alert.setContentText("Email o password errate! Riprova. Oppure server non  attivo.");
+      alert.setContentText("Email o password errate! Riprova");
 
       // Mostra l'Alert e attendi la risposta dell'utente
       alert.showAndWait();
     }
 
+
+  }
+  public void alert(String message){
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Errore di accesso");
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
 
   }
 
