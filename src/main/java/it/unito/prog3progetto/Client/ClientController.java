@@ -95,7 +95,5 @@ public class ClientController {
     }
   }
 
-  public void setClient(Client c) {
-    this.client =c;
-  }
+
 }
