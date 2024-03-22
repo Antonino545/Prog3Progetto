@@ -15,20 +15,28 @@
 
             <VBox style="-fx-spacing: 10;">
                 <Label text="Destinatari: " textFill="WHITE" />
-                <TextField />
+                <TextField fx:id="destinationsfield">
+
+                </TextField>
+
             </VBox>
 
             <!-- Add spacing here -->
             <VBox style="-fx-spacing: 10;">
                 <Label text="Oggetto: " textFill="WHITE" />
-                <TextField />
+
+            <TextField fx:id="subjectfield" >
+            </TextField>
+
             </VBox>
 
             <VBox>
                 <Label style="-fx-border-radius: 0;" text="Contenuto:" textFill="WHITE" />
-                <TextArea prefHeight="319.0" prefWidth="594.0" style="-fx-control-inner-background: #44475A; -fx-text-fill: white; -fx-border-radius: 0;" styleClass="pannel" />
-               <HBox spacing="10">
-                   <Button onAction="#handleForward" prefHeight="28.0" prefWidth="649.0" styleClass="button-primary" text="Invia" />
+                <TextArea prefHeight="319.0" prefWidth="594.0" style="-fx-control-inner-background: #44475A; -fx-text-fill: white; -fx-border-radius: 0;" styleClass="pannel" fx:id="ContentField" >
+
+                </TextArea>
+                <HBox spacing="10">
+                   <Button onAction="#sendMail" prefHeight="28.0" prefWidth="649.0" styleClass="button-primary" text="Invia" />
                </HBox>
             </VBox>
         </VBox>

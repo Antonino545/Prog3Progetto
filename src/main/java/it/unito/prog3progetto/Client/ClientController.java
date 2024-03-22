@@ -50,15 +50,13 @@ public class ClientController {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("Newemail.fxml"));
       Parent root = loader.load();
-
-      NewMailController controller = loader.getController();
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Dettagli Email");
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-      System.out.println("Errore durante l'apertura della finestra di dettaglio email");
+      e.printStackTrace();
     }
   }
 
