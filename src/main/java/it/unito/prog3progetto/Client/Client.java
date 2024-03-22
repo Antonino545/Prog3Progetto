@@ -1,4 +1,5 @@
 package it.unito.prog3progetto.Client;
+import it.unito.prog3progetto.Lib.Mail;
 import it.unito.prog3progetto.Lib.User;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,7 +32,7 @@ public class Client {
       attempts++;
       success = tryCommunication(host, port);
 
-      if(success) {
+      if (success) {
         continue;
       }
 
@@ -60,22 +61,6 @@ public class Client {
       return false;
     }
   }
-  public void closeConnections() {
-    try {
-      if (outputStream != null) {
-        outputStream.writeObject("CLOSE_CONNECTION");
-        outputStream.flush();
-      }
-      if (inputStream != null)
-        inputStream.close();
-      if (outputStream != null)
-        outputStream.close();
-      if (socket != null)
-        socket.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 
 
   public boolean sendAndCheckCredentials(String host, int port, String email, String password) {
@@ -93,8 +78,43 @@ public class Client {
       e.printStackTrace();
       closeConnections();
       return false;
-    }finally {
-      closeConnections();
     }
-}
+  }
+
+  public boolean SendMail(String host, int port, Mail mail) {
+    try {
+      outputStream.writeObject(mail);
+      outputStream.flush();
+
+      // Attendere la risposta dal server
+      boolean success = (boolean) inputStream.readObject();
+      if (success) {
+        System.out.println("Email inviata con successo.");
+      } else {
+        System.out.println("Errore durante l'invio dell'email.");
+      }
+      return success;
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+
+  public void closeConnections() {
+    try {
+      if (outputStream != null) {
+        outputStream.writeObject("CLOSE_CONNECTION");
+        outputStream.flush();
+      }
+      if (inputStream != null)
+        inputStream.close();
+      if (outputStream != null)
+        outputStream.close();
+      if (socket != null)
+        socket.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }

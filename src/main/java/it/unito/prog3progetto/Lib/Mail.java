@@ -1,9 +1,13 @@
 package it.unito.prog3progetto.Lib;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Mail {
+public class Mail implements Serializable {
+  @Serial
+  private static final long serialVersionUID = 5950169519310163575L;
   private final String sender;
   private final ArrayList<String> destinations;
 

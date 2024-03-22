@@ -60,11 +60,23 @@ public class NewMailController {
     }
     if (success) {
     Mail mail = new Mail(usermail, new ArrayList<>(destinationsList), subjectfield.getText(), ContentField.getText(), Date.from(java.time.Instant.now()));
-    System.out.println(mail);
-    Stage stage = (Stage) subjectfield.getScene().getWindow();
-    stage.close();
-      alert("Email inviata", Alert.AlertType.INFORMATION);
-      System.out.println("Email inviata");
+    Client c = new Client(usermail);
+      String host= "127.0.0.1";
+      int port= 4445;
+      if(c.connectToServer(host, port)){
+        System.out.println("Connessione al server riuscita");
+        c.SendMail(host, port, mail);
+        System.out.println(mail);
+        Stage stage = (Stage) subjectfield.getScene().getWindow();
+        stage.close();
+        alert("Email inviata", Alert.AlertType.INFORMATION);
+        System.out.println("Email inviata");
+      }else{
+        System.out.println("Connessione al server non riuscita");
+        alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+        return;
+      }
+
     }else{
       alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR);
       System.out.println("Email non inviata, controllare i destinatari");

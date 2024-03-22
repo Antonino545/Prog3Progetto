@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Server;
 
+import it.unito.prog3progetto.Lib.Mail;
 import it.unito.prog3progetto.Lib.User;
 
 import java.io.*;
@@ -65,18 +66,25 @@ public class Server {
 			try {
 				openStreams(); // Apre gli stream di input e output per comunicare con il client
 
-				User user = (User) inStream.readObject(); // Legge l'oggetto User inviato dal client
+				Object clientObject = inStream.readObject(); // Legge l'oggetto inviato dal client
 
-				boolean isAuthenticated = authenticateUser(user); // Autentica l'utente
+				if (clientObject instanceof User) {
+					User user = (User) clientObject;
+					boolean isAuthenticated = authenticateUser(user); // Autentica l'utente
+					outStream.writeObject(isAuthenticated); // Invia al client il risultato dell'autenticazione
+					outStream.flush();
 
-				outStream.writeObject(isAuthenticated); // Invia al client il risultato dell'autenticazione
-				outStream.flush();
-
-				// Gestisce la richiesta di chiusura della connessione da parte del client
-				Object clientMessage = inStream.readObject();
-				if (clientMessage instanceof String && clientMessage.equals("CLOSE_CONNECTION")) {
-					textArea.appendText("Utente "+ user.getEmail()+ " ha chiuso la connessione.\n");
-					closeStreams(); // Chiude gli stream di input e output
+					if (isAuthenticated) {
+						textArea.appendText("Utente " + user.getEmail() + " autenticato con successo.\n");
+					} else {
+						textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n");
+					}
+				}
+				else if (clientObject instanceof Mail) {
+					Mail mail = (Mail) clientObject;
+					boolean isSent = SendMail(mail); // Invia l'email al destinatario
+					outStream.writeObject(isSent); // Invia al client il risultato dell'invio dell'email
+					outStream.flush();
 				}
 
 			} catch (IOException | ClassNotFoundException e) {
@@ -126,6 +134,35 @@ public class Server {
 			}
 			textArea.appendText("Autenticazione fallita per l'utente: "+ user.getEmail()+ ".\n"); // Aggiorna l'interfaccia utente con un messaggio di errore
 			return false; // Se le credenziali non corrispondono, restituisce false
+		}
+		private boolean SendMail(Mail mail) {
+			// Invia l'email al destinatario
+			for(String destination : mail.getDestinations()) {
+				// Invia l'email al destinatario
+				Platform.runLater(() -> textArea.appendText("Email inviata a "+ destination+ ".\n"));
+				try {
+					// Create a FileWriter object
+					FileWriter fileWriter = new FileWriter(destination + ".txt");
+
+					// Wrap the FileWriter in a BufferedWriter
+					BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+					// Write some content into the file
+					bufferedWriter.write(mail.toString() + "\n");
+
+					// Close the BufferedWriter
+					bufferedWriter.close();
+
+					System.out.println("File created successfully!");
+					return true; // Se le credenziali sono corrette, restituisce true
+
+				} catch (IOException e) {
+					System.out.println("An error occurred while creating the file.");
+					e.printStackTrace();
+					return false;
+				}
+			}
+			return false;
 		}
 	}
 
