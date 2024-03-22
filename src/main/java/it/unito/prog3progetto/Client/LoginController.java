@@ -17,7 +17,7 @@ public class LoginController {
     @FXML
     private TextField passwordTextField;
 
-
+    Client client;
     private Stage primaryStage; // Reference to your primary stage
 
     // Setter method to set the primary stage
@@ -42,16 +42,22 @@ public class LoginController {
 
 
   private void Login() {
-    String mail = emailTextField.getText();
+    String useremail = emailTextField.getText();
     String password = passwordTextField.getText();
-      if(Objects.equals(mail, "") || Objects.equals(password, "")){
+
+      if(Objects.equals(useremail, "") || Objects.equals(password, "")){
         alert("Inserire email e password");
         return;
       }
-    Client c = new Client(mail);
+      String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+      if (!useremail.matches(emailPattern)) {
+        alert("Inserire un indirizzo email valido , Formato non valido");
+        return;
+      }
+      Client client = new Client(useremail);
     String host= "127.0.0.1";
     int port= 4445;
-    if(c.connectToServer(host, port)){
+    if(client.connectToServer(host, port)){
       System.out.println("Connessione al server riuscita");
     }else{
       System.out.println("Connessione al server non riuscita");
@@ -60,15 +66,22 @@ public class LoginController {
     }
 
 
-    if (c.sendAndCheckCredentials(host,port,mail,password)) {
+    if (client.sendAndCheckCredentials(host,port,useremail,password)) {
       try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();
         ClientController controller = loader.getController();
+
+        // Imposta manualmente il controller
+        // controller.setClient(client); // Rimuovi questo
+
         controller.setPrimaryStage(primaryStage);
 
-        // Imposta le credenziali nel controller
-        controller.setClient(c);
+        // Imposta manualmente il client
+        controller.initialize(client);
+
+        // Non chiamare initialize() esplicitamente
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
         primaryStage.setScene(scene);
@@ -77,12 +90,15 @@ public class LoginController {
 
       } catch (IOException e) {
         e.printStackTrace();
-        // Handle exception accordingly
+        // Gestisci l'eccezione di conseguenza
       }
+
+
+
     } else {
       // Handle unsuccessful login
       alert("Credenziali non valide");
-      c.closeConnections();
+      client.closeConnections();
       return;
     }
 

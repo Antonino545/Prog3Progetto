@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
@@ -18,13 +19,18 @@ import java.util.Date;
 import java.util.Objects;
 
 public class ClientController {
+  public Label email;
   @FXML
   private ListView<Mail> mailListView;
   private Stage primaryStage;
-  private Client c;
+  private Client client;
 
-  public void initialize() {
-    // Creazione della lista di oggetti MailItem
+  public void initialize(Client client) {
+    this.client = client;
+    System.out.println("ClientController initialized");
+    if(client != null) {
+      email.setText(client.getUserId());
+    }
     ArrayList<String> destinations = new ArrayList<String>();
     destinations.add("mario.rossi@progmail.com");
     ObservableList<Mail> items = FXCollections.observableArrayList(
@@ -40,6 +46,7 @@ public class ClientController {
     // Personalizzazione della visualizzazione delle celle
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
 
+
   }
 
   public void setPrimaryStage(Stage primaryStage) {
@@ -52,7 +59,7 @@ public class ClientController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.setUser(c.getUserId());
+      controller.setUser(client.getUserId());
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Dettagli Email");
@@ -89,6 +96,6 @@ public class ClientController {
   }
 
   public void setClient(Client c) {
-    this.c =c;
+    this.client =c;
   }
 }

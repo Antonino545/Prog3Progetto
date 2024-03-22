@@ -92,6 +92,8 @@ public class Server {
 				textArea.appendText("Errore durante la comunicazione con il client.\n"); // Aggiorna l'interfaccia utente con un messaggio di errore
 			} finally {
 				closeStreams(); // Chiude gli stream di input e output in ogni caso
+				textArea.appendText("Connessione con il client chiusa.\n"); // Aggiorna l'interfaccia utente con un messaggio di chiusura
+
 			}
 		}
 
@@ -128,11 +130,9 @@ public class Server {
 			for (String entry : database) {
 				String[] parts = entry.split(",");
 				if (parts.length == 2 && parts[0].trim().equals(user.getEmail()) && parts[1].trim().equals(user.getPassword())) {
-          textArea.appendText("Utente autenticato: "+ user.getEmail()+ ".\n"); // Aggiorna l'interfaccia utente con un messaggio di autenticazione
 					return true; // Se le credenziali sono corrette, restituisce true
 				}
 			}
-			textArea.appendText("Autenticazione fallita per l'utente: "+ user.getEmail()+ ".\n"); // Aggiorna l'interfaccia utente con un messaggio di errore
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
 		private boolean SendMail(Mail mail) {

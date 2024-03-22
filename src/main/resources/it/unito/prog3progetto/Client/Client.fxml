@@ -49,7 +49,7 @@
                            <Image url="@img/png-transparent-account-icon-man-icon-person-icon-profile-icon-user-icon-circle-oval-symbol-PhotoRoom.png-PhotoRoom.png" />
                         </image>
                      </ImageView>
-                     <Label alignment="CENTER" prefHeight="18.0" prefWidth="117.0" text="MyEmai@prog3.it " textFill="WHITE">
+                     <Label alignment="CENTER" prefHeight="18.0" prefWidth="117.0" fx:id="email"  textFill="WHITE">
                         <font>
                            <Font size="11.0" />
                         </font>
