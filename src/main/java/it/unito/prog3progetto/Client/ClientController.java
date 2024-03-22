@@ -49,7 +49,10 @@ public class ClientController {
   public void NewEmail(ActionEvent actionEvent) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("Newemail.fxml"));
+
       Parent root = loader.load();
+      NewMailController controller = loader.getController();
+      controller.setUser(c.getUserId());
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Dettagli Email");

@@ -48,6 +48,7 @@ public class Mail {
             ", destination='" + destinations + '\'' +
             ", subject='" + subject + '\'' +
             ", content='" + content + '\'' +
+            ", datesendMail=" + datesendMail +
             '}';
 
   }

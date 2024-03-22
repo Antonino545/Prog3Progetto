@@ -19,6 +19,10 @@ public class Client {
     this.id = id;
   }
 
+  String getUserId() {
+    return id;
+  }
+
   public boolean connectToServer(String host, int port) {
     int attempts = 0;
     boolean success = false;
