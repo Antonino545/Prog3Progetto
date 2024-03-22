@@ -9,8 +9,9 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
@@ -167,6 +168,42 @@ public class Server {
 			}
 			return false;
 		}	}
+		private List<Mail> receiveEmail(String usermail){
+			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+			List<Mail> mails = new ArrayList<>();
+			try {
+				File file = new File(usermail + ".txt");
+				Scanner scanner = new Scanner(file);
+
+				while (scanner.hasNextLine()) {
+					String line = scanner.nextLine();
+					String[] parts = line.split(", ");
+					if (parts.length >= 5) {
+						String sender = parts[0];
+						String destinationsString = parts[1];
+						String subject = parts[2];
+						String content = parts[3];
+						String dateString = parts[4];
+
+						// Extracting destinations from destinationsString
+						String[] destinationsArray = destinationsString.substring(1, destinationsString.length() - 1).split(", ");
+            ArrayList<String> destinations = new ArrayList<>(Arrays.asList(destinationsArray));
+
+						// Parsing date
+						Date date = dateFormat.parse(dateString);
+
+						// Creating Email object
+						Mail email = new Mail(sender, destinations, subject, content, date);
+						mails.add(email);
+					}
+				}
+				scanner.close();
+			} catch (FileNotFoundException | ParseException e) {
+				return mails;
+			}
+			return mails;
+
+		}
 
 		// Metodo per leggere il database di credenziali da file
 		private List<String> readDatabaseFromFile() {
@@ -183,5 +220,8 @@ public class Server {
 			return database;
 		}
 
-
+	public static void main(String[] args) {
+		Server server = new Server(null);
+		System.out.println(server.receiveEmail("mario.rossi222@progmail.com"));
+	}
 	}
