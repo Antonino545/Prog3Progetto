@@ -51,6 +51,12 @@ public class NewMailController {
     String[] destinationsArray = destination.split(",");
     boolean success = true;
     List<String> destinationsList = Arrays.asList(destinationsArray);
+    Set<String> uniqueDestinations = new HashSet<>(destinationsList);
+    if (uniqueDestinations.size() < destinationsList.size()) {
+      alert("I destinatari devono essere tutti diversi", Alert.AlertType.ERROR);
+      System.out.println("I destinatari devono essere tutti diversi");
+      return;
+    }
     String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     for (String dest : destinationsList) {
       if (!dest.matches(emailPattern)) {
@@ -65,12 +71,17 @@ public class NewMailController {
       int port= 4445;
       if(c.connectToServer(host, port)){
         System.out.println("Connessione al server riuscita");
-        c.SendMail(host, port, mail);
+      if(c.SendMail(host, port, mail)){
         System.out.println(mail);
         Stage stage = (Stage) subjectfield.getScene().getWindow();
         stage.close();
         alert("Email inviata", Alert.AlertType.INFORMATION);
         System.out.println("Email inviata");
+      }else{
+        System.out.println("Errore durante l'invio dell'email");
+        alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
+        return;
+      }
       }else{
         System.out.println("Connessione al server non riuscita");
         alert("Connessione al server non riuscita", Alert.AlertType.ERROR);

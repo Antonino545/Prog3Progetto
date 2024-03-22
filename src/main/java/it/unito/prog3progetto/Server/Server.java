@@ -6,6 +6,9 @@ import it.unito.prog3progetto.Lib.User;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +18,7 @@ import javafx.scene.control.TextArea;
 public class Server {
 	private ServerSocket serverSocket;
 
-	private TextArea textArea; // TextArea per visualizzare l'output
+	private final TextArea textArea; // TextArea per visualizzare l'output
 
 	// Costruttore che accetta una TextArea per visualizzare l'output
 	public Server(TextArea textArea) {
@@ -53,7 +56,7 @@ public class Server {
 
 	// Classe interna per gestire la comunicazione con un singolo client
 	private class ClientHandler implements Runnable {
-    private Socket socket;
+    private final Socket socket;
 		private ObjectInputStream inStream;
 		private ObjectOutputStream outStream;
 
@@ -68,9 +71,8 @@ public class Server {
 
 				Object clientObject = inStream.readObject(); // Legge l'oggetto inviato dal client
 
-				if (clientObject instanceof User) {
-					User user = (User) clientObject;
-					boolean isAuthenticated = authenticateUser(user); // Autentica l'utente
+				if (clientObject instanceof User user) {
+          boolean isAuthenticated = authenticateUser(user); // Autentica l'utente
 					outStream.writeObject(isAuthenticated); // Invia al client il risultato dell'autenticazione
 					outStream.flush();
 
@@ -80,9 +82,8 @@ public class Server {
 						textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n");
 					}
 				}
-				else if (clientObject instanceof Mail) {
-					Mail mail = (Mail) clientObject;
-					boolean isSent = SendMail(mail); // Invia l'email al destinatario
+				else if (clientObject instanceof Mail mail) {
+          boolean isSent = sendMail(mail); // Invia l'email al destinatario
 					outStream.writeObject(isSent); // Invia al client il risultato dell'invio dell'email
 					outStream.flush();
 				}
@@ -135,36 +136,37 @@ public class Server {
 			}
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
-		private boolean SendMail(Mail mail) {
-			// Invia l'email al destinatario
-			for(String destination : mail.getDestinations()) {
-				// Invia l'email al destinatario
-				Platform.runLater(() -> textArea.appendText("Email inviata a "+ destination+ ".\n"));
+		private boolean sendMail(Mail mail) {
+			for (String destination : mail.getDestinations()) {
+				// Send email to the recipient
+				Platform.runLater(() -> textArea.appendText("Email sent to " + destination + ".\n"));
 				try {
-					// Create a FileWriter object
-					FileWriter fileWriter = new FileWriter(destination + ".txt");
-
-					// Wrap the FileWriter in a BufferedWriter
-					BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-					// Write some content into the file
-					bufferedWriter.write(mail.toString() + "\n");
-
-					// Close the BufferedWriter
-					bufferedWriter.close();
-
-					System.out.println("File created successfully!");
-					return true; // Se le credenziali sono corrette, restituisce true
-
+					// Check if the file already exists
+					Path filePath = Paths.get(destination + ".txt");
+					if (Files.exists(filePath)) {
+						// If the file exists, append to it
+						FileWriter fileWriter = new FileWriter(filePath.toString(), true);
+						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+						bufferedWriter.write(mail.toString() );
+						bufferedWriter.close();
+						System.out.println("Content appended to the file successfully!");
+					} else {
+						// If the file doesn't exist, create it
+						FileWriter fileWriter = new FileWriter(filePath.toString());
+						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+						bufferedWriter.write(mail.toString());
+						bufferedWriter.close();
+						System.out.println("File created successfully!");
+					}
+					return true; // If the email is sent successfully, return true
 				} catch (IOException e) {
-					System.out.println("An error occurred while creating the file.");
+					System.out.println("An error occurred while processing the file.");
 					e.printStackTrace();
 					return false;
 				}
 			}
 			return false;
-		}
-	}
+		}	}
 
 		// Metodo per leggere il database di credenziali da file
 		private List<String> readDatabaseFromFile() {

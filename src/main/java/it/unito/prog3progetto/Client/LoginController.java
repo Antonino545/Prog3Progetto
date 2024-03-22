@@ -17,7 +17,6 @@ public class LoginController {
     @FXML
     private TextField passwordTextField;
 
-    Client client;
     private Stage primaryStage; // Reference to your primary stage
 
     // Setter method to set the primary stage
