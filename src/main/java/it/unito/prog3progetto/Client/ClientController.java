@@ -64,7 +64,6 @@ public class ClientController {
 
   public void logout(ActionEvent actionEvent) {
     try {
-      c.closeConnections();
       FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
       Parent root = loader.load();
 

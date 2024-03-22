@@ -89,6 +89,8 @@ public class Client {
       e.printStackTrace();
       closeConnections();
       return false;
+    }finally {
+      closeConnections();
     }
-  }
+}
 }
