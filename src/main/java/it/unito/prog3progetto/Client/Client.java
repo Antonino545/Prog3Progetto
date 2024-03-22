@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client {
   private Socket socket = null;
@@ -66,6 +68,12 @@ public class Client {
   public boolean sendAndCheckCredentials(String host, int port, String email, String password) {
     try {
       User user = new User(email, password);
+      outputStream.writeObject("LOGIN");
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      if(inputStream.readObject().equals(true)){
+        System.out.println("Server pronto a ricevere le credenziali");
+      }
       outputStream.writeObject(user);
       outputStream.flush();
       socket.setSoTimeout(5000);
@@ -80,13 +88,31 @@ public class Client {
       return false;
     }
   }
+  public ArrayList<Mail> receiveEmail(String host, int port, String email) {
+    try {
+      outputStream.writeObject("RECEIVEEMAIL");
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      if(inputStream.readObject().equals(true)){
+        System.out.println("Server pronto a ricevere le email");
+      }
+      outputStream.writeObject(email);
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      return (ArrayList<Mail>) inputStream.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
 
   public boolean SendMail(String host, int port, Mail mail) {
     try {
+      outputStream.writeObject("SENDMAIL");
+      outputStream.flush();
       outputStream.writeObject(mail);
       outputStream.flush();
-
-      // Attendere la risposta dal server
+      socket.setSoTimeout(5000);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
         System.out.println("Email inviata con successo.");

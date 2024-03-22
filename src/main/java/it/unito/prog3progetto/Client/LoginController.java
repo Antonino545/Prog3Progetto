@@ -67,6 +67,7 @@ public class LoginController {
 
     if (client.sendAndCheckCredentials(host,port,useremail,password)) {
       try {
+        System.out.println("Login riuscito");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();
         ClientController controller = loader.getController();

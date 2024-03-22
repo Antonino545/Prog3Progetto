@@ -6,6 +6,7 @@ import it.unito.prog3progetto.Lib.User;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,13 +69,39 @@ public class Server {
 		@Override
 		public void run() {
 			try {
-				openStreams(); // Apre gli stream di input e output per comunicare con il client
+				openStreams();
 
-				Object clientObject = inStream.readObject(); // Legge l'oggetto inviato dal client
+				Object clientObject = inStream.readObject();
 
-				if (clientObject instanceof User user) {
-          boolean isAuthenticated = authenticateUser(user); // Autentica l'utente
-					outStream.writeObject(isAuthenticated); // Invia al client il risultato dell'autenticazione
+				if (clientObject.equals("LOGIN")) {
+					handleLoginRequest();
+				} else if (clientObject.equals("SENDMAIL")) {
+					handleSendMailRequest();
+				} else if (clientObject.equals("RECEIVEEMAIL")) {
+					handleReceiveEmailRequest();
+				}
+
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+				// Handle other exceptions
+			} finally {
+				closeStreams();
+			}
+		}
+
+		private void handleLoginRequest() {
+			try {
+				outStream.writeObject(true);
+				outStream.flush();
+
+				// Wait for the user object
+				Object userObject = inStream.readObject();
+
+				if (userObject instanceof User) {
+					User user = (User) userObject;
+					boolean isAuthenticated = authenticateUser(user);
+
+					outStream.writeObject(isAuthenticated);
 					outStream.flush();
 
 					if (isAuthenticated) {
@@ -82,22 +109,55 @@ public class Server {
 					} else {
 						textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n");
 					}
+				} else {
+					textArea.appendText("Errore: oggetto utente non valido.\n");
 				}
-				else if (clientObject instanceof Mail mail) {
-          boolean isSent = sendMail(mail); // Invia l'email al destinatario
-					outStream.writeObject(isSent); // Invia al client il risultato dell'invio dell'email
-					outStream.flush();
-				}
-
 			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
-				textArea.appendText("Errore durante la comunicazione con il client.\n"); // Aggiorna l'interfaccia utente con un messaggio di errore
-			} finally {
-				closeStreams(); // Chiude gli stream di input e output in ogni caso
-				textArea.appendText("Connessione con il client chiusa.\n"); // Aggiorna l'interfaccia utente con un messaggio di chiusura
-
+				// Handle login request exception
 			}
 		}
+
+		private void handleSendMailRequest() {
+			try {
+				outStream.writeObject(true);
+				outStream.flush();
+
+				Object mailObject = inStream.readObject();
+				if (mailObject instanceof Mail) {
+					Mail mail = (Mail) mailObject;
+					boolean isSent = sendMail(mail);
+					outStream.writeObject(isSent);
+					outStream.flush();
+				} else {
+					Platform.runLater(() -> textArea.appendText("Error in sending email.\n"));
+
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+				// Handle send mail request exception
+			}
+		}
+
+		private void handleReceiveEmailRequest() {
+			try {
+				outStream.writeObject(true);
+				outStream.flush();
+
+//				Object userMailObject = inStream.readObject();
+//					String userMail = (String) userMailObject;
+//					ArrayList<Mail> mails = receiveEmail(userMail);
+//					outStream.writeObject(mails);
+//					outStream.flush();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				// Handle receive email request exception
+			}
+		}
+
+// Other methods...
+
 
 		// Metodo per chiudere gli stream di input e output
 		private void closeStreams() {
@@ -168,9 +228,9 @@ public class Server {
 			}
 			return false;
 		}	}
-		private List<Mail> receiveEmail(String usermail){
+		private ArrayList<Mail> receiveEmail(String usermail){
 			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-			List<Mail> mails = new ArrayList<>();
+			ArrayList<Mail> mails = new ArrayList<>();
 			try {
 				File file = new File(usermail + ".txt");
 				Scanner scanner = new Scanner(file);

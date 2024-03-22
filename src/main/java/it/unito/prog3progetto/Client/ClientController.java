@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class ClientController {
@@ -27,22 +28,23 @@ public class ClientController {
 
   public void initialize(Client client) {
     this.client = client;
-    System.out.println("ClientController initialized");
     if(client != null) {
       email.setText(client.getUserId());
+      String host= "127.0.0.1";
+      int port= 4445;
+      if(client.connectToServer(host, port)){
+        System.out.println("Connessione al server riuscita");
+
+      ObservableList<Mail> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId()));
+      mailListView.setItems(items);
+      System.out.println("Email ricevute");
+      }else {
+        System.out.println("Connessione al server non riuscita");
+      }
     }
-    ArrayList<String> destinations = new ArrayList<String>();
-    destinations.add("mario.rossi@progmail.com");
-    ObservableList<Mail> items = FXCollections.observableArrayList(
-            new Mail("sender1@example.com", destinations , "Subject 1", "Ciao come stai?\nIo bene ragazzi! Voi? Spero bene!", Date.from(Instant.now())),
-            new Mail("sender2@example.com",destinations, "Subject 2", "Content 2", Date.from(Instant.now())),
-            new Mail("sender3@example.com",destinations, "Subject 3", "Content 3", Date.from(Instant.now())),
-            new Mail("sender4@example.com",destinations, "Subject 4", "Content 4", Date.from(Instant.now())),
-            new Mail("sender5@example.com",destinations, "Subject 5", "Content 5", Date.from(Instant.now()))
-    );
 
-    mailListView.setItems(items);
 
+    // Creazione della lista di oggetti MailItem
     // Personalizzazione della visualizzazione delle celle
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
 
@@ -94,6 +96,8 @@ public class ClientController {
       System.out.println("Error opening login window: " + e.getMessage());
     }
   }
+
+
 
 
 }
