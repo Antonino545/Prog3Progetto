@@ -11,7 +11,7 @@ public class Client {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
-  private String id;
+  private final String id;
 
   private final int MAX_ATTEMPTS = 3;
 
@@ -27,13 +27,14 @@ public class Client {
       attempts++;
       success = tryCommunication(host, port);
 
-      if (!success) {
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          return false;
-        }
+      if(success) {
+        continue;
+      }
+
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
     }
 

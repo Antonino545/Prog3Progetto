@@ -52,8 +52,7 @@ public class Server {
 
 	// Classe interna per gestire la comunicazione con un singolo client
 	private class ClientHandler implements Runnable {
-		private User user;
-		private Socket socket;
+    private Socket socket;
 		private ObjectInputStream inStream;
 		private ObjectOutputStream outStream;
 
@@ -121,11 +120,11 @@ public class Server {
 			for (String entry : database) {
 				String[] parts = entry.split(",");
 				if (parts.length == 2 && parts[0].trim().equals(user.getEmail()) && parts[1].trim().equals(user.getPassword())) {
-					this.user = user;
-					textArea.appendText("Utente autenticato: "+ user.getEmail()+ ".\n"); // Aggiorna l'interfaccia utente con un messaggio di autenticazione
+          textArea.appendText("Utente autenticato: "+ user.getEmail()+ ".\n"); // Aggiorna l'interfaccia utente con un messaggio di autenticazione
 					return true; // Se le credenziali sono corrette, restituisce true
 				}
 			}
+			textArea.appendText("Autenticazione fallita per l'utente: "+ user.getEmail()+ ".\n"); // Aggiorna l'interfaccia utente con un messaggio di errore
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
 	}

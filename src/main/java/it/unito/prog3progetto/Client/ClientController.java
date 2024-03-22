@@ -12,6 +12,9 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 public class ClientController {
@@ -22,13 +25,14 @@ public class ClientController {
 
   public void initialize() {
     // Creazione della lista di oggetti MailItem
+    ArrayList<String> destinations = new ArrayList<String>();
+    destinations.add("mario.rossi@progmail.com");
     ObservableList<Mail> items = FXCollections.observableArrayList(
-            new Mail("sender1@example.com","mario.rossi@progmail.com", "Subject 1", "Ciao come stai?\nIo bene ragazzi! Voi? Spero bene!"),
-            new Mail("sender2@example.com","mario.rossi@progmail.com", "Subject 2", "Content 2"),
-            new Mail("sender3@example.com","mario.rossi@progmail.com", "Subject 3", "Content 3"),
-            new Mail("sender4@example.com","mario.rossi@progmail.com", "Subject 4", "Content 4"),
-            new Mail("sender5@example.com","mario.rossi@progmail.com", "Subject 5", "Content 5")
-
+            new Mail("sender1@example.com", destinations , "Subject 1", "Ciao come stai?\nIo bene ragazzi! Voi? Spero bene!", Date.from(Instant.now())),
+            new Mail("sender2@example.com",destinations, "Subject 2", "Content 2", Date.from(Instant.now())),
+            new Mail("sender3@example.com",destinations, "Subject 3", "Content 3", Date.from(Instant.now())),
+            new Mail("sender4@example.com",destinations, "Subject 4", "Content 4", Date.from(Instant.now())),
+            new Mail("sender5@example.com",destinations, "Subject 5", "Content 5", Date.from(Instant.now()))
     );
 
     mailListView.setItems(items);

@@ -10,7 +10,6 @@ public class User implements Serializable {
 private static final long serialVersionUID = 5950169519310163575L;
 	private String email;
 private String password;
-	private boolean authenticated;
 
 
 public User(String email, String scrittura) {
@@ -42,13 +41,6 @@ public boolean equals(Object o) {
 }
 
 
-	public boolean isAuthenticated() {
-		return authenticated;
-	}
-
-	public void setAuthenticated(boolean authenticated) {
-		this.authenticated = authenticated;
-	}
 
 public String toString() {
 	return "  Email = " + getEmail() + " ; Passwors = " + getPassword();
