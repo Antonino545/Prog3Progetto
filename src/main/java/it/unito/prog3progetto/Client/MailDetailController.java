@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Lib.Email;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,22 +9,32 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MailDetailController {
   public Label senderLabel;
   public Label subjectLabel;
   public Label contentLabel;
   public Label destinationslabel;
+  ArrayList<String> destinations;
   public Label datalabel;
+  UUID id;
 
-  public void setMailDetails(String sender, String subject, String content, String string, String data) {
+  public void setMailDetails(String sender, String subject, String content, ArrayList<String> Destinations, String data, UUID id) {
     senderLabel.setText(sender);
     subjectLabel.setText(subject);
     contentLabel.setText( content);
-    destinationslabel.setText(string);
+    this.destinations=Destinations;
+    destinationslabel.setText(Destinations.toString());
     datalabel.setText(data);
+    this.id=id;
+
 
   }
+
+
 
   public void handleReply(ActionEvent actionEvent) {
     try {
@@ -47,5 +58,13 @@ public class MailDetailController {
   }
 
   public void handleForward(ActionEvent actionEvent) {
+  }
+
+  public void handleDelete(ActionEvent actionEvent) {
+    Client client = new Client(senderLabel.getText());
+    String host= "127.0.0.1";
+    int port= 4445;
+    client.connectToServer(host, port);
+    client.DeleteMail(host, port, new Email(senderLabel.getText(), destinations, null, null,null,id));
   }
 }

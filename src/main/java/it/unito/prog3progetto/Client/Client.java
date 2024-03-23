@@ -127,6 +127,25 @@ public class Client {
       return false;
     }
   }
+  public boolean DeleteMail(String host, int port,  Email email) {
+    try {
+      outputStream.writeObject("DELETEMAIL");
+      outputStream.flush();
+      outputStream.writeObject(email);
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      boolean success = (boolean) inputStream.readObject();
+      if (success) {
+        System.out.println("Email Cancellata con successo.");
+      } else {
+        System.out.println("Errore durante la cancellazione dell'email.");
+      }
+      return success;
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
 
 
   public void closeConnections() {

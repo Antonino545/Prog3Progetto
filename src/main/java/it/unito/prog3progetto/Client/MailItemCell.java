@@ -44,8 +44,7 @@ class MailItemCell extends ListCell<Email> {
           Parent root = loader.load();
 
           MailDetailController controller = loader.getController();
-          controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations().toString(), email.getDatesendMail().toString());
-
+          controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations(), email.getDatesendMail().toString(),email.getId());
           Stage stage = new Stage();
           stage.setScene(new Scene(root));
           stage.setTitle("Dettagli Email");

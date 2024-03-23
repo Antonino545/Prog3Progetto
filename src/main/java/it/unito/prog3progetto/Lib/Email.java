@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 public class Email implements Serializable {
   @Serial
@@ -18,24 +19,27 @@ public class Email implements Serializable {
   private final String subject;
   private final String content;
 
-  private static int ultimoId = 0; // Variabile statica per tenere traccia dell'ultimo ID assegnato
-  private final int id;
+  private final  UUID id ;
+
 
   public Email(String sender, ArrayList<String> destinations, String subject, String content, Date datesendMail) {
-    this.id = ultimoId++;
+    this.id = UUID.randomUUID();
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
     this.content = content;
     this.datesendMail = datesendMail;
   }
-  public Email(String sender, ArrayList<String> destinations, String subject, String content, Date datesendMail,int id) {
+  public Email(String sender, ArrayList<String> destinations, String subject, String content, Date datesendMail,UUID id) {
     this.id = id;
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
     this.content = content;
     this.datesendMail = datesendMail;
+  }
+  public UUID getId() {
+    return id;
   }
   public String getItalianDate() {
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALIAN);
