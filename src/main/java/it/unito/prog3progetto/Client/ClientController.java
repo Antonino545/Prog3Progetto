@@ -34,20 +34,8 @@ public class ClientController {
     this.client = client;
     if(client != null) {
       email.setText(client.getUserId());
-      String host= "127.0.0.1";
-      int port= 4445;
-      if(client.connectToServer(host, port)){
-        System.out.println("Connessione al server riuscita");
-
-      ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId(),null));
-      mailListView.setItems(items);
-      indexlenght.setText(String.valueOf(items.size()));
-      System.out.println("Email ricevute");
-      }else {
-        System.out.println("Connessione al server non riuscita");
-      }
+      FullRefresh(null);
     }
-    mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
     timeline = new Timeline(new KeyFrame(Duration.minutes(10), this::Refresh));
     // Imposta il ciclo infinito
     timeline.setCycleCount(Timeline.INDEFINITE);
@@ -126,6 +114,32 @@ public class ClientController {
       }
     } else {
       System.out.println("Client is null. Cannot refresh.");
+    }
+  }
+
+
+  public void FullRefresh(ActionEvent actionEvent) {
+    String host= "127.0.0.1";
+    int port= 4445;
+    if(client.connectToServer(host, port)){
+      ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail(host, port, client.getUserId(), null));
+
+      // Cancella gli elementi precedenti dalla lista
+      mailListView.getItems().clear();
+
+
+      // Aggiunge gli elementi ricevuti dalla lista
+      mailListView.setItems(items);
+
+      // Imposta il conteggio degli elementi
+      indexlenght.setText(String.valueOf(items.size()));
+
+      // Imposta il cell factory
+      mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
+
+      System.out.println("Email ricevute");
+    } else {
+      System.out.println("Connessione al server non riuscita");
     }
   }
 

@@ -45,11 +45,12 @@ class MailItemCell extends ListCell<Email> {
 
           MailDetailController controller = loader.getController();
           controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations(), email.getDatesendMail().toString(),email.getId());
-          Stage stage = new Stage();
-          stage.setScene(new Scene(root));
-          stage.setTitle("Dettagli Email");
-          stage.setResizable(false);
-          stage.show();
+          controller.setPrimaryStage(primaryStage);
+          primaryStage.setScene(new Scene(root));
+          primaryStage.setTitle("Dettaglio Email");
+          primaryStage.show();
+
+
         } catch (IOException e) {
     System.out.println("Errore durante l'apertura della finestra di dettaglio email");
         }

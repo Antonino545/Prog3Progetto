@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class MailDetailController {
@@ -21,6 +22,7 @@ public class MailDetailController {
   ArrayList<String> destinations;
   public Label datalabel;
   UUID id;
+  private Stage primaryStage;
 
   public void setMailDetails(String sender, String subject, String content, ArrayList<String> Destinations, String data, UUID id) {
     senderLabel.setText(sender);
@@ -34,6 +36,9 @@ public class MailDetailController {
 
   }
 
+  public void setPrimaryStage(Stage primaryStage) {
+    this.primaryStage = primaryStage;
+  }
 
 
   public void handleReply(ActionEvent actionEvent) {
@@ -60,11 +65,23 @@ public class MailDetailController {
   public void handleForward(ActionEvent actionEvent) {
   }
 
-  public void handleDelete(ActionEvent actionEvent) {
+  public void handleDelete(ActionEvent actionEvent) throws IOException {
     Client client = new Client(senderLabel.getText());
     String host= "127.0.0.1";
     int port= 4445;
     client.connectToServer(host, port);
     client.DeleteMail(host, port, new Email(senderLabel.getText(), destinations, null, null,null,id));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
+    Parent root = loader.load();
+    ClientController controller = loader.getController();
+    controller.setPrimaryStage(primaryStage);
+    controller.initialize(client);
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+    primaryStage.setTitle("Client");
+    primaryStage.setScene(scene);
+    primaryStage.setResizable(false); // Imposta le dimensioni della finestra come non modificabili
+    primaryStage.show();
+
   }
 }
