@@ -29,6 +29,10 @@ class MailItemCell extends ListCell<Email> {
       Label subjectLabel = new Label(email.getSubject());
       String content = email.getContent();
       String firstLine = content.substring(0, Math.min(content.length(), 50));
+      int newlineIndex = firstLine.indexOf('\n');
+      if (newlineIndex != -1) {
+        firstLine = firstLine.substring(0, newlineIndex);
+      }
       Label contentLabel = new Label(firstLine);
       Label dateLabel = new Label(email.getItalianDate());
       vbox.getChildren().addAll(senderLabel, dateLabel,subjectLabel, contentLabel);

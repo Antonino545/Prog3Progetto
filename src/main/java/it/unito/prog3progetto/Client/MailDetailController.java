@@ -19,7 +19,7 @@ public class MailDetailController {
   public void setMailDetails(String sender, String subject, String content, String string, String data) {
     senderLabel.setText(sender);
     subjectLabel.setText(subject);
-    contentLabel.setText(content);
+    contentLabel.setText( content);
     destinationslabel.setText(string);
     datalabel.setText(data);
 

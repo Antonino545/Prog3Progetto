@@ -243,7 +243,9 @@ public class Server {
 				Scanner scanner = new Scanner(file);
 
 				while (scanner.hasNextLine()) {
+
 					String line = scanner.nextLine();
+					System.out.println(line);
 					String[] parts = line.split(" , ");
 					if (parts.length >= 6) {
 						String sender = parts[0];
@@ -261,7 +263,7 @@ public class Server {
 						Date date = dateFormat.parse(dateString);
 
 						// Creating Email object
-						Email email = new Email(sender, destinations, subject, content, date, Integer.parseInt(id));
+						Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->","\n"), date, Integer.parseInt(id));
 						emails.add(email);
 					}
 				}

@@ -90,7 +90,9 @@ public class NewMailController {
       }
     }
     if (success) {
-    Email email = new Email(usermail, new ArrayList<>(destinationsList), subjectfield.getText(), ContentField.getText(), Date.from(java.time.Instant.now()));
+      String Content = ContentField.getText();
+      Content=Content.replace("\n", "<--Accapo-->");
+    Email email = new Email(usermail, new ArrayList<>(destinationsList), subjectfield.getText(),Content, Date.from(java.time.Instant.now()));
     Client c = new Client(usermail);
       String host= "127.0.0.1";
       int port= 4445;

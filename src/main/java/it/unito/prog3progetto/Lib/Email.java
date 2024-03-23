@@ -62,7 +62,7 @@ public class Email implements Serializable {
 
   @Override
   public String toString() {
-    return "Email {"+ sender+" , "+destinations+" , "+subject+" , "+content+" , "+datesendMail+" , "+id +"}\n";
+    return  sender+" , "+destinations+" , "+subject+" , "+content+" , "+datesendMail+" , "+id +"\n";
   }
 
 }
