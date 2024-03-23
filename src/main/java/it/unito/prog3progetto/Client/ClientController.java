@@ -39,7 +39,7 @@ public class ClientController {
       if(client.connectToServer(host, port)){
         System.out.println("Connessione al server riuscita");
 
-      ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId()));
+      ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId(),null));
       mailListView.setItems(items);
       indexlenght.setText(String.valueOf(items.size()));
       System.out.println("Email ricevute");
@@ -112,11 +112,12 @@ public class ClientController {
       int port = 4445;
       if (client.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
-        ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId());
+        ObservableList<Email> lastsitems = mailListView.getItems();
+        Email lastEmail = lastsitems.getLast();
+        ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId(), lastEmail.getDatesendMail());
         System.out.println("Email ricevute dal server: ");
         System.out.println(receivedEmails);
         ObservableList<Email> items = FXCollections.observableArrayList(receivedEmails);
-        mailListView.getItems().clear(); // Pulisce la lista prima di aggiungere nuovi elementi
         mailListView.getItems().addAll(items); // Aggiunge le email ricevute alla ListView
         indexlenght.setText(String.valueOf(items.size()));
         System.out.println("Email ricevute");

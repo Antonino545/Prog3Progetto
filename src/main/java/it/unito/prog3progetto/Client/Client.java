@@ -88,7 +88,7 @@ public class Client {
       return false;
     }
   }
-  public ArrayList<Email> receiveEmail(String host, int port, String email) {
+  public ArrayList<Email> receiveEmail(String host, int port, String email, Date lastmail) {
     try {
       outputStream.writeObject("RECEIVEEMAIL");
       outputStream.flush();
@@ -97,6 +97,8 @@ public class Client {
         System.out.println("Server pronto a ricevere le email");
       }
       outputStream.writeObject(email);
+      outputStream.flush();
+      outputStream.writeObject(lastmail);
       outputStream.flush();
       socket.setSoTimeout(5000);
       return (ArrayList<Email>) inputStream.readObject();

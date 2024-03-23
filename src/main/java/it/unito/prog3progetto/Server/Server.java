@@ -140,22 +140,30 @@ public class Server {
 
 		private void handleReceiveEmailRequest() {
 			try {
+				// Segnala al client che il server è pronto a ricevere la richiesta
 				outStream.writeObject(true);
 				outStream.flush();
 
+				// Legge il nome dell'utente dal client
 				Object userMailObject = inStream.readObject();
-					String userMail = (String) userMailObject;
-					ArrayList<Email> mails = receiveEmail(userMail);
-					outStream.writeObject(mails);
-					outStream.flush();
+				String userMail = (String) userMailObject;
 
-			} catch (IOException e) {
+				// Legge la data dell'ultima email ricevuta dal client
+				Date lastEmailDate = (Date) inStream.readObject();
+
+				// Ottiene le email dall'utente con una data successiva a quella dell'ultima email ricevuta
+				ArrayList<Email> mails = receiveEmail(userMail, lastEmailDate);
+
+				// Invia le email al client
+				outStream.writeObject(mails);
+				outStream.flush();
+
+			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
-				// Handle receive email request exception
-			} catch (ClassNotFoundException e) {
-        throw new RuntimeException(e);
-      }
-    }
+				// Gestisci l'eccezione
+			}
+		}
+
 
 // Other methods...
 
@@ -235,45 +243,56 @@ public class Server {
 			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
 		}
 	}
-		private ArrayList<Email> receiveEmail(String usermail){
-			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-			ArrayList<Email> emails = new ArrayList<>();
-			try {
-				File file = new File(usermail + ".txt");
-				Scanner scanner = new Scanner(file);
+	private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+		ArrayList<Email> emails = new ArrayList<>();
+		try {
+			File file = new File(usermail + ".txt");
+			Scanner scanner = new Scanner(file);
 
-				while (scanner.hasNextLine()) {
-					String line = scanner.nextLine();
-					String[] parts = line.split(" , ");
-					if (parts.length >= 6) {
-						String sender = parts[0];
-						String destinationsString = parts[1];
-						String subject = parts[2];
-						String content = parts[3];
-						String dateString = parts[4];
-						String id = parts[5];
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String[] parts = line.split(" , ");
+				if (parts.length >= 6) {
+					String sender = parts[0];
+					String destinationsString = parts[1];
+					String subject = parts[2];
+					String content = parts[3];
+					String dateString = parts[4];
+					String idString = parts[5];
 
-						// Extracting destinations from destinationsString
-						String[] destinationsArray = destinationsString.substring(1, destinationsString.length() - 1).split(", ");
-            ArrayList<String> destinations = new ArrayList<>(Arrays.asList(destinationsArray));
+					// Extracting destinations from destinationsString
+					String[] destinationsArray = destinationsString.substring(1, destinationsString.length() - 1).split(", ");
+					ArrayList<String> destinations = new ArrayList<>(Arrays.asList(destinationsArray));
 
-						// Parsing date
-						Date date = dateFormat.parse(dateString);
+					// Parsing date
+					Date date = dateFormat.parse(dateString);
 
-						// Creating Email object
-						Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->","\n"), date, Integer.parseInt(id));
+					// Parsing ID
+					int id = Integer.parseInt(idString);
+
+					// Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
+					if (lastEmailDate == null) {
+						Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->","\n"), date, id);
+						emails.add(email);
+					} else if (date.after(lastEmailDate)) {
+						// Aggiungi solo le email con data successiva a lastEmailDate
+						Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->","\n"), date, id);
 						emails.add(email);
 					}
 				}
-				scanner.close();
-			} catch (FileNotFoundException | ParseException e) {
-				return emails;
 			}
+			scanner.close();
+		} catch (FileNotFoundException | ParseException e) {
+			// In caso di eccezione, restituisci l'elenco vuoto
 			return emails;
-
 		}
+		return emails;
+	}
 
-		// Metodo per leggere il database di credenziali da file
+
+
+	// Metodo per leggere il database di credenziali da file
 		private List<String> readDatabaseFromFile() {
 			List<String> database = new ArrayList<>();
 
