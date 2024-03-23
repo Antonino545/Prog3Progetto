@@ -290,6 +290,6 @@ public class Server {
 
 	public static void main(String[] args) {
 		Server server = new Server(null);
-		System.out.println(server.receiveEmail("mario.rossi@progmail.com"	));
+		System.out.println(server.receiveEmail("mario.rossi222@progmail.com"	));
 	}
 	}

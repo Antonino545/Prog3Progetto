@@ -36,7 +36,7 @@
 
                 </TextArea>
                 <HBox spacing="10">
-                   <Button onAction="#sendMail" prefHeight="28.0" prefWidth="649.0" styleClass="button-primary" text="Invia" />
+                   <Button onAction="#sendMail" fx:id="sendmailbutton" prefHeight="28.0" prefWidth="649.0" styleClass="button-primary" text="Invia" />
                </HBox>
             </VBox>
         </VBox>

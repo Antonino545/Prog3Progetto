@@ -12,6 +12,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 class MailItemCell extends ListCell<Email> {
+  private final Stage primaryStage;
+
+  public MailItemCell(Stage primaryStage) {
+    this.primaryStage = primaryStage;
+  }
 
 
   @Override
@@ -21,7 +26,6 @@ class MailItemCell extends ListCell<Email> {
       VBox vbox = new VBox();
       Label senderLabel = new Label(email.getSender());
       senderLabel.setStyle("-fx-font-weight: bold;");
-      Label destinationsLabel = new Label(email.getDestinations().toString());
       Label subjectLabel = new Label(email.getSubject());
       String content = email.getContent();
       String firstLine = content.substring(0, Math.min(content.length(), 50));

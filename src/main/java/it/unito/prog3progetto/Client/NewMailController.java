@@ -2,11 +2,9 @@ package it.unito.prog3progetto.Client;
 
 import it.unito.prog3progetto.Lib.Email;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -18,11 +16,38 @@ public class NewMailController {
   public TextField destinationsfield;
   @FXML
   public TextArea ContentField;
+  @FXML
+  public Button sendmailbutton;
   private String usermail;
 
 
   public void setUser(String usermail) {
     this.usermail =  usermail;
+  }
+  public void initialize(String action){
+ if(action.equals("sendmail")){
+    destinationsfield.setEditable(true);
+      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+          sendMail(event);
+        }
+      });
+  }
+  }
+  public void initialize(String action, String sender,String subject, String content, String date){
+    if(action.equals("reply")){
+      destinationsfield.setText(sender);
+      destinationsfield.setEditable(false);
+      subjectfield.setText("Re: "+subject);
+      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail" +date +"da"+sender  +"\n"+content);
+      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+          sendMail(event);
+        }
+      });
+    }
   }
 
   public void sendMail(ActionEvent actionEvent) {
