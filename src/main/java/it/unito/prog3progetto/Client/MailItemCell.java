@@ -12,11 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 class MailItemCell extends ListCell<Email> {
-  private final Stage primaryStage;
 
-  public MailItemCell(Stage primaryStage) {
-    this.primaryStage = primaryStage;
-  }
 
   @Override
   protected void updateItem(Email email, boolean empty) {
@@ -24,10 +20,14 @@ class MailItemCell extends ListCell<Email> {
     if (email != null && !empty) {
       VBox vbox = new VBox();
       Label senderLabel = new Label(email.getSender());
+      senderLabel.setStyle("-fx-font-weight: bold;");
+      Label destinationsLabel = new Label(email.getDestinations().toString());
       Label subjectLabel = new Label(email.getSubject());
-      Label contentLabel = new Label(email.getContent().split("\\n")[0]); // Prende solo la prima riga del contenuto
-
-      vbox.getChildren().addAll(senderLabel, subjectLabel, contentLabel);
+      String content = email.getContent();
+      String firstLine = content.substring(0, Math.min(content.length(), 50));
+      Label contentLabel = new Label(firstLine);
+      Label dateLabel = new Label(email.getItalianDate());
+      vbox.getChildren().addAll(senderLabel, dateLabel,subjectLabel, contentLabel);
       setGraphic(vbox);
       getStyleClass().add("emailitem");
       setOnMouseClicked(event -> {
@@ -36,7 +36,7 @@ class MailItemCell extends ListCell<Email> {
           Parent root = loader.load();
 
           MailDetailController controller = loader.getController();
-          controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent());
+          controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations().toString(), email.getDatesendMail().toString());
 
           Stage stage = new Stage();
           stage.setScene(new Scene(root));

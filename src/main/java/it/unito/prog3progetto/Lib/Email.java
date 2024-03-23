@@ -2,8 +2,10 @@ package it.unito.prog3progetto.Lib;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class Email implements Serializable {
   @Serial
@@ -11,13 +13,13 @@ public class Email implements Serializable {
   private final String sender;
   private final ArrayList<String> destinations;
 
-  private Date datesendMail;
+  private final Date datesendMail;
 
   private final String subject;
   private final String content;
 
   private static int ultimoId = 0; // Variabile statica per tenere traccia dell'ultimo ID assegnato
-  private int id;
+  private final int id;
 
   public Email(String sender, ArrayList<String> destinations, String subject, String content, Date datesendMail) {
     this.id = ultimoId++;
@@ -34,6 +36,10 @@ public class Email implements Serializable {
     this.subject = subject;
     this.content = content;
     this.datesendMail = datesendMail;
+  }
+  public String getItalianDate() {
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALIAN);
+    return sdf.format(datesendMail);
   }
   public String getSender() {
     return sender;
@@ -56,6 +62,7 @@ public class Email implements Serializable {
 
   @Override
   public String toString() {
-    return sender+",  "+destinations+",  "+subject+",  "+content+",  "+datesendMail+",  "+id +"\n";
+    return sender+" , "+destinations+" , "+subject+" , "+content+" , "+datesendMail+" , "+id +"\n";
   }
+
 }

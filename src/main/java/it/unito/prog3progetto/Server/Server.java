@@ -244,7 +244,7 @@ public class Server {
 
 				while (scanner.hasNextLine()) {
 					String line = scanner.nextLine();
-					String[] parts = line.split(",  ");
+					String[] parts = line.split(" , ");
 					if (parts.length >= 6) {
 						String sender = parts[0];
 						String destinationsString = parts[1];
