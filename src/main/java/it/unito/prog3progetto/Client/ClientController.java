@@ -1,6 +1,8 @@
 package it.unito.prog3progetto.Client;
 
 import it.unito.prog3progetto.Lib.Email;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,16 +13,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class ClientController {
   public Label email;
   @FXML
+  public Label indexlenght;
+  @FXML
   private ListView<Email> mailListView;
   private Stage primaryStage;
   private Client client;
+  private Timeline timeline;
+
 
   public void initialize(Client client) {
     this.client = client;
@@ -33,16 +41,18 @@ public class ClientController {
 
       ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId()));
       mailListView.setItems(items);
+      indexlenght.setText(String.valueOf(items.size()));
       System.out.println("Email ricevute");
       }else {
         System.out.println("Connessione al server non riuscita");
       }
     }
-
-
-    // Creazione della lista di oggetti MailItem
-    // Personalizzazione della visualizzazione delle celle
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
+    timeline = new Timeline(new KeyFrame(Duration.minutes(10), this::Refresh));
+    // Imposta il ciclo infinito
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    // Avvia il Timeline
+    timeline.play();
 
 
   }
@@ -95,6 +105,27 @@ public class ClientController {
   }
 
 
-
+  public void Refresh(ActionEvent actionEvent) {
+    if (client != null) {
+      email.setText(client.getUserId());
+      String host = "127.0.0.1";
+      int port = 4445;
+      if (client.connectToServer(host, port)) {
+        System.out.println("Connessione al server riuscita");
+        ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId());
+        System.out.println("Email ricevute dal server: ");
+        System.out.println(receivedEmails);
+        ObservableList<Email> items = FXCollections.observableArrayList(receivedEmails);
+        mailListView.getItems().clear(); // Pulisce la lista prima di aggiungere nuovi elementi
+        mailListView.getItems().addAll(items); // Aggiunge le email ricevute alla ListView
+        indexlenght.setText(String.valueOf(items.size()));
+        System.out.println("Email ricevute");
+      } else {
+        System.out.println("Connessione al server non riuscita");
+      }
+    } else {
+      System.out.println("Client is null. Cannot refresh.");
+    }
+  }
 
 }

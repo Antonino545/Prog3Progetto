@@ -243,9 +243,7 @@ public class Server {
 				Scanner scanner = new Scanner(file);
 
 				while (scanner.hasNextLine()) {
-
 					String line = scanner.nextLine();
-					System.out.println(line);
 					String[] parts = line.split(" , ");
 					if (parts.length >= 6) {
 						String sender = parts[0];
@@ -290,8 +288,5 @@ public class Server {
 			return database;
 		}
 
-	public static void main(String[] args) {
-		Server server = new Server(null);
-		System.out.println(server.receiveEmail("mario.rossi222@progmail.com"	));
-	}
+
 	}
