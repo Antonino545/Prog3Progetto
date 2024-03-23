@@ -32,7 +32,7 @@
                            </ImageView>
                         </graphic>
                      </Button>
-                     <Label text="Nuova  e-mail" textFill="WHITE">
+                     <Label text="Nuova  e-email" textFill="WHITE">
                         <font>
                            <Font name="System Bold" size="12.0" />
                         </font>

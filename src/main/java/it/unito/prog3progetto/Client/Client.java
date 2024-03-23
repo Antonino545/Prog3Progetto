@@ -1,5 +1,5 @@
 package it.unito.prog3progetto.Client;
-import it.unito.prog3progetto.Lib.Mail;
+import it.unito.prog3progetto.Lib.Email;
 import it.unito.prog3progetto.Lib.User;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,7 +8,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 public class Client {
   private Socket socket = null;
@@ -88,7 +88,7 @@ public class Client {
       return false;
     }
   }
-  public ArrayList<Mail> receiveEmail(String host, int port, String email) {
+  public ArrayList<Email> receiveEmail(String host, int port, String email) {
     try {
       outputStream.writeObject("RECEIVEEMAIL");
       outputStream.flush();
@@ -99,18 +99,18 @@ public class Client {
       outputStream.writeObject(email);
       outputStream.flush();
       socket.setSoTimeout(5000);
-      return (ArrayList<Mail>) inputStream.readObject();
+      return (ArrayList<Email>) inputStream.readObject();
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
       return new ArrayList<>();
     }
   }
 
-  public boolean SendMail(String host, int port, Mail mail) {
+  public boolean SendMail(String host, int port, Email email) {
     try {
       outputStream.writeObject("SENDMAIL");
       outputStream.flush();
-      outputStream.writeObject(mail);
+      outputStream.writeObject(email);
       outputStream.flush();
       socket.setSoTimeout(5000);
       boolean success = (boolean) inputStream.readObject();
@@ -141,6 +141,27 @@ public class Client {
         socket.close();
     } catch (IOException e) {
       e.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) {
+    Client client = new Client("mario.rossi@progmail.com");
+    String host= "127.0.0.1";
+    int port= 4445;
+    if(client.connectToServer(host, port)){
+      System.out.println("Connessione al server riuscita");
+      if(client.sendAndCheckCredentials(host, port, "mario.rossi@progmail.com", "password")){
+        System.out.println("Credenziali corrette");
+        for(int i = 0; i < 3; i++){
+          client.connectToServer(host, port);
+          ArrayList<String> destinations = new ArrayList<>();
+          destinations.add("mario.rossi@progmail.com");
+          destinations.add("mario.bianchi@progmail.com");
+          System.out.println(client.SendMail(host, port, new Email("mario.rossi@progmail.com", destinations, "Oggetto", "Contenuto", Date.from(java.time.Instant.now()))));
+
+        }
+  }}else{
+      System.out.println("Connessione al server non riuscita");
     }
   }
 }

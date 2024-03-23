@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client;
 
-import it.unito.prog3progetto.Lib.Mail;
+import it.unito.prog3progetto.Lib.Email;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -65,14 +65,14 @@ public class NewMailController {
       }
     }
     if (success) {
-    Mail mail = new Mail(usermail, new ArrayList<>(destinationsList), subjectfield.getText(), ContentField.getText(), Date.from(java.time.Instant.now()));
+    Email email = new Email(usermail, new ArrayList<>(destinationsList), subjectfield.getText(), ContentField.getText(), Date.from(java.time.Instant.now()));
     Client c = new Client(usermail);
       String host= "127.0.0.1";
       int port= 4445;
       if(c.connectToServer(host, port)){
         System.out.println("Connessione al server riuscita");
-      if(c.SendMail(host, port, mail)){
-        System.out.println(mail);
+      if(c.SendMail(host, port, email)){
+        System.out.println(email);
         Stage stage = (Stage) subjectfield.getScene().getWindow();
         stage.close();
         alert("Email inviata", Alert.AlertType.INFORMATION);

@@ -1,12 +1,11 @@
 package it.unito.prog3progetto.Server;
 
-import it.unito.prog3progetto.Lib.Mail;
+import it.unito.prog3progetto.Lib.Email;
 import it.unito.prog3progetto.Lib.User;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,7 +57,7 @@ public class Server {
 
 	// Classe interna per gestire la comunicazione con un singolo client
 	private class ClientHandler implements Runnable {
-    private final Socket socket;
+		private final Socket socket;
 		private ObjectInputStream inStream;
 		private ObjectOutputStream outStream;
 
@@ -124,9 +123,9 @@ public class Server {
 				outStream.flush();
 
 				Object mailObject = inStream.readObject();
-				if (mailObject instanceof Mail) {
-					Mail mail = (Mail) mailObject;
-					boolean isSent = sendMail(mail);
+				if (mailObject instanceof Email) {
+					Email email = (Email) mailObject;
+					boolean isSent = sendMail(email);
 					outStream.writeObject(isSent);
 					outStream.flush();
 				} else {
@@ -144,17 +143,19 @@ public class Server {
 				outStream.writeObject(true);
 				outStream.flush();
 
-//				Object userMailObject = inStream.readObject();
-//					String userMail = (String) userMailObject;
-//					ArrayList<Mail> mails = receiveEmail(userMail);
-//					outStream.writeObject(mails);
-//					outStream.flush();
+				Object userMailObject = inStream.readObject();
+					String userMail = (String) userMailObject;
+					ArrayList<Email> mails = receiveEmail(userMail);
+					outStream.writeObject(mails);
+					outStream.flush();
 
 			} catch (IOException e) {
 				e.printStackTrace();
 				// Handle receive email request exception
-			}
-		}
+			} catch (ClassNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
 // Other methods...
 
@@ -197,8 +198,12 @@ public class Server {
 			}
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
-		private boolean sendMail(Mail mail) {
-			for (String destination : mail.getDestinations()) {
+
+		private boolean sendMail(Email email) {
+			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
+
+			for (String destination : email.getDestinations()) {
+				System.out.println("Sending email to " + destination + "...");
 				// Send email to the recipient
 				Platform.runLater(() -> textArea.appendText("Email sent to " + destination + ".\n"));
 				try {
@@ -208,42 +213,45 @@ public class Server {
 						// If the file exists, append to it
 						FileWriter fileWriter = new FileWriter(filePath.toString(), true);
 						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-						bufferedWriter.write(mail.toString() );
+						bufferedWriter.write(email.toString());
 						bufferedWriter.close();
 						System.out.println("Content appended to the file successfully!");
 					} else {
 						// If the file doesn't exist, create it
 						FileWriter fileWriter = new FileWriter(filePath.toString());
 						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-						bufferedWriter.write(mail.toString());
+						bufferedWriter.write(email.toString());
 						bufferedWriter.close();
 						System.out.println("File created successfully!");
 					}
-					return true; // If the email is sent successfully, return true
+					success = true; // L'invio dell'email è riuscito per questo destinatario
 				} catch (IOException e) {
 					System.out.println("An error occurred while processing the file.");
 					e.printStackTrace();
-					return false;
+					success = false; // L'invio dell'email non è riuscito per questo destinatario
 				}
 			}
-			return false;
-		}	}
-		private ArrayList<Mail> receiveEmail(String usermail){
+
+			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
+		}
+	}
+		private ArrayList<Email> receiveEmail(String usermail){
 			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-			ArrayList<Mail> mails = new ArrayList<>();
+			ArrayList<Email> emails = new ArrayList<>();
 			try {
 				File file = new File(usermail + ".txt");
 				Scanner scanner = new Scanner(file);
 
 				while (scanner.hasNextLine()) {
 					String line = scanner.nextLine();
-					String[] parts = line.split(", ");
-					if (parts.length >= 5) {
+					String[] parts = line.split(",  ");
+					if (parts.length >= 6) {
 						String sender = parts[0];
 						String destinationsString = parts[1];
 						String subject = parts[2];
 						String content = parts[3];
 						String dateString = parts[4];
+						String id = parts[5];
 
 						// Extracting destinations from destinationsString
 						String[] destinationsArray = destinationsString.substring(1, destinationsString.length() - 1).split(", ");
@@ -253,15 +261,15 @@ public class Server {
 						Date date = dateFormat.parse(dateString);
 
 						// Creating Email object
-						Mail email = new Mail(sender, destinations, subject, content, date);
-						mails.add(email);
+						Email email = new Email(sender, destinations, subject, content, date, Integer.parseInt(id));
+						emails.add(email);
 					}
 				}
 				scanner.close();
 			} catch (FileNotFoundException | ParseException e) {
-				return mails;
+				return emails;
 			}
-			return mails;
+			return emails;
 
 		}
 
@@ -282,6 +290,6 @@ public class Server {
 
 	public static void main(String[] args) {
 		Server server = new Server(null);
-		System.out.println(server.receiveEmail("mario.rossi222@progmail.com"));
+		System.out.println(server.receiveEmail("mario.rossi@progmail.com"	));
 	}
 	}

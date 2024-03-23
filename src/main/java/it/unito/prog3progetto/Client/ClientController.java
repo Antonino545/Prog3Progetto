@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client;
 
-import it.unito.prog3progetto.Lib.Mail;
+import it.unito.prog3progetto.Lib.Email;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,16 +13,12 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 public class ClientController {
   public Label email;
   @FXML
-  private ListView<Mail> mailListView;
+  private ListView<Email> mailListView;
   private Stage primaryStage;
   private Client client;
 
@@ -35,7 +31,7 @@ public class ClientController {
       if(client.connectToServer(host, port)){
         System.out.println("Connessione al server riuscita");
 
-      ObservableList<Mail> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId()));
+      ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail( host, port, client.getUserId()));
       mailListView.setItems(items);
       System.out.println("Email ricevute");
       }else {

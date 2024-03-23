@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client;
 
-import it.unito.prog3progetto.Lib.Mail;
+import it.unito.prog3progetto.Lib.Email;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-class MailItemCell extends ListCell<Mail> {
+class MailItemCell extends ListCell<Email> {
   private final Stage primaryStage;
 
   public MailItemCell(Stage primaryStage) {
@@ -19,13 +19,13 @@ class MailItemCell extends ListCell<Mail> {
   }
 
   @Override
-  protected void updateItem(Mail mail, boolean empty) {
-    super.updateItem(mail, empty);
-    if (mail != null && !empty) {
+  protected void updateItem(Email email, boolean empty) {
+    super.updateItem(email, empty);
+    if (email != null && !empty) {
       VBox vbox = new VBox();
-      Label senderLabel = new Label(mail.getSender());
-      Label subjectLabel = new Label(mail.getSubject());
-      Label contentLabel = new Label(mail.getContent().split("\\n")[0]); // Prende solo la prima riga del contenuto
+      Label senderLabel = new Label(email.getSender());
+      Label subjectLabel = new Label(email.getSubject());
+      Label contentLabel = new Label(email.getContent().split("\\n")[0]); // Prende solo la prima riga del contenuto
 
       vbox.getChildren().addAll(senderLabel, subjectLabel, contentLabel);
       setGraphic(vbox);
@@ -36,7 +36,7 @@ class MailItemCell extends ListCell<Mail> {
           Parent root = loader.load();
 
           MailDetailController controller = loader.getController();
-          controller.setMailDetails(mail.getSender(), mail.getSubject(), mail.getContent());
+          controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent());
 
           Stage stage = new Stage();
           stage.setScene(new Scene(root));
