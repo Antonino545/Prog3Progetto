@@ -40,7 +40,7 @@ public class NewMailController {
       destinationsfield.setText(sender);
       destinationsfield.setEditable(false);
       subjectfield.setText("Re: "+subject);
-      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail" +date +"da"+sender  +"\n"+content);
+      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " +date +" da"+sender  +"\n"+content);
       sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
