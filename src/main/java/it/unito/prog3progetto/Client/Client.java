@@ -22,7 +22,7 @@ public class Client {
     this.id = id;
   }
 
-  String getUserId() {
+  public String getUserId() {
     return id;
   }
 
@@ -165,40 +165,6 @@ public class Client {
     }
   }
 
-  public static void main(String[] args) {
-    // Creazione dei client con le rispettive credenziali
-    Client[] clients = {
-            new Client("mario.bianchi@progmail.com"),
-            new Client("mario.rossi@progmail.com"),
-            new Client("mario.verdi@progmail.com")
-    };
 
-    String host = "127.0.0.1";
-    int port = 4445;
-
-    // Connessione e invio delle email per ogni client
-    for (Client client : clients) {
-      Thread thread = new Thread(() -> {
-        if (client.connectToServer(host, port)) {
-          System.out.println("Connessione al server riuscita per " + client.getUserId());
-          if (client.sendAndCheckCredentials(host, port, client.getUserId(), "password")) {
-            System.out.println("Credenziali corrette per " + client.getUserId());
-            for (int i = 0; i < 3; i++) {
-              ArrayList<String> destinations = new ArrayList<>();
-              destinations.add("mario.rossi@progmail.com");
-              destinations.add("mario.bianchi@progmail.com");
-              if(client.connectToServer(host, port))
-                System.out.println(client.SendMail(host, port, new Email(client.getUserId(), destinations, "Oggetto", "Contenuto", Date.from(java.time.Instant.now()))));
-            }
-          } else {
-            System.out.println("Credenziali incorrette per " + client.getUserId());
-          }
-        } else {
-          System.out.println("Connessione al server non riuscita per " + client.getUserId());
-        }
-      });
-      thread.start();
-    }
-  }
 
 }

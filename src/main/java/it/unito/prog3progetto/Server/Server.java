@@ -44,13 +44,16 @@ public class Server {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			textArea.appendText("Errore nell'avvio del server sulla porta "+ port+ ".\n");
+
 		} finally {
 			try {
 				if (serverSocket != null)
 					serverSocket.close();
+				textArea.appendText("Server chiuso.\n");
+
 			} catch (IOException e) {
-				e.printStackTrace();
+				textArea.appendText("Errore nella chiusura del server.\n");
 			}
 		}
 	}
@@ -72,31 +75,41 @@ public class Server {
 
 				Object clientObject = inStream.readObject();
 
-				if (clientObject.equals("LOGIN")) {
-					handleLoginRequest();
-				} else if (clientObject.equals("SENDMAIL")) {
-					handleSendMailRequest();
-				} else if (clientObject.equals("RECEIVEEMAIL")) {
-					handleReceiveEmailRequest();
-				}else if (clientObject.equals("DELETEMAIL")) {
-					handleDeleteEmailRequest();
+				switch (clientObject.toString()) {
+					case "LOGIN":
+						handleLoginRequest();
+						break;
+					case "SENDMAIL":
+						handleSendMailRequest();
+						break;
+					case "RECEIVEEMAIL":
+						handleReceiveEmailRequest();
+						break;
+					case "DELETEMAIL":
+						handleDeleteEmailRequest();
+						break;
+					default:
+						outStream.writeObject(false);
+						outStream.flush();
+						break;
 				}
 
 			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-				// Handle other exceptions
+
+				Platform.runLater(() -> textArea.appendText("Errore nella comunicazione con il client.\n"));
 			} finally {
 				closeStreams();
 			}
 		}
 
 		private void handleLoginRequest() {
+			Object userObject = null;
 			try {
 				outStream.writeObject(true);
 				outStream.flush();
 
 				// Wait for the user object
-				Object userObject = inStream.readObject();
+				 userObject = inStream.readObject();
 
 				if (userObject instanceof User) {
 					User user = (User) userObject;
@@ -106,16 +119,16 @@ public class Server {
 					outStream.flush();
 
 					if (isAuthenticated) {
-						textArea.appendText("Utente " + user.getEmail() + " autenticato con successo.\n");
+						Platform.runLater(() -> textArea.appendText("Autenticazione riuscita per l'utente " + user.getEmail() + ".\n"));
 					} else {
-						textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n");
-					}
+						Platform.runLater(() -> textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n"));
+								}
 				} else {
-					textArea.appendText("Errore: oggetto utente non valido.\n");
+					Platform.runLater(() -> textArea.appendText("Error in authenticating user.\n"));
 				}
 			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-				// Handle login request exception
+				User user = (User) userObject;
+				Platform.runLater(() -> textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n"));
 			}
 		}
 

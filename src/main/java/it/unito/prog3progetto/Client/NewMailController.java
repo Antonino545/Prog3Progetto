@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Client.Client;
 import it.unito.prog3progetto.Lib.Email;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -81,6 +82,7 @@ public class NewMailController {
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
 
     if (success) {
+      content=content.replace("\n","<--Accapo-->");
       Email email = new Email(usermail, new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
       Client c = new Client(usermail);
       String host = "127.0.0.1";

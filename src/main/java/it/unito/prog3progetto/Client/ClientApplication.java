@@ -1,6 +1,5 @@
 package it.unito.prog3progetto.Client;
 
-import it.unito.prog3progetto.Client.ClientController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

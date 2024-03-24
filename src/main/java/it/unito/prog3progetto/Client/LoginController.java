@@ -1,5 +1,7 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Client.ClientController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -68,6 +71,7 @@ public class LoginController {
     if (client.sendAndCheckCredentials(host,port,useremail,password)) {
       try {
         System.out.println("Login riuscito");
+        saveUserEmailToFile(useremail);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();
         ClientController controller = loader.getController();
@@ -108,6 +112,13 @@ public class LoginController {
     }
 
 
+  }
+  private static void saveUserEmailToFile(String userEmail) throws IOException {
+    String fileName = "user_email.txt";
+    try (FileWriter writer = new FileWriter(fileName)) {
+      writer.write(userEmail);
+      System.out.println("Email dell'utente salvata con successo nel file: " + fileName);
+    }
   }
   public void alert(String message){
     Alert alert = new Alert(Alert.AlertType.ERROR);

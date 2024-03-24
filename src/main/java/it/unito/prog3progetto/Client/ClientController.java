@@ -122,6 +122,9 @@ public class ClientController {
       System.out.println("Client is null. Cannot refresh.");
     }
   }
+  public Client getClient() {
+    return client;
+  }
 
 
 

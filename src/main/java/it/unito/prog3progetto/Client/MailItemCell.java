@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
-class MailItemCell extends ListCell<Email> {
+public class MailItemCell extends ListCell<Email> {
   private final Stage primaryStage;
 
   public MailItemCell(Stage primaryStage) {

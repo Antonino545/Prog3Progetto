@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,11 @@ public class MailDetailController {
   public Label datalabel;
   UUID id;
   private Stage primaryStage;
+  private Client client;
+
+  public void initialize() throws IOException {
+    this.client = readUserEmailFromFile();
+  }
 
   public void setMailDetails(String sender, String subject, String content, ArrayList<String> Destinations, String data, UUID id) {
     senderLabel.setText(sender);
@@ -39,6 +46,7 @@ public class MailDetailController {
   public void setPrimaryStage(Stage primaryStage) {
     this.primaryStage = primaryStage;
   }
+
 
 
   public void handleReply(ActionEvent actionEvent) {
@@ -66,7 +74,6 @@ public class MailDetailController {
   }
 
   public void handleDelete(ActionEvent actionEvent) throws IOException {
-    Client client = new Client(senderLabel.getText());
     String host= "127.0.0.1";
     int port= 4445;
     client.connectToServer(host, port);
@@ -76,7 +83,7 @@ public class MailDetailController {
   }
 
   public void indietro(ActionEvent actionEvent) {
-    loader(new Client(senderLabel.getText()));
+   loader(client);
   }
   public void loader(Client client) {
     try {
@@ -96,6 +103,17 @@ public class MailDetailController {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+  private static Client readUserEmailFromFile() throws IOException {
+    String fileName = "user_email.txt";
+    try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+      System.out.println("Contenuto del file " + fileName + ":");
+      String line;
+      while ((line = reader.readLine()) != null) {
+        return new Client(line);
+      }
+    }
+    return null;
   }
 
 }
