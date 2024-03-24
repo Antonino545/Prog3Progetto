@@ -84,14 +84,6 @@ public class MailItemCell extends ListCell<Email> {
   private static Button getButton(Email email) {
     Button deleteButton = new Button("Delete");
     deleteButton.setOnAction(event -> {
-      // Implementa l'eliminazione dell'email qui
-      // Puoi utilizzare il metodo deleteEmail del controller o del modello
-      // Esempio:
-      // MailController.getInstance().deleteEmail(email);
-      // Oppure:
-      // MailModel.getInstance().deleteEmail(email);
-
-      // Puoi mostrare anche un messaggio di conferma all'utente
       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
       alert.setTitle("Conferma Cancella Email");
       alert.setHeaderText("Cancellazione Email");

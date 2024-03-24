@@ -66,29 +66,9 @@ public class ClientController {
     }
   }
 
-  public void logout(ActionEvent actionEvent) {
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-      Parent root = loader.load();
-
-      LoginController controller = loader.getController();
-      // Assuming primaryStage is properly initialized before calling logout
-      if (primaryStage != null) {
-        controller.setPrimaryStage(primaryStage);
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
-        primaryStage.setScene(scene);
-
-
-        primaryStage.setTitle("Login");
-        primaryStage.setResizable(false);
-        primaryStage.show();
-      } else {
-        System.out.println("Primary stage is null. Cannot set scene.");
-      }
-    } catch (IOException e) {
-      System.out.println("Error opening login window: " + e.getMessage());
-    }
+  public void logout(ActionEvent actionEvent) throws IOException {
+    Librerie lib = new Librerie();
+    lib.loadLogin(primaryStage);
   }
 
 
@@ -100,14 +80,11 @@ public class ClientController {
       if (client.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
         ObservableList<Email> lastsitems = mailListView.getItems();
-        Email lastEmail = lastsitems.isEmpty() ? null : lastsitems.get(0); // Controlla se la lista è vuota
+        Email lastEmail = lastsitems.isEmpty() ? null : lastsitems.getFirst(); // Controlla se la lista è vuota
         ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId(), lastEmail != null ? lastEmail.getDatesendMail() : null);
-
         ObservableList<Email> items = FXCollections.observableArrayList(receivedEmails);
         items.sort((o1, o2) -> o2.getDatesendMail().compareTo(o1.getDatesendMail()));
-
         if (!items.isEmpty()) {
-          // Aggiunge le nuove email in cima alla ListView
           mailListView.getItems().addAll(0, items);
           indexlenght.setText(String.valueOf(items.size()));
           System.out.println("Email ricevute");
@@ -133,19 +110,10 @@ public class ClientController {
     if(client.connectToServer(host, port)){
       ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail(host, port, client.getUserId(), null));
       items.sort((o1, o2) -> o2.getDatesendMail().compareTo(o1.getDatesendMail()));
-      // Cancella gli elementi precedenti dalla lista
       mailListView.getItems().clear();
-
-
-      // Aggiunge gli elementi ricevuti dalla lista
       mailListView.setItems(items);
-
-      // Imposta il conteggio degli elementi
       indexlenght.setText(String.valueOf(items.size()));
-
-      // Imposta il cell factory
       mailListView.setCellFactory(param -> new MailItemCell(primaryStage));
-
       System.out.println("Email ricevute");
     } else {
       System.out.println("Connessione al server non riuscita");

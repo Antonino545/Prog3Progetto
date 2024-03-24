@@ -1,4 +1,3 @@
-marco.gialli@progmail.com , [andrea.rossi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 11:08:52 CET 2024 , 011c5655-c342-4de2-b207-31f26562143b
 luca.verdi@progmail.com , [andrea.rossi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 11:08:52 CET 2024 , 72dfc2cb-20dc-4998-9097-a3b9bbd2e9b1
 marco.gialli@progmail.com , [andrea.rossi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 11:08:52 CET 2024 , d790920c-b217-42ed-948b-afd09ebbc3b2
 stefano.bianchi@progmail.com , [andrea.rossi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 11:08:52 CET 2024 , 3518b978-0d8c-4a99-aedd-b471feec2fba

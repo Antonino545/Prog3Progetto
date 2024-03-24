@@ -9,16 +9,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static it.unito.prog3progetto.Client.libController.alert;
-import static it.unito.prog3progetto.Client.libController.readUserEmailFromFile;
+import static it.unito.prog3progetto.Client.Librerie.alert;
+import static it.unito.prog3progetto.Client.Librerie.readUserEmailFromFile;
 
 public class MailDetailController {
   public Label senderLabel;
@@ -107,7 +104,6 @@ public class MailDetailController {
   }
   public void loader(Client client) {
     try {
-
       FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
       Parent root = loader.load();
       ClientController controller = loader.getController();

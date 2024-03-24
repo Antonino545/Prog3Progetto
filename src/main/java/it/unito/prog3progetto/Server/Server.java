@@ -69,24 +69,22 @@ public class Server {
 		public void run() {
 			try {
 				openStreams();
-
 				Object clientObject = inStream.readObject();
-
 				switch (clientObject.toString()) {
 					case "LOGIN":
-						Platform.runLater(() -> textArea.appendText("Richiesta di autenticazione ricevuta.\n"));
+						Platform.runLater(() -> textArea.appendText("Request for login received.\n"));
 						handleLoginRequest();
 						break;
 					case "SENDMAIL":
-						Platform.runLater(() -> textArea.appendText("Richiesta di invio email ricevuta.\n"));
+						Platform.runLater(() -> textArea.appendText("Request for sending email received.\n"));
 						handleSendMailRequest();
 						break;
 					case "RECEIVEEMAIL":
-						Platform.runLater(() -> textArea.appendText("Richiesta di ricezione email ricevuta.\n"));
+						Platform.runLater(() -> textArea.appendText("Request for receiving email received.\n"));
 						handleReceiveEmailRequest();
 						break;
 					case "DELETEMAIL":
-						Platform.runLater(() -> textArea.appendText("Richiesta di cancellazione email ricevuta.\n"));
+						Platform.runLater(() -> textArea.appendText("Request for deleting email received.\n"));
 						handleDeleteEmailRequest();
 						break;
 					default:
@@ -94,7 +92,6 @@ public class Server {
 						outStream.flush();
 						break;
 				}
-
 			} catch (IOException | ClassNotFoundException e) {
 
 				Platform.runLater(() -> textArea.appendText("Errore nella comunicazione con il client.\n"));

@@ -9,8 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.*;
 
-import static it.unito.prog3progetto.Client.libController.alert;
-import static it.unito.prog3progetto.Client.libController.readUserEmailFromFile;
+import static it.unito.prog3progetto.Client.Librerie.alert;
+import static it.unito.prog3progetto.Client.Librerie.readUserEmailFromFile;
 
 public class NewMailController {
   @FXML
