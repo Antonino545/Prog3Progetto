@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.ClientController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"  xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.ClientController">
    <left>
-      <VBox prefHeight="835.0" prefWidth="198.0" spacing="10.0" styleClass="left-pannel" stylesheets="@style.css" BorderPane.alignment="CENTER">
+      <VBox  spacing="10.0" styleClass="left-pannel" stylesheets="@style.css" BorderPane.alignment="CENTER">
          <children>
             <Label prefHeight="35.0" prefWidth="82.0" text="Inbox " textFill="WHITE">
                <VBox.margin>

@@ -213,9 +213,7 @@ public class Server {
 			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
 
 			for (String destination : email.getDestinations()) {
-				System.out.println("Sending email to " + destination + "...");
-				// Send email to the recipient
-				Platform.runLater(() -> textArea.appendText("Email sent to " + destination + ".\n"));
+				Platform.runLater(() -> textArea.appendText("Sending email to " + destination + ".\n"));
 				try {
 					// Check if the file already exists
 					Path filePath = Paths.get(destination + ".txt");
@@ -225,18 +223,19 @@ public class Server {
 						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 						bufferedWriter.write(email.toString());
 						bufferedWriter.close();
-						System.out.println("Content appended to the file successfully!");
+						Platform.runLater(() -> textArea.appendText("Email add to postbox of " + destination + ".\n"));
+
 					} else {
-						// If the file doesn't exist, create it
 						FileWriter fileWriter = new FileWriter(filePath.toString());
 						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 						bufferedWriter.write(email.toString());
 						bufferedWriter.close();
-						System.out.println("File created successfully!");
+						Platform.runLater(() -> textArea.appendText("Email don't exist, create new postbox of " + destination + ".\n"));
 					}
 					success = true; // L'invio dell'email è riuscito per questo destinatario
-				} catch (IOException e) {
-					System.out.println("An error occurred while processing the file.");
+          Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
+        } catch (IOException e) {
+					Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
 					e.printStackTrace();
 					success = false; // L'invio dell'email non è riuscito per questo destinatario
 				}

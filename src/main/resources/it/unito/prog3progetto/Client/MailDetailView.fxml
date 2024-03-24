@@ -6,11 +6,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="400" prefWidth="600" styleClass="pannel" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.MailDetailController">
+<BorderPane  styleClass="pannel" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.MailDetailController">
     <center>
 
         <VBox>
             <HBox spacing="10">
+                <Button onAction="#indietro" styleClass="button-primary" text="indietro" />
+
                 <Button onAction="#handleReply" styleClass="button-primary" text="Reply" />
                 <Button onAction="#handleReplyAll" styleClass="button-primary" text="Reply-All" />
                 <Button onAction="#handleForward" styleClass="button-primary" text="Forward" />
@@ -36,7 +38,7 @@
             </HBox>
             <VBox>
                 <Label text="Contenuto:" textFill="WHITE" />
-                <Label fx:id="contentLabel" alignment="TOP_LEFT" prefHeight="351.0" prefWidth="643.0" style="-fx-background-color: #44475A;" textFill="WHITE" VBox.vgrow="ALWAYS" />
+                <Label fx:id="contentLabel" alignment="TOP_LEFT" prefHeight="351.0" prefWidth="643.0"  wrapText="true" style="-fx-background-color: #44475A;" textFill="WHITE" VBox.vgrow="ALWAYS" />
             </VBox>
 
 

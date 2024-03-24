@@ -1,0 +1,16 @@
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:06:53 CET 2024 , c2023f99-3b58-4b30-a4aa-4bf7c70af1e4
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:08:08 CET 2024 , 737712ed-d8f7-4e2d-a839-63b0e6f09b78
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:08:08 CET 2024 , d15538da-e6a2-45c8-8741-0c75a3d6cb6f
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:08:08 CET 2024 , f789af0f-8b9e-41de-8ff3-8666ef616576
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:08:10 CET 2024 , f6ea025b-97ba-43c8-9748-aae9e45da6da
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:08:10 CET 2024 , e349b16f-0466-4144-bd33-93812540dd8b
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:08:10 CET 2024 , 2dafc661-7858-41ca-8316-465d0bc5a3e4
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , ed528ddf-1621-4761-be95-c6f1f5e833e1
+mario.bianchi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , 2b93748c-49a6-4743-8958-19b2e1f46d45
+mario.verdi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , fad47207-026f-46a9-b97e-b8148ecaf86f
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , 981bd3d9-cf77-43b4-a68d-0de5644c2f1c
+mario.bianchi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , a244e801-08e7-4908-8463-671b9a754d64
+mario.verdi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , 35f39707-e3c2-4d66-b898-7c53c2c51121
+mario.bianchi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , 598741bf-12a8-46dd-ba85-d8ed0b6e26b6
+mario.rossi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , 350e29a1-ad44-42fb-8d6e-2964f5e4d687
+mario.verdi@progmail.com , [mario.rossi@progmail.com, mario.bianchi@progmail.com] , Oggetto , Contenuto , Sun Mar 24 08:11:15 CET 2024 , 11cc4908-d6bd-4a20-b2d0-1d865e551680

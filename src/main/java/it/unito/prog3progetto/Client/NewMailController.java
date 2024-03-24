@@ -51,81 +51,79 @@ public class NewMailController {
   }
 
   public void sendMail(ActionEvent actionEvent) {
-
     System.out.println("Prova di invio email");
-    if(destinationsfield.getText().isEmpty() ){
+
+    String destination = destinationsfield.getText();
+    String subject = subjectfield.getText();
+    String content = ContentField.getText();
+
+    if (destination.isEmpty()) {
       alert("Inserire il destinatario o i destinatari", Alert.AlertType.ERROR);
       return;
     }
-    if(subjectfield.getText().isEmpty()) {
-      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-      alert.setTitle("Conferma invio email");
-      alert.setHeaderText("Conferma invio email");
-      alert.setContentText("Il campo oggetto è vuoto, vuoi continuare?");
 
-      Optional<ButtonType> result = alert.showAndWait();
-      if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
-        // Se l'utente conferma, vai avanti con l'operazione
-      } else {
-        // Se l'utente non conferma, interrompi il flusso del programma
-        return; // o qualsiasi altra azione necessaria per gestire la non conferma
+    if (subject.isEmpty()) {
+      if (!confirmDialog("Il campo oggetto è vuoto, vuoi continuare?")) {
+        return;
       }
     }
 
-    String destination = destinationsfield.getText();
     String[] destinationsArray = destination.split(",");
-    boolean success = true;
-    List<String> destinationsList = Arrays.asList(destinationsArray);
-    Set<String> uniqueDestinations = new HashSet<>(destinationsList);
-    if (uniqueDestinations.size() < destinationsList.size()) {
+    Set<String> uniqueDestinations = new HashSet<>(Arrays.asList(destinationsArray));
+
+    if (uniqueDestinations.size() < destinationsArray.length) {
       alert("I destinatari devono essere tutti diversi", Alert.AlertType.ERROR);
       System.out.println("I destinatari devono essere tutti diversi");
       return;
     }
+
     String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    for (String dest : destinationsList) {
-      if (!dest.matches(emailPattern)) {
-        success = false;
-        break;
-      }
-    }
+    boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
+
     if (success) {
-      String Content = ContentField.getText();
-    Email email = new Email(usermail, new ArrayList<>(destinationsList), subjectfield.getText(),Content, Date.from(java.time.Instant.now()));
-    Client c = new Client(usermail);
-      String host= "127.0.0.1";
-      int port= 4445;
-      if(c.connectToServer(host, port)){
+      Email email = new Email(usermail, new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
+      Client c = new Client(usermail);
+      String host = "127.0.0.1";
+      int port = 4445;
+
+      if (c.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
-      if(c.SendMail(host, port, email)){
-        System.out.println(email);
-        Stage stage = (Stage) subjectfield.getScene().getWindow();
-        stage.close();
-        alert("Email inviata", Alert.AlertType.INFORMATION);
-        System.out.println("Email inviata");
-      }else{
-        System.out.println("Errore durante l'invio dell'email");
-        alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
-        return;
-      }
-      }else{
+        if (c.SendMail(host, port, email)) {
+          System.out.println(email);
+          Stage stage = (Stage) subjectfield.getScene().getWindow();
+          stage.close();
+          alert("Email inviata", Alert.AlertType.INFORMATION);
+          System.out.println("Email inviata");
+        } else {
+          System.out.println("Errore durante l'invio dell'email");
+          alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
+        }
+      } else {
         System.out.println("Connessione al server non riuscita");
         alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
-        return;
       }
-
-    }else{
+    } else {
       alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR);
       System.out.println("Email non inviata, controllare i destinatari");
     }
-
   }
-  public void alert(String message, Alert.AlertType type){
+
+  public boolean confirmDialog(String message) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Conferma invio email");
+    alert.setHeaderText("Conferma invio email");
+    alert.setContentText(message);
+
+    Optional<ButtonType> result = alert.showAndWait();
+    return result.isPresent() && result.get() == ButtonType.OK;
+  }
+
+  public void alert(String message, Alert.AlertType type) {
     Alert alert = new Alert(type);
     alert.setTitle("Avviso");
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
-
   }
+
 }

@@ -84,14 +84,19 @@ public class LoginController {
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+
+        // Rimuovi le linee che impostano le dimensioni minime
+        // primaryStage.minHeightProperty().setValue(300);
+        // primaryStage.minHeightProperty().setValue(400);
+
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false); // Imposta le dimensioni della finestra come non modificabili
+        primaryStage.setTitle("Client");
         primaryStage.show();
 
       } catch (IOException e) {
         e.printStackTrace();
-        // Gestisci l'eccezione di conseguenza
       }
+
 
 
 

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="400" prefWidth="600" styleClass="pannel" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.NewMailController">
+<BorderPane styleClass="pannel" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.NewMailController">
     <center>
 
         <VBox>
@@ -32,7 +32,7 @@
 
             <VBox>
                 <Label style="-fx-border-radius: 0;" text="Contenuto:" textFill="WHITE" />
-                <TextArea prefHeight="319.0" prefWidth="594.0" style="-fx-control-inner-background: #44475A; -fx-text-fill: white; -fx-border-radius: 0;" styleClass="pannel" fx:id="ContentField" >
+                <TextArea prefHeight="319.0" wrapText="true" prefWidth="594.0" style="-fx-control-inner-background: #44475A; -fx-text-fill: white; -fx-border-radius: 0;" styleClass="pannel" fx:id="ContentField" >
 
                 </TextArea>
                 <HBox spacing="10">

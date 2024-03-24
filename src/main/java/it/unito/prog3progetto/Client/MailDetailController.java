@@ -71,17 +71,31 @@ public class MailDetailController {
     int port= 4445;
     client.connectToServer(host, port);
     client.DeleteMail(host, port, new Email(senderLabel.getText(), destinations, null, null,null,id));
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
-    Parent root = loader.load();
-    ClientController controller = loader.getController();
-    controller.setPrimaryStage(primaryStage);
-    controller.initialize(client);
-    Scene scene = new Scene(root);
-    scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
-    primaryStage.setTitle("Client");
-    primaryStage.setScene(scene);
-    primaryStage.setResizable(false); // Imposta le dimensioni della finestra come non modificabili
-    primaryStage.show();
+    loader(client);
 
   }
+
+  public void indietro(ActionEvent actionEvent) {
+    loader(new Client(senderLabel.getText()));
+  }
+  public void loader(Client client) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
+      Parent root = loader.load();
+      ClientController controller = loader.getController();
+      controller.setPrimaryStage(primaryStage);
+      controller.initialize(client);
+      Scene scene = new Scene(root);
+      scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+      primaryStage.setScene(scene);
+      primaryStage.setTitle("Client");
+      primaryStage.setResizable(true);
+      primaryStage.setMinWidth(300); // Imposta la larghezza minima della finestra
+      primaryStage.setMinHeight(400); // Imposta l'altezza minima della finestra
+      primaryStage.show(); // Mostra la finestra
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
 }

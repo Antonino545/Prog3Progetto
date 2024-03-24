@@ -101,14 +101,20 @@ public class ClientController {
       if (client.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
         ObservableList<Email> lastsitems = mailListView.getItems();
-        Email lastEmail = lastsitems.getLast();
-        ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId(), lastEmail.getDatesendMail());
-        System.out.println("Email ricevute dal server: ");
-        System.out.println(receivedEmails);
+        Email lastEmail = lastsitems.isEmpty() ? null : lastsitems.get(0); // Controlla se la lista è vuota
+        ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId(), lastEmail != null ? lastEmail.getDatesendMail() : null);
+
         ObservableList<Email> items = FXCollections.observableArrayList(receivedEmails);
-        mailListView.getItems().addAll(items); // Aggiunge le email ricevute alla ListView
-        indexlenght.setText(String.valueOf(items.size()));
-        System.out.println("Email ricevute");
+        items.sort((o1, o2) -> o2.getDatesendMail().compareTo(o1.getDatesendMail()));
+
+        if (!items.isEmpty()) {
+          // Aggiunge le nuove email in cima alla ListView
+          mailListView.getItems().addAll(0, items);
+          indexlenght.setText(String.valueOf(items.size()));
+          System.out.println("Email ricevute");
+        }else {
+          FullRefresh(null);
+        }
       } else {
         System.out.println("Connessione al server non riuscita");
       }
@@ -118,12 +124,13 @@ public class ClientController {
   }
 
 
+
   public void FullRefresh(ActionEvent actionEvent) {
     String host= "127.0.0.1";
     int port= 4445;
     if(client.connectToServer(host, port)){
       ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail(host, port, client.getUserId(), null));
-
+      items.sort((o1, o2) -> o2.getDatesendMail().compareTo(o1.getDatesendMail()));
       // Cancella gli elementi precedenti dalla lista
       mailListView.getItems().clear();
 

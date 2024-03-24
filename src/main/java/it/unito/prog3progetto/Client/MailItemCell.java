@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 class MailItemCell extends ListCell<Email> {
   private final Stage primaryStage;
@@ -46,10 +47,15 @@ class MailItemCell extends ListCell<Email> {
           MailDetailController controller = loader.getController();
           controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations(), email.getDatesendMail().toString(),email.getId());
           controller.setPrimaryStage(primaryStage);
-          primaryStage.setScene(new Scene(root));
-          primaryStage.setTitle("Dettaglio Email");
-          primaryStage.show();
+          Scene scene = new Scene(root);
+          scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
 
+          primaryStage.setScene(scene);
+          primaryStage.setTitle("Dettagli Email");
+          primaryStage.setResizable(true);
+          primaryStage.setMinWidth(300); // Imposta la larghezza minima della finestra
+          primaryStage.setMinHeight(400); // Imposta l'altezza minima della finestra
+          primaryStage.show(); // Mostra la finestra
 
         } catch (IOException e) {
     System.out.println("Errore durante l'apertura della finestra di dettaglio email");
