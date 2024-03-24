@@ -86,9 +86,11 @@
                            </Label>
                         </children>
                      </HBox>
-                     <Button onAction="#logout" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Logout" />
-                     <Button onAction="#Refresh" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Refresh" />
-                     <Button onAction="#FullRefresh" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Full Refresh" />
+                     <VBox spacing="10">
+                        <Button onAction="#logout" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Logout" />
+                        <Button onAction="#Refresh" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Refresh" />
+                        <Button onAction="#FullRefresh" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Full Refresh" />
+                     </VBox>
 
                   </children>
                </VBox>

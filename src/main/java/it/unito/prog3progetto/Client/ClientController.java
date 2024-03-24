@@ -55,7 +55,6 @@ public class ClientController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.setUser(client.getUserId());
       controller.initialize("sendmail");
       Stage stage = new Stage();
       stage.setScene(new Scene(root));

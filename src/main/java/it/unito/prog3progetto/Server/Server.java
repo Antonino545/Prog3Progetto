@@ -35,9 +35,6 @@ public class Server {
 
 			while (true) {
 				Socket socket = serverSocket.accept(); // Accetta connessioni dai client
-				textArea.appendText("Nuova connessione accettata da "+ socket.getInetAddress().getHostAddress()+ ".\n");
-
-				// Avvia un thread per gestire la connessione con il client
 				ClientHandler clientHandler = new ClientHandler(socket);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
@@ -77,15 +74,19 @@ public class Server {
 
 				switch (clientObject.toString()) {
 					case "LOGIN":
+						Platform.runLater(() -> textArea.appendText("Richiesta di autenticazione ricevuta.\n"));
 						handleLoginRequest();
 						break;
 					case "SENDMAIL":
+						Platform.runLater(() -> textArea.appendText("Richiesta di invio email ricevuta.\n"));
 						handleSendMailRequest();
 						break;
 					case "RECEIVEEMAIL":
+						Platform.runLater(() -> textArea.appendText("Richiesta di ricezione email ricevuta.\n"));
 						handleReceiveEmailRequest();
 						break;
 					case "DELETEMAIL":
+						Platform.runLater(() -> textArea.appendText("Richiesta di cancellazione email ricevuta.\n"));
 						handleDeleteEmailRequest();
 						break;
 					default:
@@ -119,16 +120,16 @@ public class Server {
 					outStream.flush();
 
 					if (isAuthenticated) {
-						Platform.runLater(() -> textArea.appendText("Autenticazione riuscita per l'utente " + user.getEmail() + ".\n"));
+						Platform.runLater(() -> textArea.appendText("Authentication successful for user " + user.getEmail() + ".\n"));
 					} else {
-						Platform.runLater(() -> textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n"));
+						Platform.runLater(() -> textArea.appendText("Authentication failed for user " + user.getEmail() + ".\n"));
 								}
 				} else {
 					Platform.runLater(() -> textArea.appendText("Error in authenticating user.\n"));
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				User user = (User) userObject;
-				Platform.runLater(() -> textArea.appendText("Autenticazione fallita per l'utente " + user.getEmail() + ".\n"));
+				Platform.runLater(() -> textArea.appendText("Authentication error for user " + user.getEmail() + ".\n"));
 			}
 		}
 
@@ -295,6 +296,7 @@ public class Server {
 						}
 					}
 				}
+				Platform.runLater(() -> textArea.appendText("Email send to client.\n"));
 				scanner.close();
 			} catch (FileNotFoundException | ParseException e) {
 				// In caso di eccezione, restituisci l'elenco vuoto

@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -15,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import static it.unito.prog3progetto.Client.libController.alert;
+import static it.unito.prog3progetto.Client.libController.readUserEmailFromFile;
 
 public class MailDetailController {
   public Label senderLabel;
@@ -55,7 +59,6 @@ public class MailDetailController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.setUser(senderLabel.getText());
       controller.initialize("reply", senderLabel.getText(), subjectLabel.getText(), contentLabel.getText(), datalabel.getText());
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
@@ -76,10 +79,27 @@ public class MailDetailController {
   public void handleDelete(ActionEvent actionEvent) throws IOException {
     String host= "127.0.0.1";
     int port= 4445;
-    client.connectToServer(host, port);
-    client.DeleteMail(host, port, new Email(senderLabel.getText(), destinations, null, null,null,id));
-    loader(client);
+    if(deleteMail(host, port, new Email(senderLabel.getText(), destinations, null, null,null,id))){
+      loader(client);
+    }
 
+  }
+  public  boolean deleteMail(String host, int port, Email email) throws IOException {
+    if(client == null) {
+     client= readUserEmailFromFile();
+    }
+    if( client.connectToServer(host, port)){
+      if(client.DeleteMail(host, port, email)) {
+        alert("Email eliminata", Alert.AlertType.INFORMATION);
+        return true;
+      }else {
+        alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
+        return false;
+      }
+    }else{
+      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      return false;
+    }
   }
 
   public void indietro(ActionEvent actionEvent) {
@@ -87,6 +107,7 @@ public class MailDetailController {
   }
   public void loader(Client client) {
     try {
+
       FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
       Parent root = loader.load();
       ClientController controller = loader.getController();
@@ -104,16 +125,6 @@ public class MailDetailController {
       e.printStackTrace();
     }
   }
-  private static Client readUserEmailFromFile() throws IOException {
-    String fileName = "user_email.txt";
-    try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-      System.out.println("Contenuto del file " + fileName + ":");
-      String line;
-      while ((line = reader.readLine()) != null) {
-        return new Client(line);
-      }
-    }
-    return null;
-  }
+
 
 }

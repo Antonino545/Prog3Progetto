@@ -1,6 +1,4 @@
 package it.unito.prog3progetto.Client;
-
-import it.unito.prog3progetto.Client.Client;
 import it.unito.prog3progetto.Lib.Email;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,7 +6,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.*;
+
+import static it.unito.prog3progetto.Client.libController.alert;
+import static it.unito.prog3progetto.Client.libController.readUserEmailFromFile;
 
 public class NewMailController {
   @FXML
@@ -22,10 +24,8 @@ public class NewMailController {
   private String usermail;
 
 
-  public void setUser(String usermail) {
-    this.usermail =  usermail;
-  }
-  public void initialize(String action){
+  public void initialize(String action) throws IOException {
+    usermail = String.valueOf(readUserEmailFromFile());
  if(action.equals("sendmail")){
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
@@ -120,12 +120,6 @@ public class NewMailController {
     return result.isPresent() && result.get() == ButtonType.OK;
   }
 
-  public void alert(String message, Alert.AlertType type) {
-    Alert alert = new Alert(type);
-    alert.setTitle("Avviso");
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
+
 
 }

@@ -1,16 +1,23 @@
 package it.unito.prog3progetto.Client;
 
 import it.unito.prog3progetto.Lib.Email;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
+
+import it.unito.prog3progetto.Client.MailDetailController;
+import it.unito.prog3progetto.Lib.Email;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public class MailItemCell extends ListCell<Email> {
   private final Stage primaryStage;
@@ -24,10 +31,13 @@ public class MailItemCell extends ListCell<Email> {
   protected void updateItem(Email email, boolean empty) {
     super.updateItem(email, empty);
     if (email != null && !empty) {
+      HBox hbox = new HBox();
       VBox vbox = new VBox();
-      Label senderLabel = new Label(email.getSender());
+      Label senderLabel = new Label("From: " + email.getSender());
       senderLabel.setStyle("-fx-font-weight: bold;");
-      Label subjectLabel = new Label(email.getSubject());
+      Label subjectLabel = new Label("Subject: " + email.getSubject());
+      Label dateLabel = new Label("Date: " + email.getItalianDate());
+
       String content = email.getContent();
       String firstLine = content.substring(0, Math.min(content.length(), 50));
       int newlineIndex = firstLine.indexOf('\n');
@@ -35,9 +45,13 @@ public class MailItemCell extends ListCell<Email> {
         firstLine = firstLine.substring(0, newlineIndex);
       }
       Label contentLabel = new Label(firstLine);
-      Label dateLabel = new Label(email.getItalianDate());
-      vbox.getChildren().addAll(senderLabel, dateLabel,subjectLabel, contentLabel);
-      setGraphic(vbox);
+
+      vbox.getChildren().addAll(senderLabel, dateLabel, subjectLabel, contentLabel);
+      Button deleteButton = getButton(email);
+      hbox.getChildren().addAll(vbox, deleteButton);
+      HBox.setHgrow(vbox, Priority.ALWAYS);
+
+      setGraphic(hbox);
       getStyleClass().add("emailitem");
       setOnMouseClicked(event -> {
         try {
@@ -58,7 +72,7 @@ public class MailItemCell extends ListCell<Email> {
           primaryStage.show(); // Mostra la finestra
 
         } catch (IOException e) {
-    System.out.println("Errore durante l'apertura della finestra di dettaglio email");
+          System.out.println("Errore durante l'apertura della finestra di dettaglio email");
         }
       });
     } else {
@@ -66,4 +80,38 @@ public class MailItemCell extends ListCell<Email> {
       setGraphic(null);
     }
   }
+
+  private static Button getButton(Email email) {
+    Button deleteButton = new Button("Delete");
+    deleteButton.setOnAction(event -> {
+      // Implementa l'eliminazione dell'email qui
+      // Puoi utilizzare il metodo deleteEmail del controller o del modello
+      // Esempio:
+      // MailController.getInstance().deleteEmail(email);
+      // Oppure:
+      // MailModel.getInstance().deleteEmail(email);
+
+      // Puoi mostrare anche un messaggio di conferma all'utente
+      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+      alert.setTitle("Conferma Cancella Email");
+      alert.setHeaderText("Cancellazione Email");
+      alert.setContentText("Sei sicuro di voler cancellare l'email selezionata?");
+
+      Optional<ButtonType> result = alert.showAndWait();
+      if (result.isPresent() && result.get() == ButtonType.OK) {
+       MailDetailController controller = new MailDetailController();
+        String host= "127.0.0.1";
+        int port= 4445;
+        try {
+          controller.deleteMail(host, port, email);
+          System.out.println("Email eliminata");
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+    });
+    return deleteButton;
+  }
 }
+
