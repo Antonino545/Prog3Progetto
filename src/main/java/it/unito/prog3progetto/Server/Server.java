@@ -220,9 +220,8 @@ public class Server {
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
 
-		private boolean sendMail(Email email) {
+		private synchronized boolean sendMail(Email email) {
 			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
-
 			for (String destination : email.getDestinations()) {
 				Platform.runLater(() -> textArea.appendText("Sending email to " + destination + ".\n"));
 				try {
@@ -230,22 +229,21 @@ public class Server {
 					Path filePath = Paths.get(destination + ".txt");
 					if (Files.exists(filePath)) {
 						// If the file exists, append to it
-						FileWriter fileWriter = new FileWriter(filePath.toString(), true);
-						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-						bufferedWriter.write(email.toString());
-						bufferedWriter.close();
-						Platform.runLater(() -> textArea.appendText("Email add to postbox of " + destination + ".\n"));
-
+						try (FileWriter fileWriter = new FileWriter(filePath.toString(), true);
+								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+							bufferedWriter.write(email.toString());
+						}
+						Platform.runLater(() -> textArea.appendText("Email added to the postbox of " + destination + ".\n"));
 					} else {
-						FileWriter fileWriter = new FileWriter(filePath.toString());
-						BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-						bufferedWriter.write(email.toString());
-						bufferedWriter.close();
-						Platform.runLater(() -> textArea.appendText("Email don't exist, create new postbox of " + destination + ".\n"));
+						try (FileWriter fileWriter = new FileWriter(filePath.toString());
+								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+							bufferedWriter.write(email.toString());
+						}
+						Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
 					}
 					success = true; // L'invio dell'email è riuscito per questo destinatario
-          Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
-        } catch (IOException e) {
+					Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
+				} catch (IOException e) {
 					Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
 					e.printStackTrace();
 					success = false; // L'invio dell'email non è riuscito per questo destinatario
@@ -254,6 +252,7 @@ public class Server {
 
 			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
 		}
+
 		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 			ArrayList<Email> emails = new ArrayList<>();
@@ -284,11 +283,11 @@ public class Server {
 
 						// Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
 						if (lastEmailDate == null) {
-							Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->","\n"), date, id);
+							Email email = new Email(sender, destinations, subject, content, date, id);
 							emails.add(email);
 						} else if (date.after(lastEmailDate)) {
 							// Aggiungi solo le email con data successiva a lastEmailDate
-							Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->","\n"), date, id);
+							Email email = new Email(sender, destinations, subject, content, date, id);
 							emails.add(email);
 						}
 					}

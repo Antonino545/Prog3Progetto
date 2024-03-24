@@ -27,7 +27,7 @@ public class Email implements Serializable {
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
-    this.content = content;
+    this.content = content.replace("\n","<--Accapo-->");
     this.datesendMail = datesendMail;
   }
   public Email(String sender, ArrayList<String> destinations, String subject, String content, Date datesendMail,UUID id) {
@@ -35,7 +35,7 @@ public class Email implements Serializable {
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
-    this.content = content;
+    this.content = content.replace("<--Accapo-->","\n");
     this.datesendMail = datesendMail;
   }
   public UUID getId() {
@@ -68,5 +68,6 @@ public class Email implements Serializable {
   public String toString() {
     return  sender+" , "+destinations+" , "+subject+" , "+content+" , "+datesendMail+" , "+id +"\n";
   }
+
 
 }

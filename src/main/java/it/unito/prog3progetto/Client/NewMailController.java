@@ -82,7 +82,6 @@ public class NewMailController {
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
 
     if (success) {
-      content=content.replace("\n","<--Accapo-->");
       Email email = new Email(usermail, new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
       Client c = new Client(usermail);
       String host = "127.0.0.1";
