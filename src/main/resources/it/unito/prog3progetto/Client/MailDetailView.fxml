@@ -11,8 +11,6 @@
 
         <VBox>
             <HBox spacing="10">
-                <Button onAction="#indietro" styleClass="button-primary" text="indietro" />
-
                 <Button onAction="#handleReply" styleClass="button-primary" text="Reply" />
                 <Button onAction="#handleReplyAll" styleClass="button-primary" text="Reply-All" />
                 <Button onAction="#handleForward" styleClass="button-primary" text="Forward" />

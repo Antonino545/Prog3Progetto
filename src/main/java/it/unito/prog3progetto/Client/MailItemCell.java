@@ -65,20 +65,18 @@ public class MailItemCell extends ListCell<Email> {
 
           MailDetailController controller = loader.getController();
           controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations(), email.getDatesendMail().toString(),email.getId());
-          controller.setPrimaryStage(primaryStage);
 
           Scene scene = new Scene(root);
           scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+          Stage stage = new Stage();
+          stage.setScene(scene);
 
-          primaryStage.setScene(scene);
-          primaryStage.setTitle("Dettagli Email");
-          primaryStage.setResizable(true);
-          primaryStage.setMinWidth(300); // Imposta la larghezza minima della finestra
-          primaryStage.setMinHeight(400); // Imposta l'altezza minima della finestra
-          primaryStage.show(); // Mostra la finestra
+          stage.show();
+
+
 
         } catch (IOException e) {
-          System.out.println("Errore durante l'apertura della finestra di dettaglio email");
+          System.out.println("Errore durante l'apertura della finestra di dettaglio email"+e.getMessage());
         }
       });
     } else {

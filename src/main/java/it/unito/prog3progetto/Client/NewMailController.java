@@ -28,73 +28,35 @@ public class NewMailController {
     usermail = String.valueOf(readUserEmailFromFile());
  if(action.equals("sendmail")){
     destinationsfield.setEditable(true);
-      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          try {
-            sendMail(event);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
+      sendmailbutton.setOnAction(event -> {
+        try {
+          sendMail();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
         }
       });
   }
   }
-  public void initialize(String action, String sender,ArrayList<String> Destination, String subject, String content, String date){
-    if(action.equals("reply")){
-      destinationsfield.setText(sender);
-      destinationsfield.setEditable(false);
-      subjectfield.setText("Re: "+subject);
-      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " +date +" da"+sender  +"\n"+content);
-      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          try {
-            sendMail(event);
-          } catch (IOException e) {
+public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date) {
+    EventHandler<ActionEvent> handler = event -> {
+        try {
+            sendMail();
+        } catch (IOException e) {
             throw new RuntimeException(e);
-          }
         }
-      });
+    };
 
-    }else if(action.equals("forward")){
-      destinationsfield.setEditable(false);
-      subjectfield.setText("Fwd: "+subject);
-      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " +date +" da"+sender  +"\n"+content);
-      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          try {
-            sendMail(event);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      });
-    }else if(action.equals("replyall")){
-      String destinations = "";
-     for(String dest: Destination){
-       destinations += dest + ",";
-     }
-      destinationsfield.setText(sender+","+ destinations);
+    String prefix = action.equals("reply") ? "Re: " : action.equals("forward") ? "Fwd: " : "ReALL: ";
+    String destinations = action.equals("replyall") ? String.join(",", Destination) + "," + sender : sender;
 
-      destinationsfield.setEditable(false);
-      subjectfield.setText("ReALl: "+subject);
-      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " +date +" da"+sender  +"\n"+content);
-      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          try {
-            sendMail(event);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      });
-    }
-  }
+    destinationsfield.setText(destinations);
+    destinationsfield.setEditable(false);
+    subjectfield.setText(prefix + subject);
+    ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " + date + " da" + sender + "\n" + content);
+    sendmailbutton.setOnAction(handler);
+}
 
-  public void sendMail(ActionEvent actionEvent) throws IOException {
+  public void sendMail() throws IOException {
     System.out.println("Prova di invio email");
 
     String destination = destinationsfield.getText();

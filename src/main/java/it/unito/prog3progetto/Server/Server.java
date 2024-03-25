@@ -9,8 +9,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 import static it.unito.prog3progetto.Client.Librerie.readEmails;
 
@@ -28,13 +27,14 @@ public class Server {
 	}
 
 	// Metodo per avviare il server e metterlo in ascolto su una porta specifica
+	private volatile boolean isRunning = true; // Flag to control the server's running state
+
 	public void listen(int port) {
 		try {
 			serverSocket = new ServerSocket(port);
+			textArea.appendText("Server avviato sulla porta: " + port + ". In attesa di connessioni...\n");
 
-			textArea.appendText("Server avviato sulla porta:"+ port+ ". In attesa di connessioni...\n");
-
-			while (true) {
+			while (isRunning) {
 				Socket socket = serverSocket.accept(); // Accetta connessioni dai client
 				ClientHandler clientHandler = new ClientHandler(socket);
 				Thread thread = new Thread(clientHandler);
@@ -42,7 +42,7 @@ public class Server {
 			}
 
 		} catch (IOException e) {
-			textArea.appendText("Errore nell'avvio del server sulla porta "+ port+ ".\n");
+			textArea.appendText("Errore nell'avvio del server sulla porta " + port + ".\n");
 
 		} finally {
 			try {
@@ -56,8 +56,15 @@ public class Server {
 		}
 	}
 
+	// Method to stop the server
+	public void stopServer() {
+		isRunning = false;
+	}
+
 	// Classe interna per gestire la comunicazione con un singolo client
 	private class ClientHandler implements Runnable {
+		private static final Object lock = new Object();
+
 		private final Socket socket;
 		private ObjectInputStream inStream;
 		private ObjectOutputStream outStream;
@@ -95,7 +102,7 @@ public class Server {
 				}
 			} catch (IOException | ClassNotFoundException e) {
 
-				Platform.runLater(() -> textArea.appendText("Errore nella comunicazione con il client.\n"));
+				Platform.runLater(() -> textArea.appendText("Errore nella comunicazione con il client" + e.getMessage() + ".\n"));
 			} finally {
 				closeStreams();
 			}
@@ -219,45 +226,51 @@ public class Server {
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
 
-		private synchronized boolean sendMail(Email email) {
+		private  boolean sendMail(Email email) {
 			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
 			for (String destination : email.getDestinations()) {
-				Platform.runLater(() -> textArea.appendText("Sending email to " + destination + ".\n"));
-				try {
-					// Check if the file already exists
-					Path filePath = Paths.get(destination + ".txt");
-					if (Files.exists(filePath)) {
-						// If the file exists, append to it
-						try (FileWriter fileWriter = new FileWriter(filePath.toString(), true);
-								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-							bufferedWriter.write(email.emailNoEndLine().toString());
+				synchronized (lock) {
+					Platform.runLater(() -> textArea.appendText("Sending email to " + destination + ".\n"));
+					try {
+						// Check if the file already exists
+						Path filePath = Paths.get(destination + ".txt");
+						if (Files.exists(filePath)) {
+							// If the file exists, append to it
+							try (FileWriter fileWriter = new FileWriter(filePath.toString(), true);
+									 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+								bufferedWriter.write(email.emailNoEndLine().toString());
+							}
+							Platform.runLater(() -> textArea.appendText("Email added to the postbox of " + destination + ".\n"));
+						} else {
+							try (FileWriter fileWriter = new FileWriter(filePath.toString());
+									 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+								bufferedWriter.write(email.emailNoEndLine().toString());
+							}
+							Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
 						}
-						Platform.runLater(() -> textArea.appendText("Email added to the postbox of " + destination + ".\n"));
-					} else {
-						try (FileWriter fileWriter = new FileWriter(filePath.toString());
-								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-							bufferedWriter.write(email.emailNoEndLine().toString());
-						}
-						Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
+						success = true; // L'invio dell'email è riuscito per questo destinatario
+						Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
+					} catch (IOException e) {
+						Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
+						e.printStackTrace();
+						success = false; // L'invio dell'email non è riuscito per questo destinatario
 					}
-					success = true; // L'invio dell'email è riuscito per questo destinatario
-					Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
-				} catch (IOException e) {
-					Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
-					e.printStackTrace();
-					success = false; // L'invio dell'email non è riuscito per questo destinatario
-				}
-			}
 
-			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
-		}
+					return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
+				}
+				}
+      return success;
+    }
 
 		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) throws IOException {
-			return readEmails(usermail + ".txt", lastEmailDate);
-
+			synchronized (lock) {
+				return readEmails(usermail + ".txt", lastEmailDate);
+			}
 		}
 		public static void DeletemailByid(String usermail, String uuidToDelete) {
-			List<String> linesToKeep = new ArrayList<>();
+			synchronized (lock) {
+
+				List<String> linesToKeep = new ArrayList<>();
 
 			try (BufferedReader br = new BufferedReader(new FileReader(usermail + ".txt"))) {
 				String line;
@@ -277,6 +290,7 @@ public class Server {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
 			}
 		}
 		private void handleDeleteEmailRequest() {
