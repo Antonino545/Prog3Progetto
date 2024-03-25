@@ -88,17 +88,28 @@ public class LoginController {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
 
-        // Rimuovi le linee che impostano le dimensioni minime
-        // primaryStage.minHeightProperty().setValue(300);
-        // primaryStage.minHeightProperty().setValue(400);
-
         primaryStage.setScene(scene);
         primaryStage.setTitle("Client");
+
+        // Aggiungi il listener per gestire le dimensioni della finestra quando è massimizzata
+        primaryStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
+          if (newValue) { // Se la finestra è massimizzata
+            // Imposta le dimensioni minime in base alle dimensioni correnti
+            primaryStage.setMinWidth(primaryStage.getWidth());
+            primaryStage.setMinHeight(primaryStage.getHeight());
+          } else { // Se la finestra non è massimizzata
+            // Ripristina le dimensioni minime predefinite
+            primaryStage.setMinWidth(300); // Imposta le dimensioni minime desiderate in base alle tue esigenze
+            primaryStage.setMinHeight(400); // Imposta le dimensioni minime desiderate in base alle tue esigenze
+          }
+        });
+
         primaryStage.show();
 
       } catch (IOException e) {
         e.printStackTrace();
       }
+
 
 
 

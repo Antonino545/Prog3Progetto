@@ -31,12 +31,16 @@ public class NewMailController {
       sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-          sendMail(event);
+          try {
+            sendMail(event);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
         }
       });
   }
   }
-  public void initialize(String action, String sender,String subject, String content, String date){
+  public void initialize(String action, String sender,ArrayList<String> Destination, String subject, String content, String date){
     if(action.equals("reply")){
       destinationsfield.setText(sender);
       destinationsfield.setEditable(false);
@@ -45,13 +49,52 @@ public class NewMailController {
       sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-          sendMail(event);
+          try {
+            sendMail(event);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      });
+
+    }else if(action.equals("forward")){
+      destinationsfield.setEditable(false);
+      subjectfield.setText("Fwd: "+subject);
+      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " +date +" da"+sender  +"\n"+content);
+      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+          try {
+            sendMail(event);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      });
+    }else if(action.equals("replyall")){
+      String destinations = "";
+     for(String dest: Destination){
+       destinations += dest + ",";
+     }
+      destinationsfield.setText(sender+","+ destinations);
+
+      destinationsfield.setEditable(false);
+      subjectfield.setText("ReALl: "+subject);
+      ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " +date +" da"+sender  +"\n"+content);
+      sendmailbutton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+          try {
+            sendMail(event);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
         }
       });
     }
   }
 
-  public void sendMail(ActionEvent actionEvent) {
+  public void sendMail(ActionEvent actionEvent) throws IOException {
     System.out.println("Prova di invio email");
 
     String destination = destinationsfield.getText();
@@ -82,6 +125,9 @@ public class NewMailController {
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
 
     if (success) {
+      if(usermail == null){
+        usermail = Objects.requireNonNull(readUserEmailFromFile()).getUserId();
+      }
       Email email = new Email(usermail, new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
       Client c = new Client(usermail);
       String host = "127.0.0.1";

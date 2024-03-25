@@ -83,6 +83,7 @@ public class ClientController implements MailListObserver {
 
   public void logout(ActionEvent actionEvent) throws IOException {
     Librerie lib = new Librerie();
+    client = null;
     lib.loadLogin(primaryStage);
   }
 

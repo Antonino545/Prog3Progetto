@@ -131,7 +131,7 @@ public class Server {
 			}
 		}
 
-		private void handleSendMailRequest() {
+		private synchronized   void handleSendMailRequest() {
 			try {
 				outStream.writeObject(true);
 				outStream.flush();

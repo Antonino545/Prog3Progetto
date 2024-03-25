@@ -59,7 +59,7 @@ public class MailDetailController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize("reply", senderLabel.getText(), subjectLabel.getText(), contentLabel.getText(), datalabel.getText());
+      controller.initialize("reply", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), datalabel.getText());
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Reply Email");
@@ -71,9 +71,37 @@ public class MailDetailController {
   }
 
   public void handleReplyAll(ActionEvent actionEvent) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("Newemail.fxml"));
+
+      Parent root = loader.load();
+      NewMailController controller = loader.getController();
+      controller.initialize("replyall", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), datalabel.getText());
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Reply All Email");
+      stage.setResizable(false);
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public void handleForward(ActionEvent actionEvent) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("Newemail.fxml"));
+
+      Parent root = loader.load();
+      NewMailController controller = loader.getController();
+      controller.initialize("forward", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), datalabel.getText());
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Forward Email");
+      stage.setResizable(false);
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
 
