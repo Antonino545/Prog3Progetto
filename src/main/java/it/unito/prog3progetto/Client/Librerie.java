@@ -18,7 +18,6 @@ public class Librerie {
   public static Client readUserEmailFromFile() throws IOException {
     String fileName = "user_email.txt";
     try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-      System.out.println("Contenuto del file " + fileName + ":");
       String line;
       while ((line = reader.readLine()) != null) {
         return new Client(line);
