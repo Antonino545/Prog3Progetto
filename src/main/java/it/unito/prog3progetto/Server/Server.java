@@ -308,7 +308,7 @@ public class Server {
 		private List<String> readDatabaseFromFile() {
 			List<String> database = new ArrayList<>();
 
-			try (BufferedReader br = new BufferedReader(new FileReader("/Users/antonino/Documents/Project/Unito/Prog3Progetto/src/main/resources/it/unito/prog3progetto/Server/database.txt"))) {
+			try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\incor\\Documents\\Project\\Unito\\Prog3-Progetto\\Prog3Progetto\\src\\main\\java\\it\\unito\\prog3progetto\\Server\\database.txt"))) {
 				String line;
 				while ((line = br.readLine()) != null) {
 					database.add(line); // Aggiunge ogni riga del file al database

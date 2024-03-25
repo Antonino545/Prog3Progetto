@@ -31,7 +31,7 @@ public class TestClient {
             System.out.println("Credenziali corrette per " + client.getUserId());
             for (int i = 0; i < 3; i++) {
               ArrayList<String> destinations = new ArrayList<>();
-              destinations.add("marco.gialli@progmail.com");
+              destinations.add("luca.verdi@progmail.com");
               if(client.connectToServer(host, port))
                 System.out.println(client.SendMail(host, port, new Email(client.getUserId(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
             }

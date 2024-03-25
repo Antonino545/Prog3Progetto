@@ -19,11 +19,16 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
-public class MailItemCell extends ListCell<Email> {
-  private final Stage primaryStage;
+import static it.unito.prog3progetto.Client.Librerie.readUserEmailFromFile;
 
-  public MailItemCell(Stage primaryStage) {
+public class MailItemCell extends ListCell<Email> {
+  private static ClientController clientController;
+  private final Stage primaryStage;
+  private static final String host = "127.0.0.1";
+  private static final int port = 4445;
+  public MailItemCell(Stage primaryStage, ClientController clientController) {
     this.primaryStage = primaryStage;
+    this.clientController = clientController;
   }
 
 
@@ -81,7 +86,7 @@ public class MailItemCell extends ListCell<Email> {
     }
   }
 
-  private static Button getButton(Email email) {
+  private Button getButton(Email email) {
     Button deleteButton = new Button("Delete");
     deleteButton.setOnAction(event -> {
       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -91,19 +96,12 @@ public class MailItemCell extends ListCell<Email> {
 
       Optional<ButtonType> result = alert.showAndWait();
       if (result.isPresent() && result.get() == ButtonType.OK) {
-       MailDetailController controller = new MailDetailController();
-        String host= "127.0.0.1";
-        int port= 4445;
-        try {
-          controller.deleteMail(host, port, email);
-          System.out.println("Email eliminata");
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
+        clientController.deleteEmail(email); // Rimuovi l'email tramite il ClientController
       }
-
     });
     return deleteButton;
   }
+
+
 }
 

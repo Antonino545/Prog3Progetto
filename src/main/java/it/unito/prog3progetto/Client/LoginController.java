@@ -80,15 +80,10 @@ public class LoginController {
         Parent root = loader.load();
         ClientController controller = loader.getController();
 
-        // Imposta manualmente il controller
-        // controller.setClient(client); // Rimuovi questo
-
         controller.setPrimaryStage(primaryStage);
 
         // Imposta manualmente il client
         controller.initialize(client);
-
-        // Non chiamare initialize() esplicitamente
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
