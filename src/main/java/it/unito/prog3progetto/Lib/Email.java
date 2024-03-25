@@ -17,7 +17,7 @@ public class Email implements Serializable {
   private final Date datesendMail;
 
   private final String subject;
-  private final String content;
+  private  String content;
 
   private final  UUID id ;
 
@@ -55,6 +55,7 @@ public class Email implements Serializable {
   public String getSubject() {
     return subject;
   }
+
 
   public String getContent() {
     return content;

@@ -14,6 +14,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 
+import static it.unito.prog3progetto.Client.Librerie.deleteFileIfExists;
+
 public class LoginController {
     @FXML
     private TextField emailTextField;
@@ -71,6 +73,8 @@ public class LoginController {
     if (client.sendAndCheckCredentials(host,port,useremail,password)) {
       try {
         System.out.println("Login riuscito");
+        deleteFileIfExists("user_email.txt");
+        deleteFileIfExists("email.txt");
         saveUserEmailToFile(useremail);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();

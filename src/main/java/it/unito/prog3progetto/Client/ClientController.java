@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static it.unito.prog3progetto.Client.Librerie.writeEmails;
+
 public class ClientController {
   public Label email;
   @FXML
@@ -30,13 +32,19 @@ public class ClientController {
   private Timeline timeline;
 
 
-  public void initialize(Client client) {
+  public void initialize(Client client) throws IOException {
     this.client = client;
     if(client != null) {
       email.setText(client.getUserId());
       FullRefresh(null);
     }
-    timeline = new Timeline(new KeyFrame(Duration.minutes(10), this::Refresh));
+    timeline = new Timeline(new KeyFrame(Duration.minutes(10), event -> {
+      try {
+        Refresh(null);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }));
     // Imposta il ciclo infinito
     timeline.setCycleCount(Timeline.INDEFINITE);
     // Avvia il Timeline
@@ -72,7 +80,7 @@ public class ClientController {
   }
 
 
-  public void Refresh(ActionEvent actionEvent) {
+  public void Refresh(ActionEvent actionEvent) throws IOException {
     if (client != null) {
       email.setText(client.getUserId());
       String host = "127.0.0.1";
@@ -104,11 +112,13 @@ public class ClientController {
 
 
 
-  public void FullRefresh(ActionEvent actionEvent) {
+  public void FullRefresh(ActionEvent actionEvent) throws IOException {
     String host= "127.0.0.1";
     int port= 4445;
     if(client.connectToServer(host, port)){
-      ObservableList<Email> items = FXCollections.observableArrayList(client.receiveEmail(host, port, client.getUserId(), null));
+      ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId(), null);
+      writeEmails(receivedEmails);
+      ObservableList<Email> items = FXCollections.observableArrayList(receivedEmails);
       items.sort((o1, o2) -> o2.getDatesendMail().compareTo(o1.getDatesendMail()));
       mailListView.getItems().clear();
       mailListView.setItems(items);

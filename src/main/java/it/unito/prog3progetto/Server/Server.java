@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import static it.unito.prog3progetto.Client.Librerie.readEmails;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
@@ -166,11 +167,9 @@ public class Server {
 
 				// Ottiene le email dall'utente con una data successiva a quella dell'ultima email ricevuta
 				ArrayList<Email> mails = receiveEmail(userMail, lastEmailDate);
-
-				// Invia le email al client
+				Platform.runLater(() -> textArea.appendText("Sending email to the client with email: " + userMail + ".\n"));
 				outStream.writeObject(mails);
 				outStream.flush();
-
 			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 				// Gestisci l'eccezione
@@ -253,52 +252,9 @@ public class Server {
 			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
 		}
 
-		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-			ArrayList<Email> emails = new ArrayList<>();
-			try {
-				File file = new File(usermail + ".txt");
-				Scanner scanner = new Scanner(file);
+		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) throws IOException {
+			return readEmails(usermail + ".txt", lastEmailDate);
 
-				while (scanner.hasNextLine()) {
-					String line = scanner.nextLine();
-					String[] parts = line.split(" , ");
-					if (parts.length >= 6) {
-						String sender = parts[0];
-						String destinationsString = parts[1];
-						String subject = parts[2];
-						String content = parts[3];
-						String dateString = parts[4];
-						String idString = parts[5];
-
-						// Extracting destinations from destinationsString
-						String[] destinationsArray = destinationsString.substring(1, destinationsString.length() - 1).split(", ");
-						ArrayList<String> destinations = new ArrayList<>(Arrays.asList(destinationsArray));
-
-						// Parsing date
-						Date date = dateFormat.parse(dateString);
-
-						// Parsing ID
-						UUID id = UUID.fromString(idString);
-
-						// Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
-						if (lastEmailDate == null) {
-							Email email = new Email(sender, destinations, subject, content, date, id);
-							emails.add(email);
-						} else if (date.after(lastEmailDate)) {
-							// Aggiungi solo le email con data successiva a lastEmailDate
-							Email email = new Email(sender, destinations, subject, content, date, id);
-							emails.add(email);
-						}
-					}
-				}
-				Platform.runLater(() -> textArea.appendText("Email send to client.\n"));
-				scanner.close();
-			} catch (FileNotFoundException | ParseException e) {
-				// In caso di eccezione, restituisci l'elenco vuoto
-				return emails;
-			}
-			return emails;
 		}
 		public static void DeletemailByid(String usermail, String uuidToDelete) {
 			List<String> linesToKeep = new ArrayList<>();
