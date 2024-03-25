@@ -21,11 +21,11 @@ public class NewMailController {
   public TextArea ContentField;
   @FXML
   public Button sendmailbutton;
-  private String usermail;
+  private Client client;
 
 
-  public void initialize(String action) throws IOException {
-    usermail = String.valueOf(readUserEmailFromFile());
+  public void initialize(String action,Client client) throws IOException {
+  this.client = client;
  if(action.equals("sendmail")){
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(event -> {
@@ -57,6 +57,11 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 }
 
   public void sendMail() throws IOException {
+    if(this.client == null){
+     alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
+      System.out.println("Errore durante l'invio dell'email");
+      return;
+    }
     System.out.println("Prova di invio email");
 
     String destination = destinationsfield.getText();
@@ -87,17 +92,13 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
 
     if (success) {
-      if(usermail == null){
-        usermail = Objects.requireNonNull(readUserEmailFromFile()).getUserId();
-      }
-      Email email = new Email(usermail, new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
-      Client c = new Client(usermail);
-      String host = "127.0.0.1";
-      int port = 4445;
+      Email email = new Email(client.getUserId(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
 
-      if (c.connectToServer(host, port)) {
+      String host= "127.0.0.1";
+      int port= 4445;
+      if (this.client.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
-        if (c.SendMail(host, port, email)) {
+        if (this.client.SendMail(host, port, email)) {
           System.out.println(email);
           Stage stage = (Stage) subjectfield.getScene().getWindow();
           stage.close();

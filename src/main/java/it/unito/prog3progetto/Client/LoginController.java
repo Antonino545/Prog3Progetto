@@ -78,12 +78,12 @@ public class LoginController {
         saveUserEmailToFile(useremail);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = loader.load();
-        ClientController controller = loader.getController();
+        ClientController clientController = loader.getController();
 
-        controller.setPrimaryStage(primaryStage);
+        clientController.setPrimaryStage(primaryStage);
 
         // Imposta manualmente il client
-        controller.initialize(client);
+        clientController.initialize(client);
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
