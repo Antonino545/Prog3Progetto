@@ -27,7 +27,7 @@ public class Email implements Serializable {
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
-    this.content = content.replace("\n","<--Accapo-->");
+    this.content = content;
     this.datesendMail = datesendMail;
   }
   public Email(String sender, ArrayList<String> destinations, String subject, String content, Date datesendMail,UUID id) {
@@ -35,7 +35,7 @@ public class Email implements Serializable {
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
-    this.content = content.replace("<--Accapo-->","\n");
+    this.content = content;
     this.datesendMail = datesendMail;
   }
   public UUID getId() {
@@ -56,7 +56,21 @@ public class Email implements Serializable {
     return subject;
   }
 
+  /**
+   * Return the content of the email without the end line character (\n) and replace it with <--Accapo-->
+   * @return Email
+   */
+  public Email emailNoEndLine(){
+    return new Email(sender,destinations,subject,content.replace("\n","<--Accapo-->"),datesendMail,id);
+  }
 
+  /**
+   * Return the content of the email with the end line character (\n) and replace <--Accapo--> with \n
+   * @return Email
+   */
+  public Email emailEndLine(){
+    return new Email(sender,destinations,subject,content.replace("<--Accapo-->", "\n"),datesendMail,id);
+  }
   public String getContent() {
     return content;
   }

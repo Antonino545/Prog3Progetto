@@ -230,13 +230,13 @@ public class Server {
 						// If the file exists, append to it
 						try (FileWriter fileWriter = new FileWriter(filePath.toString(), true);
 								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-							bufferedWriter.write(email.toString());
+							bufferedWriter.write(email.emailNoEndLine().toString());
 						}
 						Platform.runLater(() -> textArea.appendText("Email added to the postbox of " + destination + ".\n"));
 					} else {
 						try (FileWriter fileWriter = new FileWriter(filePath.toString());
 								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-							bufferedWriter.write(email.toString());
+							bufferedWriter.write(email.emailNoEndLine().toString());
 						}
 						Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
 					}

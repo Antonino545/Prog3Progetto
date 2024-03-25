@@ -76,8 +76,7 @@ public class Librerie {
     String fileName = "emails.txt";
     try (FileWriter writer = new FileWriter(fileName)) {
       for (Email email : emails) {
-        String content= email.getContent().replace("\n", "<--Accapo-->");
-        writer.write(email.getSender() + " , " + email.getDestinations() + " , " + email.getSubject() + " , " + content + " , " + email.getDatesendMail() + " , " + email.getId() + "\n");
+        writer.write(email.emailNoEndLine().toString());
       }
       System.out.println("Email salvate con successo nel file: " + fileName);
     }
@@ -113,10 +112,10 @@ public class Librerie {
           // Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
           if (lastEmailDate == null) {
             Email email = new Email(sender, destinations, subject, content, date, id);
-            emails.add(email);
+            emails.add(email.emailEndLine());
           } else if (date.after(lastEmailDate)) {
             Email email = new Email(sender, destinations, subject, content, date, id);
-            emails.add(email);
+            emails.add(email.emailEndLine());
           }
         }
       }
