@@ -6,12 +6,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static it.unito.prog3progetto.Client.Librerie.alert;
@@ -73,31 +76,7 @@ public class MailDetailController {
   public void handleForward(ActionEvent actionEvent) {
   }
 
-  public void handleDelete(ActionEvent actionEvent) throws IOException {
-    String host= "127.0.0.1";
-    int port= 4445;
-    if(deleteMail(host, port, new Email(senderLabel.getText(), destinations, null, null,null,id))){
-      loader(client);
-    }
 
-  }
-  public  boolean deleteMail(String host, int port, Email email) throws IOException {
-    if(client == null) {
-     client= readUserEmailFromFile();
-    }
-    if( client.connectToServer(host, port)){
-      if(client.DeleteMail(host, port, email)) {
-        alert("Email eliminata", Alert.AlertType.INFORMATION);
-        return true;
-      }else {
-        alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
-        return false;
-      }
-    }else{
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
-      return false;
-    }
-  }
 
   public void indietro(ActionEvent actionEvent) {
    loader(client);

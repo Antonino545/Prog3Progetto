@@ -66,6 +66,7 @@ public class MailItemCell extends ListCell<Email> {
           MailDetailController controller = loader.getController();
           controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations(), email.getDatesendMail().toString(),email.getId());
           controller.setPrimaryStage(primaryStage);
+
           Scene scene = new Scene(root);
           scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
 

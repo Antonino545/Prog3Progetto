@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static it.unito.prog3progetto.Client.Librerie.writeEmails;
+
 
 public class ClientController implements MailListObserver {
   public Label email;
@@ -105,7 +105,6 @@ public class ClientController implements MailListObserver {
     int port= 4445;
     if(client.connectToServer(host, port)){
       ArrayList<Email> receivedEmails = client.receiveEmail(host, port, client.getUserId(), null);
-      writeEmails(receivedEmails);
       ObservableList<Email> items = FXCollections.observableArrayList(receivedEmails);
       items.sort((o1, o2) -> o2.getDatesendMail().compareTo(o1.getDatesendMail()));
 

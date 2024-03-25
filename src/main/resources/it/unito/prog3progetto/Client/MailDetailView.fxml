@@ -16,8 +16,6 @@
                 <Button onAction="#handleReply" styleClass="button-primary" text="Reply" />
                 <Button onAction="#handleReplyAll" styleClass="button-primary" text="Reply-All" />
                 <Button onAction="#handleForward" styleClass="button-primary" text="Forward" />
-                <Button onAction="#handleDelete" styleClass="button-primary" text="Delete" />
-
             </HBox>
 
             <HBox>
