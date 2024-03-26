@@ -6,12 +6,10 @@ import it.unito.prog3progetto.Lib.User;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import java.util.*;
 import static it.unito.prog3progetto.Client.Librerie.readEmails;
+import static it.unito.prog3progetto.Client.Librerie.writeswmail;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
@@ -89,8 +87,12 @@ public class Server {
 						break;
 					case "RECEIVEEMAIL":
 						Platform.runLater(() -> textArea.appendText("Request for receiving email received.\n"));
-						handleReceiveEmailRequest();
+						handleReceiveEmailRequest(true);
 						break;
+					case "RECEIVESENDEMAIL":
+						Platform.runLater(() -> textArea.appendText("Request for receiving email received.\n"));
+						handleReceiveEmailRequest(false);
+
 					case "DELETEMAIL":
 						Platform.runLater(() -> textArea.appendText("Request for deleting email received.\n"));
 						handleDeleteEmailRequest();
@@ -159,7 +161,7 @@ public class Server {
 			}
 		}
 
-		private void handleReceiveEmailRequest() {
+		private void handleReceiveEmailRequest(boolean b) {
 			try {
 				// Segnala al client che il server è pronto a ricevere la richiesta
 				outStream.writeObject(true);
@@ -171,9 +173,9 @@ public class Server {
 
 				// Legge la data dell'ultima email ricevuta dal client
 				Date lastEmailDate = (Date) inStream.readObject();
-
-				// Ottiene le email dall'utente con una data successiva a quella dell'ultima email ricevuta
-				ArrayList<Email> mails = receiveEmail(userMail, lastEmailDate);
+				ArrayList<Email> mails=new ArrayList<Email>();
+				if(b) mails = fetchReceivedEmails(userMail, lastEmailDate);
+				else mails = fetchSendEmails(userMail, lastEmailDate);
 				Platform.runLater(() -> textArea.appendText("Sending email to the client with email: " + userMail + ".\n"));
 				outStream.writeObject(mails);
 				outStream.flush();
@@ -228,45 +230,23 @@ public class Server {
 
 		private boolean sendMail(Email email) {
 			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
+			writeswmail(email.getSender(),email,true,textArea);
 			for (String destination : email.getDestinations()) {
-				try {
-					// Check if the file already exists
-					Path filePath = Paths.get(destination + ".txt");
-					if (Files.exists(filePath)) {
-						// If the file exists, append to it
-						List<String> lines = Files.readAllLines(filePath);
-						int index = lines.indexOf("<----------------------------------------------------Email Ricevute---------------------------------------------------->");
-						if (index != -1) { // Found the line
-							lines.add(index + 1, email.emailNoEndLine().toString());
-							Files.write(filePath, lines);
-							Platform.runLater(() -> textArea.appendText("Email added to the postbox of " + destination + ".\n"));
-						} else {
-							Platform.runLater(() -> textArea.appendText("Error: Email section not found in postbox of " + destination + ".\n"));
-						}
-					} else {
-						try (FileWriter fileWriter = new FileWriter(filePath.toString());
-								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-							bufferedWriter.write("<----------------------------------------------------Email Inviati---------------------------------------------------->\n");
-							bufferedWriter.write("<----------------------------------------------------Email Ricevute---------------------------------------------------->\n");
-							bufferedWriter.write(email.emailNoEndLine().toString());
-						}
-						Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
-					}
-					success = true; // L'invio dell'email è riuscito per questo destinatario
-					Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
-				} catch (IOException e) {
-					Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
-					e.printStackTrace();
-					// Non impostiamo success a false qui poiché vogliamo continuare a inviare ad altri destinatari se uno fallisce
-				}
+					success= writeswmail(destination,email,false,textArea);
 			}
 
 			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
 		}
 
-		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) throws IOException {
+
+		private ArrayList<Email> fetchReceivedEmails(String usermail, Date lastEmailDate) throws IOException {
 			synchronized (lock) {
-				return readEmails(usermail + ".txt", lastEmailDate, false);
+				return readEmails(usermail, lastEmailDate, false);
+			}
+		}
+		private ArrayList<Email> fetchSendEmails(String usermail, Date lastEmailDate) throws IOException {
+			synchronized (lock) {
+				return readEmails(usermail, lastEmailDate, true);
 			}
 		}
 		public static void DeletemailByid(String usermail, String uuidToDelete) {

@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
-import java.util.SequencedCollection;
 
 public class MailListModel {
   private final ObservableList<Email> emails = FXCollections.observableArrayList();
@@ -42,6 +41,13 @@ public class MailListModel {
       observer.onEmailRemoved(email);
     }
   }
+  public void clear(){
+    emails.clear();
+    // Notifica gli osservatori che tutti gli email sono stati rimossi
+    for (MailListObserver observer : observers) {
+      observer.onAllEmailsRemoved();
+    }
+  }
 
   public ObservableList<Email> getEmails() {
     return emails;
@@ -53,4 +59,8 @@ public class MailListModel {
       notifyEmailAdded(email);
     }
   }
+  public int size() {
+    return emails.size();
+  }
+
 }

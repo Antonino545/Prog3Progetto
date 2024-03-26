@@ -35,8 +35,6 @@ public class TestClient {
               if(client.connectToServer(host, port))
                 System.out.println(client.SendMail(host, port, new Email(client.getUserId(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
             }
-            if(client.connectToServer(host, port))
-              System.out.println(client.receiveEmail(host, port, client.getUserId(), null));
           } else {
             System.out.println("Credenziali incorrette per " + client.getUserId());
           }

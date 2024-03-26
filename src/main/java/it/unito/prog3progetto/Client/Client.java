@@ -107,6 +107,25 @@ public class Client {
       return new ArrayList<>();
     }
   }
+  public ArrayList<Email> receivesendEmail(String host, int port, String email, Date lastmail) {
+    try {
+      outputStream.writeObject("RECEIVESENDEMAIL");
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      if(inputStream.readObject().equals(true)){
+        System.out.println("Server pronto a ricevere le email");
+      }
+      outputStream.writeObject(email);
+      outputStream.flush();
+      outputStream.writeObject(lastmail);
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      return (ArrayList<Email>) inputStream.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
 
   public boolean SendMail(String host, int port, Email email) {
     try {

@@ -74,7 +74,7 @@
                      <HBox fx:id="sendemail"  styleClass="not-selectable" nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0" onMouseClicked="#sendemails" >
                         <children>
                            <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="33.0" prefWidth="67.0" text="Mail Inviate" textFill="WHITE" />
-                           <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="103.0" text="0" textFill="WHITE">
+                           <Label alignment="CENTER_RIGHT" prefHeight="33.0" fx:id="sendmaillabel" prefWidth="103.0" text="0" textFill="WHITE">
                               <font>
                                  <Font name="System Bold" size="12.0" />
                               </font>

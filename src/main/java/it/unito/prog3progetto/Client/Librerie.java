@@ -1,15 +1,19 @@
 package it.unito.prog3progetto.Client;
 
+import it.unito.prog3progetto.Client.LoginController;
 import it.unito.prog3progetto.Lib.Email;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -49,31 +53,21 @@ public class Librerie {
 
   /**
    * Read emails from a file
-   * @param filename The name of the file to read
    * @param lastEmailDate The date of the last email received
    * @return An ArrayList of Email objects
    * @throws IOException If an I/O error occurs
    */
-  public static ArrayList<Email> readEmails(String filename, Date lastEmailDate,boolean sendemail) throws IOException {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-    ArrayList<Email> emails = new ArrayList<>();
-    boolean foundHeader = false; // Flag per indicare se è stata trovata la linea di intestazione
-    try {
-      File file = new File(filename);
-      Scanner scanner = new Scanner(file);
-      while (scanner.hasNextLine()) {
-        String line = scanner.nextLine();
+  public static ArrayList<Email> readEmails(String usermail, Date lastEmailDate, boolean sendemail) throws IOException {
+      SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+      ArrayList<Email> emails = new ArrayList<>();
+      try {
+        // Determina il nome del file in base al tipo di email
+        String filename = sendemail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
 
-        if (!sendemail &&line.equals("<----------------------------------------------------Email Ricevute---------------------------------------------------->")) {
-          foundHeader = true;
-          continue; // Passa alla prossima iterazione del ciclo
-        }else{
-          if(sendemail && line.equals("<----------------------------------------------------Email Inviate---------------------------------------------------->")){
-            foundHeader = true;
-            continue; // Passa alla prossima iterazione del ciclo
-          }
-        }
-        if (foundHeader) {
+        File file = new File(filename);
+        Scanner scanner = new Scanner(file);
+        while (scanner.hasNextLine()) {
+          String line = scanner.nextLine();
           String[] parts = line.split(" , ");
           if (parts.length >= 6) {
             String sender = parts[0];
@@ -89,19 +83,44 @@ public class Librerie {
             // Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
             if (lastEmailDate == null || date.after(lastEmailDate)) {
               Email email = new Email(sender, destinations, subject, content, date, id);
-
-              emails.add(email.emailEndLine());
+              emails.add(email);
             }
           }
         }
+        scanner.close();
+      } catch (FileNotFoundException | ParseException e) {
+        // In caso di eccezione, restituisci l'elenco vuoto
+        e.printStackTrace();
       }
-      scanner.close();
-    } catch (FileNotFoundException | ParseException e) {
-      // In caso di eccezione, restituisci l'elenco vuoto
       return emails;
-    }
-    return emails;
+
+
   }
 
+  public static boolean writeswmail(String destination, Email email, boolean sendmail, TextArea textArea) {
+    boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
+
+    try {
+      // Determina il nome del file in base al tipo di email
+      String filename = sendmail ? "Server/" + destination + "_sent.txt" : "Server/" + destination + "_received.txt";
+
+      // Scrivi l'email nel file corretto
+      try (FileWriter fileWriter = new FileWriter(filename, true);
+           BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        // Scrivi l'email nel file
+        bufferedWriter.write(email.emailNoEndLine().toString());
+        bufferedWriter.newLine();
+        success = true; // L'invio dell'email è riuscito per questo destinatario
+        Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
+      } catch (IOException e) {
+        Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
+        e.printStackTrace();
+      }
+    } catch (Exception e) {
+      Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
+      e.printStackTrace();
+    }
+    return success;
+  }
 
 }
