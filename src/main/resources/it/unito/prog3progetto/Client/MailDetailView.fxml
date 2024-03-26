@@ -32,7 +32,7 @@
                 <Label text="Oggetto: " textFill="WHITE" />
                 <Label fx:id="subjectLabel" textFill="WHITE" />
             </HBox>
-            <VBox>
+            <VBox  VBox.vgrow="ALWAYS">
                 <Label text="Contenuto:" textFill="WHITE" />
                 <Label fx:id="contentLabel" alignment="TOP_LEFT" prefHeight="351.0" prefWidth="643.0"  wrapText="true" style="-fx-background-color: #44475A;" textFill="WHITE" VBox.vgrow="ALWAYS" />
             </VBox>

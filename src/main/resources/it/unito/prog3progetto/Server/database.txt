@@ -1,4 +1,0 @@
-luca.verdi@progmail.com,password
-andrea.rossi@progmail.com,password
-stefano.bianchi@progmail.com,password
-marco.gialli@progmail.com,password

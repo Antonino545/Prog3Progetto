@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,8 +24,10 @@ public class ClientController implements MailListObserver {
   public Label email;
   @FXML
   public Label indexLengthLabel;
+  public HBox inbox;
   @FXML
   private ListView<Email> mailListView;
+  public HBox sendemail;
 
   private Stage primaryStage;
   private Client client;
@@ -117,7 +121,7 @@ public class ClientController implements MailListObserver {
       if(indexLengthLabel != null)
       indexLengthLabel.setText(String.valueOf(items.size()));
       mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
-      mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this));
+      mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this,client));
 
       System.out.println("Email ricevute");
     } else {
@@ -139,5 +143,24 @@ public class ClientController implements MailListObserver {
     } else {
       Librerie.alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
+  }
+
+  @FXML
+  public void sendemails() {
+    // Qui inserisci il codice per gestire l'invio delle email
+
+    // Dopo aver gestito l'evento, modifica lo stile della HBox
+    sendemail.getStyleClass().remove("not-selectable");
+    sendemail.getStyleClass().add("selectable");
+    inbox.getStyleClass().remove("selectable");
+    inbox.getStyleClass().add("not-selectable");
+
+  }
+
+  public void inboxemail(MouseEvent mouseEvent) {
+    inbox.getStyleClass().remove("not-selectable");
+    inbox.getStyleClass().add("selectable");
+    sendemail.getStyleClass().remove("selectable");
+    sendemail.getStyleClass().add("not-selectable");
   }
 }

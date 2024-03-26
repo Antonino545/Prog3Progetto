@@ -6,28 +6,25 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
-import it.unito.prog3progetto.Client.MailDetailController;
-import it.unito.prog3progetto.Lib.Email;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-
-import static it.unito.prog3progetto.Client.Librerie.readUserEmailFromFile;
 
 public class MailItemCell extends ListCell<Email> {
   private static ClientController clientController;
   private final Stage primaryStage;
   private static final String host = "127.0.0.1";
   private static final int port = 4445;
-  public MailItemCell(Stage primaryStage, ClientController clientController) {
+  private final Client client;
+  public MailItemCell(Stage primaryStage, ClientController clientController,Client client) {
     this.primaryStage = primaryStage;
+    this.client = client;
     this.clientController = clientController;
   }
 
@@ -53,6 +50,7 @@ public class MailItemCell extends ListCell<Email> {
 
       vbox.getChildren().addAll(senderLabel, dateLabel, subjectLabel, contentLabel);
       Button deleteButton = getButton(email);
+      deleteButton.getStyleClass().add("button-primary");
       hbox.getChildren().addAll(vbox, deleteButton);
       HBox.setHgrow(vbox, Priority.ALWAYS);
 
@@ -64,8 +62,7 @@ public class MailItemCell extends ListCell<Email> {
           Parent root = loader.load();
 
           MailDetailController controller = loader.getController();
-          controller.setMailDetails(email.getSender(), email.getSubject(), email.getContent(), email.getDestinations(), email.getDatesendMail().toString(),email.getId());
-
+          controller.initialize(client,email);
           Scene scene = new Scene(root);
           scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
           Stage stage = new Stage();

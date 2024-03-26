@@ -264,7 +264,7 @@ public class Server {
 
 		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) throws IOException {
 			synchronized (lock) {
-				return readEmails(usermail + ".txt", lastEmailDate);
+				return readEmails(usermail + ".txt", lastEmailDate, false);
 			}
 		}
 		public static void DeletemailByid(String usermail, String uuidToDelete) {
@@ -322,7 +322,7 @@ public class Server {
 		private List<String> readDatabaseFromFile() {
 			List<String> database = new ArrayList<>();
 
-			try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\incor\\Documents\\Project\\Unito\\Prog3-Progetto\\Prog3Progetto\\src\\main\\java\\it\\unito\\prog3progetto\\Server\\database.txt"))) {
+			try (BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(getClass().getResource("credentials.txt")).getFile()))) {
 				String line;
 				while ((line = br.readLine()) != null) {
 					database.add(line); // Aggiunge ogni riga del file al database

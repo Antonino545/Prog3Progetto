@@ -5,20 +5,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
-
-import static it.unito.prog3progetto.Client.Librerie.alert;
-import static it.unito.prog3progetto.Client.Librerie.readUserEmailFromFile;
 
 public class MailDetailController {
   public Label senderLabel;
@@ -30,20 +22,14 @@ public class MailDetailController {
   UUID id;
   private Client client;
 
-  public void initialize() throws IOException {
-    this.client = readUserEmailFromFile();
-  }
-
-  public void setMailDetails(String sender, String subject, String content, ArrayList<String> Destinations, String data, UUID id) {
-    senderLabel.setText(sender);
-    subjectLabel.setText(subject);
-    contentLabel.setText( content);
-    this.destinations=Destinations;
-    destinationslabel.setText(Destinations.toString());
-    datalabel.setText(data);
-    this.id=id;
-
-
+  public void initialize(Client client,Email email) throws IOException {
+    this.client = client;
+    senderLabel.setText(email.getSender());
+    subjectLabel.setText(email.getSubject());
+    contentLabel.setText(email.getContent());
+    destinationslabel.setText(email.getDestinations().toString());
+    datalabel.setText(email.getItalianDate());
+    id=email.getId();
   }
 
 

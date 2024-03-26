@@ -54,4 +54,13 @@
 
 }
 
+.not-selectable {
+    -fx-border-color: transparent;
+    -fx-border-width: 2px;
+}
 
+
+.selectable {
+    -fx-border-color:  #BD93F9;
+    -fx-border-width: 2px;
+}
