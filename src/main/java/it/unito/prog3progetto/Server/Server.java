@@ -226,41 +226,43 @@ public class Server {
 			return false; // Se le credenziali non corrispondono, restituisce false
 		}
 
-		private  boolean sendMail(Email email) {
+		private boolean sendMail(Email email) {
 			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
 			for (String destination : email.getDestinations()) {
-				synchronized (lock) {
-					Platform.runLater(() -> textArea.appendText("Sending email to " + destination + ".\n"));
-					try {
-						// Check if the file already exists
-						Path filePath = Paths.get(destination + ".txt");
-						if (Files.exists(filePath)) {
-							// If the file exists, append to it
-							try (FileWriter fileWriter = new FileWriter(filePath.toString(), true);
-									 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-								bufferedWriter.write(email.emailNoEndLine().toString());
-							}
+				try {
+					// Check if the file already exists
+					Path filePath = Paths.get(destination + ".txt");
+					if (Files.exists(filePath)) {
+						// If the file exists, append to it
+						List<String> lines = Files.readAllLines(filePath);
+						int index = lines.indexOf("<----------------------------------------------------Email Ricevute---------------------------------------------------->");
+						if (index != -1) { // Found the line
+							lines.add(index + 1, email.emailNoEndLine().toString());
+							Files.write(filePath, lines);
 							Platform.runLater(() -> textArea.appendText("Email added to the postbox of " + destination + ".\n"));
 						} else {
-							try (FileWriter fileWriter = new FileWriter(filePath.toString());
-									 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-								bufferedWriter.write(email.emailNoEndLine().toString());
-							}
-							Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
+							Platform.runLater(() -> textArea.appendText("Error: Email section not found in postbox of " + destination + ".\n"));
 						}
-						success = true; // L'invio dell'email è riuscito per questo destinatario
-						Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
-					} catch (IOException e) {
-						Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
-						e.printStackTrace();
-						success = false; // L'invio dell'email non è riuscito per questo destinatario
+					} else {
+						try (FileWriter fileWriter = new FileWriter(filePath.toString());
+								 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+							bufferedWriter.write("<----------------------------------------------------Email Inviati---------------------------------------------------->\n");
+							bufferedWriter.write("<----------------------------------------------------Email Ricevute---------------------------------------------------->\n");
+							bufferedWriter.write(email.emailNoEndLine().toString());
+						}
+						Platform.runLater(() -> textArea.appendText("Email postbox for " + destination + " created.\n"));
 					}
+					success = true; // L'invio dell'email è riuscito per questo destinatario
+					Platform.runLater(() -> textArea.appendText("Email sent successfully to " + destination + ".\n"));
+				} catch (IOException e) {
+					Platform.runLater(() -> textArea.appendText("Error in sending email to " + destination + ".\n"));
+					e.printStackTrace();
+					// Non impostiamo success a false qui poiché vogliamo continuare a inviare ad altri destinatari se uno fallisce
+				}
+			}
 
-					return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
-				}
-				}
-      return success;
-    }
+			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
+		}
 
 		private ArrayList<Email> receiveEmail(String usermail, Date lastEmailDate) throws IOException {
 			synchronized (lock) {
