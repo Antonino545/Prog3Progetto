@@ -1,4 +1,4 @@
-package it.unito.prog3progetto.Lib;
+package it.unito.prog3progetto.Model;
 
 import java.io.Serial;
 import java.io.Serializable;

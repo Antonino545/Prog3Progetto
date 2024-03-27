@@ -1,6 +1,8 @@
 package it.unito.prog3progetto.Client;
 
-import it.unito.prog3progetto.Lib.Email;
+import it.unito.prog3progetto.Client.Controller.ClientController;
+import it.unito.prog3progetto.Client.Controller.MailDetailController;
+import it.unito.prog3progetto.Model.Email;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;

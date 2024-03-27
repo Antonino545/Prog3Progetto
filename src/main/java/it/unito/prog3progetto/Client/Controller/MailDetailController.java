@@ -1,6 +1,7 @@
-package it.unito.prog3progetto.Client;
+package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Lib.Email;
+import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Model.Email;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

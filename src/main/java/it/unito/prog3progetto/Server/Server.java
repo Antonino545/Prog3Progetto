@@ -1,7 +1,7 @@
 package it.unito.prog3progetto.Server;
 
-import it.unito.prog3progetto.Lib.Email;
-import it.unito.prog3progetto.Lib.User;
+import it.unito.prog3progetto.Model.Email;
+import it.unito.prog3progetto.Model.User;
 
 import java.io.*;
 import java.net.ServerSocket;

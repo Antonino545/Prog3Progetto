@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client;
 
-import it.unito.prog3progetto.Lib.Email;
+import it.unito.prog3progetto.Model.Email;
 
 import java.util.ArrayList;
 import java.util.Date;

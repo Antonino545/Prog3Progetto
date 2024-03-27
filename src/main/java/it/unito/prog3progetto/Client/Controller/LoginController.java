@@ -1,7 +1,6 @@
-package it.unito.prog3progetto.Client;
+package it.unito.prog3progetto.Client.Controller;
 
 import it.unito.prog3progetto.Client.Client;
-import it.unito.prog3progetto.Client.ClientController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
@@ -75,7 +75,7 @@ public class LoginController {
 
 
         saveUserEmailToFile(useremail);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Client.fxml"));
+        FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Client.fxml").toURI().toURL());
         Parent root = loader.load();
         ClientController clientController = loader.getController();
 
@@ -85,7 +85,7 @@ public class LoginController {
         clientController.initialize(client);
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Client");

@@ -1,6 +1,5 @@
-package it.unito.prog3progetto.Client;
+package it.unito.prog3progetto.Model;
 
-import it.unito.prog3progetto.Lib.Email;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

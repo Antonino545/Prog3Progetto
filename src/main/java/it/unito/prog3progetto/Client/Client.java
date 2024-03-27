@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client;
-import it.unito.prog3progetto.Lib.Email;
-import it.unito.prog3progetto.Lib.User;
+import it.unito.prog3progetto.Model.Email;
+import it.unito.prog3progetto.Model.User;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

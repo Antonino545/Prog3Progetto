@@ -1,8 +1,9 @@
-package it.unito.prog3progetto.Client;
+package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Lib.Email;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import it.unito.prog3progetto.Client.*;
+import it.unito.prog3progetto.Model.Email;
+import it.unito.prog3progetto.Model.MailListModel;
+import it.unito.prog3progetto.Model.MailListObserver;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,13 +12,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 
 public class ClientController implements MailListObserver {
@@ -90,7 +91,7 @@ public class ClientController implements MailListObserver {
 
   public void NewEmail(ActionEvent actionEvent) {
     try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("Newemail.fxml"));
+      FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
       Parent root = loader.load();
       NewMailController controller = loader.getController();
       controller.initialize("sendmail",client);
@@ -108,9 +109,19 @@ public class ClientController implements MailListObserver {
   public void logout(ActionEvent actionEvent) throws IOException {
     Librerie lib = new Librerie();
     client = null;
-    lib.loadLogin(primaryStage);
+    loadLogin(primaryStage);
   }
-
+  public  void loadLogin(Stage primaryStage) throws IOException {
+    FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Login.fxml").toURI().toURL());
+    Parent root = loader.load();
+    LoginController controller = loader.getController();
+    controller.setPrimaryStage(primaryStage);
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
+    primaryStage.setScene(scene);
+    primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
+    primaryStage.show();
+  }
   public void Refresh() throws IOException {
     if (client != null && client.connectToServer(host, port)) {
       Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getFirst();
