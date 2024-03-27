@@ -26,26 +26,20 @@ import java.util.Objects;
 
 
 public class ClientController implements MailListObserver {
-  public Label email;
   @FXML
-  public Label indexLengthLabel;
+  public Label indexLengthLabel,email,sendmaillabel;
   public HBox inbox;
-  public Label sendmaillabel;
   @FXML
   private ListView<Email> mailListView;
   public HBox sendemail;
-
   private Stage primaryStage;
   private Client client;
-  private MailListModel mailReceivedListModel;
-  private MailListModel mailSendListModel;
+  private MailListModel mailReceivedListModel,mailSendListModel;
   private ArrayList<Email> previousSentEmails = new ArrayList<>();
   private ArrayList<Email> previousReceivedEmails = new ArrayList<>();
 
   private final String host = "127.0.0.1";
   private final int port = 4445;
-  private StringProperty receivedEmailCount = new SimpleStringProperty("0");
-  private StringProperty sentEmailCount = new SimpleStringProperty("0");
 
 
   public void initialize(Client client) throws IOException {
@@ -56,9 +50,8 @@ public class ClientController implements MailListObserver {
       mailSendListModel=new MailListModel();
       mailReceivedListModel.addObserver(this); // Registra il controller come osservatore
       mailSendListModel.addObserver(this);
-      indexLengthLabel.textProperty().bindBidirectional(receivedEmailCount);
-      sendmaillabel.textProperty().bindBidirectional(sentEmailCount);
-
+      indexLengthLabel.textProperty().bind(mailReceivedListModel.sizeProperty().asString());
+      sendmaillabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
       sendemails();
       inboxemail();
     }
@@ -69,28 +62,18 @@ public class ClientController implements MailListObserver {
   public void onEmailAdded(Email email) {
     mailListView.getItems().add(email); // Aggiorna la ListView aggiungendo l'email
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this,client));
-    receivedEmailCount.set(Integer.toString(mailReceivedListModel.size()));
-    sentEmailCount.set(Integer.toString(mailSendListModel.size()));
-
-
-
   }
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire la rimozione di email
   @Override
   public void onEmailRemoved(Email email) {
     mailListView.getItems().remove(email); // Rimuovi l'email dalla ListView
-    receivedEmailCount.set(Integer.toString(mailReceivedListModel.size()));
-    sentEmailCount.set(Integer.toString(mailSendListModel.size()));
   }
 
   @Override
   public void onAllEmailsRemoved() {
     mailListView.getItems().clear(); // Rimuovi tutti gli email dalla ListView
-    if (indexLengthLabel != null && sendmaillabel != null) {
-      receivedEmailCount.set(Integer.toString(mailReceivedListModel.size())); // Imposta la lunghezza dell'indice delle email ricevute
-      sentEmailCount.set(Integer.toString(mailSendListModel.size())); // Imposta la lunghezza dell'indice delle email inviate
-    }
+
   }
 
 
