@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Model;
 
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -61,5 +62,6 @@ public class MailListModel {
   public int size() {
     return emails.size();
   }
+
 
 }
