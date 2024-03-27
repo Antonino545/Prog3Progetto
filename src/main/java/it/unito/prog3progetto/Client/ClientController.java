@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.List;
 
 
 public class ClientController implements MailListObserver {
@@ -34,6 +34,9 @@ public class ClientController implements MailListObserver {
   private Client client;
   private MailListModel mailReceivedListModel;
   private MailListModel mailSendListModel;
+  private ArrayList<Email> previousSentEmails = new ArrayList<>();
+  private ArrayList<Email> previousReceivedEmails = new ArrayList<>();
+
   private final String host = "127.0.0.1";
   private final int port = 4445;
 
@@ -48,7 +51,7 @@ public class ClientController implements MailListObserver {
       indexLengthLabel.setText(String.valueOf(mailReceivedListModel.getEmails().size())); // Aggiorna la lunghezza dell'indice
       sendmaillabel.setText(String.valueOf(mailSendListModel.getEmails().size())); // Aggiorna la lunghezza dell'indice
       sendemails();
-      FullRefresh();
+      inboxemail();
     }
   }
 
@@ -153,29 +156,48 @@ public class ClientController implements MailListObserver {
 
   @FXML
   public void sendemails() {
-    // Qui inserisci il codice per gestire l'invio delle email
-
-    // Dopo aver gestito l'evento, modifica lo stile della HBox
     sendemail.getStyleClass().remove("not-selectable");
     sendemail.getStyleClass().add("selectable");
     inbox.getStyleClass().remove("selectable");
     inbox.getStyleClass().add("not-selectable");
-    if(client.connectToServer(host, port)){
-      mailSendListModel.clear();
-      mailSendListModel.addEmails( client.receivesendEmail(host, port, client.getUserId(), null));
+    if (!previousSentEmails.isEmpty()) {
+      mailListView.getItems().setAll(previousSentEmails);
+      return;
+    }
 
+    if (client.connectToServer(host, port)) {
+      mailSendListModel.clear();
+      mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserId(), null));
+      previousSentEmails.addAll(mailSendListModel.getEmails());
       System.out.println("Email ricevute");
     } else {
       System.out.println("Connessione al server non riuscita");
     }
 
+
   }
 
-  public void inboxemail(MouseEvent mouseEvent) {
+
+  public void inboxemail() {
     inbox.getStyleClass().remove("not-selectable");
     inbox.getStyleClass().add("selectable");
     sendemail.getStyleClass().remove("selectable");
     sendemail.getStyleClass().add("not-selectable");
+    // Se ci sono email ricevute precedentemente, non richiederle nuovamente al server
+    if (!previousReceivedEmails.isEmpty()) {
+      mailListView.getItems().setAll(previousReceivedEmails);
+      return;
+    }
+
+    // Se non ci sono email ricevute precedentemente, richiedile al server e memorizzale
     FullRefresh();
+
+    // Memorizza le email ricevute precedentemente
+    previousReceivedEmails.clear();
+    previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
+
+    // Modifica lo stile della HBox
+
   }
+
 }
