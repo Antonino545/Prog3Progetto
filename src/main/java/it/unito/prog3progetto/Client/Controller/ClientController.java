@@ -4,10 +4,6 @@ import it.unito.prog3progetto.Client.*;
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.MailListModel;
 import it.unito.prog3progetto.Model.MailListObserver;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +18,6 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class ClientController implements MailListObserver {
@@ -159,10 +154,7 @@ public class ClientController implements MailListObserver {
 
   @FXML
   public void sendemails() {
-    sendemail.getStyleClass().remove("not-selectable");
-    sendemail.getStyleClass().add("selectable");
-    inbox.getStyleClass().remove("selectable");
-    inbox.getStyleClass().add("not-selectable");
+    changeButton(sendemail,inbox);
     if (!previousSentEmails.isEmpty()) {
       mailListView.getItems().setAll(previousSentEmails);
       return;
@@ -182,10 +174,7 @@ public class ClientController implements MailListObserver {
 
 
   public void inboxemail() {
-    inbox.getStyleClass().remove("not-selectable");
-    inbox.getStyleClass().add("selectable");
-    sendemail.getStyleClass().remove("selectable");
-    sendemail.getStyleClass().add("not-selectable");
+    changeButton(inbox,sendemail);
     // Se ci sono email ricevute precedentemente, non richiederle nuovamente al server
     if (!previousReceivedEmails.isEmpty()) {
       mailListView.getItems().setAll(previousReceivedEmails);
@@ -203,4 +192,10 @@ public class ClientController implements MailListObserver {
 
   }
 
+  public void changeButton(HBox first, HBox second){
+    first.getStyleClass().remove("not-selectable");
+    first.getStyleClass().add("selectable");
+    second.getStyleClass().remove("selectable");
+    second.getStyleClass().add("not-selectable");
+  }
 }
