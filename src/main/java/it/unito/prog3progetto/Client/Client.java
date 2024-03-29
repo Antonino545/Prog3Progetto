@@ -89,7 +89,6 @@ public class Client {
       if (success) {
         Object token = inputStream.readObject();
         if (token instanceof UUID) {
-          System.out.println(token);
           System.out.println("Token Recuperato con successo.");
           return (UUID) token;
         } else {
@@ -167,6 +166,25 @@ public class Client {
         System.out.println("Email inviata con successo.");
       } else {
         System.out.println("Errore durante l'invio dell'email.");
+      }
+      return success;
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+  public boolean logout(){
+    try {
+      outputStream.writeObject(token);
+      outputStream.flush();
+      outputStream.writeObject("LOGOUT");
+      outputStream.flush();
+      socket.setSoTimeout(5000);
+      boolean success = (boolean) inputStream.readObject();
+      if (success) {
+        System.out.println("Logout effettuato con successo.");
+      } else {
+        System.out.println("Errore durante il logout.");
       }
       return success;
     } catch (IOException | ClassNotFoundException e) {

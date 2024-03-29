@@ -29,6 +29,7 @@ public class TestClient {
         if (client.connectToServer(host, port)) {
           System.out.println("Connessione al server riuscita per " + client.getUserMail());
           UUID token = client.sendAndCheckCredentials(host, port, client.getUserMail(), "password");
+          client.setToken(token);
           if (token != null) {
             System.out.println("Credenziali corrette per " + client.getUserMail());
             for (int i = 0; i < 3; i++) {

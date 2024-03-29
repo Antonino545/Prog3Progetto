@@ -1,25 +1,19 @@
 package it.unito.prog3progetto.Server;
 
-import it.unito.prog3progetto.Model.Email;
-import it.unito.prog3progetto.Model.User;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import java.util.*;
-import static it.unito.prog3progetto.Model.Lib.readEmails;
-import static it.unito.prog3progetto.Model.Lib.writeswmail;
 
-import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 public class Server {
 	private ServerSocket serverSocket;
-	private final Map<UUID, String> authenticatedTokens;
+	final Map<UUID, String> authenticatedTokens;
 
 
-	private final TextArea textArea; // TextArea per visualizzare l'output
+	final TextArea textArea; // TextArea per visualizzare l'output
 
 	// Costruttore che accetta una TextArea per visualizzare l'output
 	public Server(TextArea textArea) {
@@ -37,7 +31,7 @@ public class Server {
 
 			while (isRunning) {
 				Socket socket = serverSocket.accept(); // Accetta connessioni dai client
-				ClientHandler clientHandler = new ClientHandler(socket,this);
+				ClientHandler clientHandler = new ClientHandler(this, socket);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
 			}
@@ -57,280 +51,7 @@ public class Server {
 		}
 	}
 
-	// Method to stop the server
-	public void stopServer() {
-		isRunning = false;
-	}
-	public boolean isUserAuthenticated(User user) {
-		return authenticatedTokens.containsKey(user);
-	}
-
-	// Classe interna per gestire la comunicazione con un singolo client
-	private class ClientHandler implements Runnable {
-		private static final Object lock = new Object();
-
-		private final Socket socket;
-		private ObjectInputStream inStream;
-		private ObjectOutputStream outStream;
-		private final Server server;
-		private String userMail;
-
-		public ClientHandler(Socket socket, Server server) {
-			this.socket = socket;
-			this.server = server;
-		}
-
-		@Override
-		public void run() {
-			try {
-				openStreams();
-				Object clientObject = inStream.readObject();
-				if(clientObject!=null){
-				if (clientObject.toString().equals("LOGIN")) {
-					handleLoginRequest(); // Se il client richiede un login, gestisci direttamente la richiesta
-					return;
-				}
-				}
-
-				if (!isAuthenticated(clientObject instanceof UUID ? (UUID) clientObject : null)) {
-
-					Platform.runLater(() -> textArea.appendText("User  is not authenticated.\n"));
-					outStream.writeObject(false); // Invia una risposta negativa al client se non è autenticato
-					outStream.flush();
-					return;
-				}
-				Platform.runLater(() -> textArea.appendText("User is authenticated.\n"));
-				userMail=	getUserEmail((UUID) clientObject);
-
-				 clientObject = inStream.readObject();
-
-				switch (clientObject.toString()) {
-					case "SENDMAIL":
-						Platform.runLater(() -> textArea.appendText("Request for sending email received.\n"));
-						handleSendMailRequest();
-						break;
-					case "RECEIVEEMAIL":
-						Platform.runLater(() -> textArea.appendText("Request for receiving email received.\n"));
-						handleReceiveEmailRequest(true);
-						break;
-					case "RECEIVESENDEMAIL":
-						Platform.runLater(() -> textArea.appendText("Request for receiving email received.\n"));
-						handleReceiveEmailRequest(false);
-
-					case "DELETEMAIL":
-						Platform.runLater(() -> textArea.appendText("Request for deleting email received.\n"));
-						handleDeleteEmailRequest();
-						break;
-					default:
-						outStream.writeObject(false);
-						outStream.flush();
-						break;
-				}
-			} catch (IOException | ClassNotFoundException e) {
-
-				Platform.runLater(() -> textArea.appendText("Errore nella comunicazione con il client" + e.getMessage() + ".\n"));
-			} finally {
-				closeStreams();
-			}
-		}
-
-		private boolean isAuthenticated(UUID token) {
-			return server.authenticatedTokens.containsKey(token);
-		}
-		private String getUserEmail(UUID token) {
-			return server.authenticatedTokens.get(token);
-		}
-
-
-		private void handleLoginRequest() {
-			Object userObject = null;
-			try {
-				outStream.writeObject(true);
-				outStream.flush();
-
-				// Wait for the user object
-				 userObject = inStream.readObject();
-
-				if (userObject instanceof User) {
-					User user = (User) userObject;
-					boolean isAuthenticated = authenticateUser(user);
-					outStream.writeObject(isAuthenticated);
-					outStream.flush();
-					UUID token = UUID.randomUUID();
-					if (isAuthenticated) {
-						server.authenticatedTokens.put(token,user.getEmail());
-						outStream.writeObject(token);
-						outStream.flush();
-						Platform.runLater(() -> textArea.appendText("Authentication successful for user " + user.getEmail() + ".\n"));
-					} else {
-						Platform.runLater(() -> textArea.appendText("Authentication failed for user " + user.getEmail() + ".\n"));
-								}
-				} else {
-					Platform.runLater(() -> textArea.appendText("Error in authenticating user.\n"));
-				}
-			} catch (IOException | ClassNotFoundException e) {
-				User user = (User) userObject;
-				Platform.runLater(() -> textArea.appendText("Authentication error for user " + user.getEmail() + ".\n"));
-			}
-		}
-
-		private synchronized   void handleSendMailRequest() {
-			try {
-				outStream.writeObject(true);
-				outStream.flush();
-				Object mailObject = inStream.readObject();
-				if (mailObject instanceof Email) {
-					Email email = (Email) mailObject;
-					boolean isSent = sendMail(email);
-					outStream.writeObject(isSent);
-					outStream.flush();
-				} else {
-					Platform.runLater(() -> textArea.appendText("Error in sending email.\n"));
-
-				}
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-				// Handle send mail request exception
-			}
-		}
-
-		private void handleReceiveEmailRequest(boolean b) {
-			try {
-				// Segnala al client che il server è pronto a ricevere la richiesta
-				outStream.writeObject(true);
-				outStream.flush();
-
-				// Legge il nome dell'utente dal client
-				Object userMailObject = inStream.readObject();
-				String userMail = (String) userMailObject;
-
-				// Legge la data dell'ultima email ricevuta dal client
-				Date lastEmailDate = (Date) inStream.readObject();
-				ArrayList<Email> mails=new ArrayList<Email>();
-				if(b) mails = fetchReceivedEmails(userMail, lastEmailDate);
-				else mails = fetchSendEmails(userMail, lastEmailDate);
-				Platform.runLater(() -> textArea.appendText("Sending email to the client with email: " + userMail + ".\n"));
-				outStream.writeObject(mails);
-				outStream.flush();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-				// Gestisci l'eccezione
-			}
-		}
-
-
-		// Metodo per chiudere gli stream di input e output
-		private void closeStreams() {
-			try {
-				if (inStream != null) {
-					inStream.close();
-				}
-				if (outStream != null) {
-					outStream.close();
-				}
-				if (socket != null) {
-					socket.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		// Metodo per aprire gli stream di input e output per comunicare con il client
-		private void openStreams() throws IOException {
-			inStream = new ObjectInputStream(socket.getInputStream()); // Stream di input per ricevere dati dal client
-			outStream = new ObjectOutputStream(socket.getOutputStream()); // Stream di output per inviare dati al client
-			outStream.flush(); // Assicura che tutti i dati siano inviati
-		}
-
-		// Metodo per autenticare l'utente confrontando le credenziali con un database
-		private boolean authenticateUser(User user) {
-			// Legge il database di credenziali da file
-			List<String> database = readDatabaseFromFile();
-
-			// Verifica se le credenziali dell'utente sono presenti nel database
-			for (String entry : database) {
-				String[] parts = entry.split(",");
-				if (parts.length == 2 && parts[0].trim().equals(user.getEmail()) && parts[1].trim().equals(user.getPassword())) {
-					return true; // Se le credenziali sono corrette, restituisce true
-				}
-			}
-			return false; // Se le credenziali non corrispondono, restituisce false
-		}
-
-		private boolean sendMail(Email email) {
-			boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
-			writeswmail(email.getSender(),email,true,textArea);
-			for (String destination : email.getDestinations()) {
-					success= writeswmail(destination,email,false,textArea);
-			}
-
-			return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
-		}
-
-
-
-		private ArrayList<Email> fetchReceivedEmails(String usermail, Date lastEmailDate) throws IOException {
-			synchronized (lock) {
-				return readEmails(usermail, lastEmailDate, false);
-			}
-		}
-		private ArrayList<Email> fetchSendEmails(String usermail, Date lastEmailDate) throws IOException {
-			synchronized (lock) {
-				return readEmails(usermail, lastEmailDate, true);
-			}
-		}
-		public static void DeletemailByid(String usermail, String uuidToDelete) {
-			synchronized (lock) {
-
-				List<String> linesToKeep = new ArrayList<>();
-
-			try (BufferedReader br = new BufferedReader(new FileReader(usermail + ".txt"))) {
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (!line.contains(uuidToDelete)) {
-						linesToKeep.add(line);
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(usermail + ".txt"))) {
-				for (String line : linesToKeep) {
-					bw.write(line);
-					bw.newLine();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			}
-		}
-		private void handleDeleteEmailRequest() {
-			try {
-				outStream.writeObject(true);
-				outStream.flush();
-				Object mailObject = inStream.readObject();
-				if (mailObject instanceof Email email) {
-					DeletemailByid(userMail,email.getId().toString());
-					outStream.writeObject(true);
-					outStream.flush();
-					Platform.runLater(() -> textArea.appendText("Email deleted successfully.\n"));
-				} else {
-					Platform.runLater(() -> textArea.appendText("Error in deleting email.\n"));
-				}
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-
-
-
-	// Metodo per leggere il database di credenziali da file
-		private List<String> readDatabaseFromFile() {
+		List<String> readDatabaseFromFile() {
 			List<String> database = new ArrayList<>();
 
 			try (BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(getClass().getResource("credentials.txt")).getFile()))) {
