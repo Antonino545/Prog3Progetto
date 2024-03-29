@@ -101,8 +101,10 @@ class ClientHandler implements Runnable {
             // Sostituisci il token esistente
             server.authenticatedTokens.remove(existingToken);
           }
-          server.authenticatedTokens.put(token, userEmail);
-          saveAuthenticatedTokensToFile(); // Salva i token dopo l'autenticazione
+          synchronized (server.authenticatedTokens) { // Synchronize on the map itself
+            server.authenticatedTokens.put(token, userEmail);
+          }
+          //          saveAuthenticatedTokensToFile(); // Salva i token dopo l'autenticazione
           outStream.writeObject(token);
           outStream.flush();
           Platform.runLater(() -> server.textArea.appendText("Authentication successful for user " + userEmail + ".\n"));
@@ -129,12 +131,14 @@ class ClientHandler implements Runnable {
 
 
   private void saveAuthenticatedTokensToFile() {
-    try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
-      for (UUID token : server.authenticatedTokens.keySet()) {
-        writer.println(token + "," + server.authenticatedTokens.get(token));
+    synchronized (server.authenticatedTokens) { // Synchronize on the map itself
+      try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
+        for (UUID token : server.authenticatedTokens.keySet()) {
+          writer.println(token + "," + server.authenticatedTokens.get(token));
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
   private synchronized void handleSendMailRequest() {
@@ -235,7 +239,7 @@ class ClientHandler implements Runnable {
     }
   }
 
-  public static void DeletemailByid(String usermail, String uuidToDelete) {
+  public synchronized static void DeletemailByid(String usermail, String uuidToDelete) {
     synchronized (lock) {
 
       List<String> linesToKeep = new ArrayList<>();

@@ -14,7 +14,6 @@ public class TestClient {
             new Client("luca.verdi@progmail.com"),
             new Client("stefano.bianchi@progmail.com"),
             new Client("marco.gialli@progmail.com"),
-
     };
 
     String host = "127.0.0.1";
@@ -32,12 +31,8 @@ public class TestClient {
           client.setToken(token);
           if (token != null) {
             System.out.println("Credenziali corrette per " + client.getUserMail());
-            for (int i = 0; i < 3; i++) {
-              ArrayList<String> destinations = new ArrayList<>();
-              destinations.add("luca.verdi@progmail.com");
-              if(client.connectToServer(host, port))
-                System.out.println(client.SendMail(host, port, new Email(client.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
-            }
+            // Operazione specifica per ogni thread
+            performThreadOperation(client, host, port, randomContent);
           } else {
             System.out.println("Credenziali incorrette per " + client.getUserMail());
           }
@@ -48,6 +43,28 @@ public class TestClient {
       thread.start();
     }
   }
+
+  private static void performThreadOperation(Client client, String host, int port, String randomContent) {
+    // Eseguire operazioni specifiche per ogni thread qui
+    // Ad esempio, invio di email per alcuni client e altre operazioni per altri
+    // Qui, invieremo email solo per il client con l'indirizzo "luca.verdi@progmail.com"
+    if (client.getUserMail().equals("luca.verdi@progmail.com")) {
+      for (int i = 0; i < 3; i++) {
+        ArrayList<String> destinations = new ArrayList<>();
+        destinations.add("luca.verdi@progmail.com");
+        if (client.connectToServer(host, port)) {
+          System.out.println(client.SendMail(host, port, new Email(client.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
+        }
+      }
+    } else {
+      // Altre operazioni per altri client
+      // Esempio: client diversi possono eseguire operazioni diverse qui
+    }
+  }
+
+  // Metodo di esempio per generare testo casuale multiriga
+
+
 
   // Metodo per generare testo randomico multiriga
   private static String generateRandomMultilineText() {
