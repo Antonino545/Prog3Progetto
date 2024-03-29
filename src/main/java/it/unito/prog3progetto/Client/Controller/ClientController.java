@@ -2,6 +2,7 @@ package it.unito.prog3progetto.Client.Controller;
 
 import it.unito.prog3progetto.Client.*;
 import it.unito.prog3progetto.Model.Email;
+import it.unito.prog3progetto.Model.Lib;
 import it.unito.prog3progetto.Model.MailListModel;
 import it.unito.prog3progetto.Model.MailListObserver;
 import javafx.event.ActionEvent;
@@ -27,6 +28,8 @@ public class ClientController implements MailListObserver {
   @FXML
   private ListView<Email> mailListView;
   public HBox sendemail;
+
+  public boolean imininbox = false;
   private Stage primaryStage;
   private Client client;
   private MailListModel mailReceivedListModel,mailSendListModel;
@@ -40,7 +43,7 @@ public class ClientController implements MailListObserver {
   public void initialize(Client client) throws IOException {
     this.client = client;
     if (client != null) {
-      email.setText(client.getUserId());
+      email.setText(client.getUserMail());
       mailReceivedListModel = new MailListModel();
       mailSendListModel=new MailListModel();
       mailReceivedListModel.addObserver(this); // Registra il controller come osservatore
@@ -49,6 +52,7 @@ public class ClientController implements MailListObserver {
       sendmaillabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
       sendemails();
       inboxemail();
+      imininbox = true;
     }
   }
 
@@ -94,7 +98,7 @@ public class ClientController implements MailListObserver {
   }
 
   public void logout(ActionEvent actionEvent) throws IOException {
-    Librerie lib = new Librerie();
+    Lib lib = new Lib();
     client = null;
     loadLogin(primaryStage);
   }
@@ -116,7 +120,7 @@ public class ClientController implements MailListObserver {
         FullRefresh();
         return;
       }
-      mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserId(), lastEmail.getDatesendMail()));
+      mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserMail(), lastEmail.getDatesendMail()));
       System.out.println("Email ricevute");
     } else {
       System.out.println("Connessione al server non riuscita");
@@ -127,7 +131,7 @@ public class ClientController implements MailListObserver {
 
     if(client.connectToServer(host, port)){
       mailReceivedListModel.clear();
-      mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserId(), null));
+      mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserMail(), null));
 
       System.out.println("Email ricevute");
     } else {
@@ -143,12 +147,12 @@ public class ClientController implements MailListObserver {
         mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
 
-        Librerie.alert("Email eliminata", Alert.AlertType.INFORMATION);
+        Lib.alert("Email eliminata", Alert.AlertType.INFORMATION);
       } else {
-        Librerie.alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
+        Lib.alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
       }
     } else {
-      Librerie.alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      Lib.alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   }
 
@@ -162,13 +166,13 @@ public class ClientController implements MailListObserver {
 
     if (client.connectToServer(host, port)) {
       mailSendListModel.clear();
-      mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserId(), null));
+      mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserMail(), null));
       previousSentEmails.addAll(mailSendListModel.getEmails());
       System.out.println("Email ricevute");
     } else {
       System.out.println("Connessione al server non riuscita");
     }
-
+  imininbox = false;
 
   }
 
@@ -187,7 +191,7 @@ public class ClientController implements MailListObserver {
     // Memorizza le email ricevute precedentemente
     previousReceivedEmails.clear();
     previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
-
+    imininbox = true;
     // Modifica lo stile della HBox
 
   }

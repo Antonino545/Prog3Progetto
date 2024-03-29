@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.*;
 
-import static it.unito.prog3progetto.Client.Librerie.alert;
+import static it.unito.prog3progetto.Model.Lib.alert;
 
 public class NewMailController {
   @FXML
@@ -92,7 +92,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
 
     if (success) {
-      Email email = new Email(client.getUserId(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
+      Email email = new Email(client.getUserMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
 
       String host= "127.0.0.1";
       int port= 4445;

@@ -1,21 +1,15 @@
-package it.unito.prog3progetto.Client;
+package it.unito.prog3progetto.Model;
 
-import it.unito.prog3progetto.Client.Controller.LoginController;
-import it.unito.prog3progetto.Model.Email;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Librerie {
+public class Lib {
 
   public static void alert(String message, Alert.AlertType type) {
     Alert alert = new Alert(type);
@@ -24,20 +18,6 @@ public class Librerie {
     alert.setContentText(message);
     alert.showAndWait();
   }
-
-
-
-
-  public static void writeEmails(List<Email> emails) throws IOException {
-    String fileName = "emails.txt";
-    try (FileWriter writer = new FileWriter(fileName)) {
-      for (Email email : emails) {
-        writer.write(email.emailNoEndLine().toString());
-      }
-      System.out.println("Email salvate con successo nel file: " + fileName);
-    }
-  }
-
   /**
    * Read emails from a file
    * @param lastEmailDate The date of the last email received

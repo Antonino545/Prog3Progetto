@@ -9,21 +9,29 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 public class Client {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
-  private final String id;
+  private final String mail;
+  private UUID token;
 
   private final int MAX_ATTEMPTS = 3;
 
-  public Client(String id) {
-    this.id = id;
+  public Client(String mail) {
+    this.mail = mail;
   }
 
-  public String getUserId() {
-    return id;
+  public String getUserMail() {
+    return mail;
+  }
+  public UUID getToken() {
+    return token;
+  }
+  public void setToken(UUID token) {
+    this.token = token;
   }
 
   public boolean connectToServer(String host, int port) {
@@ -56,7 +64,7 @@ public class Client {
       inputStream = new ObjectInputStream(socket.getInputStream());
       return true;
     } catch (ConnectException e) {
-      System.out.println("[Client " + this.id + "] Server non raggiungibile");
+      System.out.println("[Client " + this.mail + "] Server non raggiungibile");
       return false;
     } catch (IOException e) {
       e.printStackTrace();
@@ -65,7 +73,7 @@ public class Client {
   }
 
 
-  public boolean sendAndCheckCredentials(String host, int port, String email, String password) {
+  public UUID sendAndCheckCredentials(String host, int port, String email, String password) {
     try {
       User user = new User(email, password);
       outputStream.writeObject("LOGIN");
@@ -77,19 +85,35 @@ public class Client {
       outputStream.writeObject(user);
       outputStream.flush();
       socket.setSoTimeout(5000);
-      return (boolean) inputStream.readObject();
+      boolean success = (boolean) inputStream.readObject();
+      if (success) {
+        Object token = inputStream.readObject();
+        if (token instanceof UUID) {
+          System.out.println(token);
+          System.out.println("Token Recuperato con successo.");
+          return (UUID) token;
+        } else {
+          System.out.println("Errore durante il recupero del token.");
+          return null;
+        }
+      } else {
+        System.out.println("Credenziali errate.");
+        return null;
+      }
     } catch (SocketTimeoutException e) {
       System.out.println("Timeout di connessione");
       closeConnections();
-      return false;
+      return null;
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
       closeConnections();
-      return false;
+      return null;
     }
   }
   public ArrayList<Email> receiveEmail(String host, int port, String email, Date lastmail) {
     try {
+      outputStream.writeObject(token);
+      outputStream.flush();
       outputStream.writeObject("RECEIVEEMAIL");
       outputStream.flush();
       socket.setSoTimeout(5000);
@@ -109,6 +133,8 @@ public class Client {
   }
   public ArrayList<Email> receivesendEmail(String host, int port, String email, Date lastmail) {
     try {
+      outputStream.writeObject(token);
+      outputStream.flush();
       outputStream.writeObject("RECEIVESENDEMAIL");
       outputStream.flush();
       socket.setSoTimeout(5000);
@@ -129,6 +155,8 @@ public class Client {
 
   public boolean SendMail(String host, int port, Email email) {
     try {
+      outputStream.writeObject(token);
+      outputStream.flush();
       outputStream.writeObject("SENDMAIL");
       outputStream.flush();
       outputStream.writeObject(email);
@@ -148,6 +176,8 @@ public class Client {
   }
   public boolean DeleteMail(String host, int port,  Email email) {
     try {
+      outputStream.writeObject(token);
+      outputStream.flush();
       outputStream.writeObject("DELETEMAIL");
       outputStream.flush();
       outputStream.writeObject(email);

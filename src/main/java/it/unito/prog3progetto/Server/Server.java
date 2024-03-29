@@ -8,21 +8,24 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import java.util.*;
-import static it.unito.prog3progetto.Client.Librerie.readEmails;
-import static it.unito.prog3progetto.Client.Librerie.writeswmail;
+import static it.unito.prog3progetto.Model.Lib.readEmails;
+import static it.unito.prog3progetto.Model.Lib.writeswmail;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 public class Server {
 	private ServerSocket serverSocket;
+	private final Map<UUID, String> authenticatedTokens;
+
 
 	private final TextArea textArea; // TextArea per visualizzare l'output
 
 	// Costruttore che accetta una TextArea per visualizzare l'output
 	public Server(TextArea textArea) {
 		this.textArea = textArea;
-	}
+		this.authenticatedTokens = new HashMap<>();
+  }
 
 	// Metodo per avviare il server e metterlo in ascolto su una porta specifica
 	private volatile boolean isRunning = true; // Flag to control the server's running state
@@ -34,7 +37,7 @@ public class Server {
 
 			while (isRunning) {
 				Socket socket = serverSocket.accept(); // Accetta connessioni dai client
-				ClientHandler clientHandler = new ClientHandler(socket);
+				ClientHandler clientHandler = new ClientHandler(socket,this);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
 			}
@@ -58,6 +61,9 @@ public class Server {
 	public void stopServer() {
 		isRunning = false;
 	}
+	public boolean isUserAuthenticated(User user) {
+		return authenticatedTokens.containsKey(user);
+	}
 
 	// Classe interna per gestire la comunicazione con un singolo client
 	private class ClientHandler implements Runnable {
@@ -66,9 +72,12 @@ public class Server {
 		private final Socket socket;
 		private ObjectInputStream inStream;
 		private ObjectOutputStream outStream;
+		private final Server server;
+		private String userMail;
 
-		public ClientHandler(Socket socket) {
+		public ClientHandler(Socket socket, Server server) {
 			this.socket = socket;
+			this.server = server;
 		}
 
 		@Override
@@ -76,11 +85,26 @@ public class Server {
 			try {
 				openStreams();
 				Object clientObject = inStream.readObject();
+				if(clientObject!=null){
+				if (clientObject.toString().equals("LOGIN")) {
+					handleLoginRequest(); // Se il client richiede un login, gestisci direttamente la richiesta
+					return;
+				}
+				}
+
+				if (!isAuthenticated(clientObject instanceof UUID ? (UUID) clientObject : null)) {
+
+					Platform.runLater(() -> textArea.appendText("User  is not authenticated.\n"));
+					outStream.writeObject(false); // Invia una risposta negativa al client se non è autenticato
+					outStream.flush();
+					return;
+				}
+				Platform.runLater(() -> textArea.appendText("User is authenticated.\n"));
+				userMail=	getUserEmail((UUID) clientObject);
+
+				 clientObject = inStream.readObject();
+
 				switch (clientObject.toString()) {
-					case "LOGIN":
-						Platform.runLater(() -> textArea.appendText("Request for login received.\n"));
-						handleLoginRequest();
-						break;
 					case "SENDMAIL":
 						Platform.runLater(() -> textArea.appendText("Request for sending email received.\n"));
 						handleSendMailRequest();
@@ -110,6 +134,14 @@ public class Server {
 			}
 		}
 
+		private boolean isAuthenticated(UUID token) {
+			return server.authenticatedTokens.containsKey(token);
+		}
+		private String getUserEmail(UUID token) {
+			return server.authenticatedTokens.get(token);
+		}
+
+
 		private void handleLoginRequest() {
 			Object userObject = null;
 			try {
@@ -122,11 +154,13 @@ public class Server {
 				if (userObject instanceof User) {
 					User user = (User) userObject;
 					boolean isAuthenticated = authenticateUser(user);
-
 					outStream.writeObject(isAuthenticated);
 					outStream.flush();
-
+					UUID token = UUID.randomUUID();
 					if (isAuthenticated) {
+						server.authenticatedTokens.put(token,user.getEmail());
+						outStream.writeObject(token);
+						outStream.flush();
 						Platform.runLater(() -> textArea.appendText("Authentication successful for user " + user.getEmail() + ".\n"));
 					} else {
 						Platform.runLater(() -> textArea.appendText("Authentication failed for user " + user.getEmail() + ".\n"));
@@ -144,7 +178,6 @@ public class Server {
 			try {
 				outStream.writeObject(true);
 				outStream.flush();
-
 				Object mailObject = inStream.readObject();
 				if (mailObject instanceof Email) {
 					Email email = (Email) mailObject;
@@ -184,9 +217,6 @@ public class Server {
 				// Gestisci l'eccezione
 			}
 		}
-
-
-// Other methods...
 
 
 		// Metodo per chiudere gli stream di input e output
@@ -239,6 +269,7 @@ public class Server {
 		}
 
 
+
 		private ArrayList<Email> fetchReceivedEmails(String usermail, Date lastEmailDate) throws IOException {
 			synchronized (lock) {
 				return readEmails(usermail, lastEmailDate, false);
@@ -281,9 +312,7 @@ public class Server {
 				outStream.flush();
 				Object mailObject = inStream.readObject();
 				if (mailObject instanceof Email email) {
-          for(String destination : email.getDestinations()){
-						DeletemailByid(destination,email.getId().toString());
-					}
+					DeletemailByid(userMail,email.getId().toString());
 					outStream.writeObject(true);
 					outStream.flush();
 					Platform.runLater(() -> textArea.appendText("Email deleted successfully.\n"));

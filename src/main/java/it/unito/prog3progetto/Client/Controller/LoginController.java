@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 
 public class LoginController {
@@ -68,8 +69,9 @@ public class LoginController {
       return;
     }
 
-
-    if (client.sendAndCheckCredentials(host,port,useremail,password)) {
+      UUID token = client.sendAndCheckCredentials(host, port, useremail, password);
+    client.setToken(token);
+    if (token != null) {
       try {
         System.out.println("Login riuscito");
 

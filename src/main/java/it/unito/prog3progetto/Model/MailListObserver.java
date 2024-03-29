@@ -5,6 +5,4 @@ public interface MailListObserver {
   void onEmailRemoved(Email email);
 
   void onAllEmailsRemoved();
-
-  // Implementazione del metodo dell'interfaccia MailListObserver per gestire l'aggiunta di email
 }

@@ -5,6 +5,7 @@ import it.unito.prog3progetto.Model.Email;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 
 public class TestClient {
   public static void main(String[] args) {
@@ -26,20 +27,21 @@ public class TestClient {
     for (Client client : clients) {
       Thread thread = new Thread(() -> {
         if (client.connectToServer(host, port)) {
-          System.out.println("Connessione al server riuscita per " + client.getUserId());
-          if (client.sendAndCheckCredentials(host, port, client.getUserId(), "password")) {
-            System.out.println("Credenziali corrette per " + client.getUserId());
+          System.out.println("Connessione al server riuscita per " + client.getUserMail());
+          UUID token = client.sendAndCheckCredentials(host, port, client.getUserMail(), "password");
+          if (token != null) {
+            System.out.println("Credenziali corrette per " + client.getUserMail());
             for (int i = 0; i < 3; i++) {
               ArrayList<String> destinations = new ArrayList<>();
               destinations.add("luca.verdi@progmail.com");
               if(client.connectToServer(host, port))
-                System.out.println(client.SendMail(host, port, new Email(client.getUserId(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
+                System.out.println(client.SendMail(host, port, new Email(client.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
             }
           } else {
-            System.out.println("Credenziali incorrette per " + client.getUserId());
+            System.out.println("Credenziali incorrette per " + client.getUserMail());
           }
         } else {
-          System.out.println("Connessione al server non riuscita per " + client.getUserId());
+          System.out.println("Connessione al server non riuscita per " + client.getUserMail());
         }
       });
       thread.start();
