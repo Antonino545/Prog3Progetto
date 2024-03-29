@@ -6,10 +6,7 @@ import javafx.application.Platform;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static it.unito.prog3progetto.Model.Lib.readEmails;
 import static it.unito.prog3progetto.Model.Lib.writeswmail;
@@ -98,10 +95,17 @@ class ClientHandler implements Runnable {
         outStream.flush();
         UUID token = UUID.randomUUID();
         if (isAuthenticated) {
-          server.authenticatedTokens.put(token, user.getEmail());
+          String userEmail = user.getEmail();
+          UUID existingToken = getExistingToken(userEmail);
+          if (existingToken != null) {
+            // Sostituisci il token esistente
+            server.authenticatedTokens.remove(existingToken);
+          }
+          server.authenticatedTokens.put(token, userEmail);
+          saveAuthenticatedTokensToFile(); // Salva i token dopo l'autenticazione
           outStream.writeObject(token);
           outStream.flush();
-          Platform.runLater(() -> server.textArea.appendText("Authentication successful for user " + user.getEmail() + ".\n"));
+          Platform.runLater(() -> server.textArea.appendText("Authentication successful for user " + userEmail + ".\n"));
         } else {
           Platform.runLater(() -> server.textArea.appendText("Authentication failed for user " + user.getEmail() + ".\n"));
         }
@@ -111,6 +115,26 @@ class ClientHandler implements Runnable {
     } catch (IOException | ClassNotFoundException e) {
       User user = (User) userObject;
       Platform.runLater(() -> server.textArea.appendText("Authentication error for user " + user.getEmail() + ".\n"));
+    }
+  }
+
+  private UUID getExistingToken(String userEmail) {
+    for (Map.Entry<UUID, String> entry : server.authenticatedTokens.entrySet()) {
+      if (entry.getValue().equals(userEmail)) {
+        return entry.getKey();
+      }
+    }
+    return null;
+  }
+
+
+  private void saveAuthenticatedTokensToFile() {
+    try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
+      for (UUID token : server.authenticatedTokens.keySet()) {
+        writer.println(token + "," + server.authenticatedTokens.get(token));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
   private synchronized void handleSendMailRequest() {

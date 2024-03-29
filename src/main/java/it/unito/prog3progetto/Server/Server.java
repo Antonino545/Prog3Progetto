@@ -29,6 +29,8 @@ public class Server {
 			serverSocket = new ServerSocket(port);
 			textArea.appendText("Server avviato sulla porta: " + port + ". In attesa di connessioni...\n");
 
+			loadAuthenticatedTokensFromFile(); // Carica i token dal file al avvio del server
+
 			while (isRunning) {
 				Socket socket = serverSocket.accept(); // Accetta connessioni dai client
 				ClientHandler clientHandler = new ClientHandler(this, socket);
@@ -50,6 +52,26 @@ public class Server {
 			}
 		}
 	}
+
+	private void loadAuthenticatedTokensFromFile() {
+		try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length == 2) {
+					UUID token = UUID.fromString(parts[0]);
+					String email = parts[1];
+					authenticatedTokens.put(token, email);
+				}
+			}
+		} catch (IOException e) {
+			// Se il file non esiste o ci sono altri errori di lettura, semplicemente non carichiamo i token.
+			// Questo può essere gestito diversamente a seconda dei requisiti.
+			textArea.appendText("Impossibile caricare i token degli utenti dal file.\n");
+		}
+	}
+
+
 
 		List<String> readDatabaseFromFile() {
 			List<String> database = new ArrayList<>();
