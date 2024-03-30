@@ -7,6 +7,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.layout.HBox?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="561.0" prefWidth="418.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Server.ServerController">
     <center>
         <VBox prefHeight="600.0" prefWidth="800.0" spacing="10.0" style="-fx-background-color: #282A36;" BorderPane.alignment="CENTER">
@@ -15,13 +16,16 @@
                     <Font size="48.0" />
                 </font>
             </Text>
-         <Button mnemonicParsing="false" onAction="#startServer" prefHeight="26.0" prefWidth="435.0" styleClass="button-primary" stylesheets="@server.css" text="Avvia server" />
-
-            <TextArea fx:id="logTextArea" editable="false" prefHeight="400.0" prefWidth="800.0" styleClass="text-area" wrapText="true">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </TextArea>
+            <VBox spacing="10">
+                <HBox>
+                    <Button HBox.hgrow="ALWAYS" mnemonicParsing="false" onAction="#startServer" prefHeight="26.0" maxWidth="Infinity" styleClass="button-primary" stylesheets="@server.css" text="Avvia server" />
+                </HBox>
+                <TextArea fx:id="logTextArea" editable="false" prefHeight="400.0" prefWidth="5000.0" maxWidth="Infinity" maxHeight="Infinity" styleClass="text-area" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </TextArea>
+            </VBox>
         </VBox>
     </center>
 </BorderPane>
