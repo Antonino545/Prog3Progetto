@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.scene.control.TextArea;
 
@@ -18,7 +19,7 @@ public class Server {
 	// Costruttore che accetta una TextArea per visualizzare l'output
 	public Server(TextArea textArea) {
 		this.textArea = textArea;
-		this.authenticatedTokens = new HashMap<>();
+		this.authenticatedTokens = new ConcurrentHashMap<>();
   }
 
 	// Metodo per avviare il server e metterlo in ascolto su una porta specifica

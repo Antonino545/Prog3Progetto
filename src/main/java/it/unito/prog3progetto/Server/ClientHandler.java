@@ -61,8 +61,11 @@ class ClientHandler implements Runnable {
         case "RECEIVEEMAIL":
           handleReceiveEmailRequest("RECEIVEEMAIL".equals(clientObject.toString()));
           break;
-        case "DELETEMAIL":
-          handleDeleteEmailRequest();
+        case "DELETEMAILRECEIVED":
+          handleDeleteEmailRequest(true);
+          break;
+        case "DELETEMAILSEND":
+          handleDeleteEmailRequest(false);
           break;
         case "LOGOUT":
           server.authenticatedTokens.remove((UUID) clientObject);
@@ -158,7 +161,7 @@ class ClientHandler implements Runnable {
     }
   }
 
-  private void handleReceiveEmailRequest(boolean b) {
+  private void handleReceiveEmailRequest(boolean isinbox) {
     try {outStream.writeObject(true);
       outStream.flush();
       Object userMailObject = inStream.readObject();
@@ -166,7 +169,7 @@ class ClientHandler implements Runnable {
       Date lastEmailDate = (Date) inStream.readObject();
       System.out.println("Received email request for user: " + userMail + " with last email date: " + lastEmailDate);
       ArrayList<Email> mails = new ArrayList<Email>();
-      if (b) mails = fetchReceivedEmails(userMail, lastEmailDate);
+      if (isinbox) mails = fetchReceivedEmails(userMail, lastEmailDate);
       else mails = fetchSendEmails(userMail, lastEmailDate);
       Platform.runLater(() -> server.textArea.appendText("Sending email to the client with email: " + userMail + ".\n"));
       outStream.writeObject(mails);
@@ -272,13 +275,13 @@ class ClientHandler implements Runnable {
     }
   }
 
-  private void handleDeleteEmailRequest() {
+  private void handleDeleteEmailRequest(boolean b) {
     try {
       outStream.writeObject(true);
       outStream.flush();
       Object mailObject = inStream.readObject();
       if (mailObject instanceof Email email) {
-        DeletemailByid(userMail, email.getId().toString(),false);
+        DeletemailByid(userMail, email.getId().toString(),b);
         outStream.writeObject(true);
         outStream.flush();
         Platform.runLater(() -> server.textArea.appendText("Email deleted successfully.\n"));

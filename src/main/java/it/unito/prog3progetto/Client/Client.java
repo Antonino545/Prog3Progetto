@@ -109,11 +109,15 @@ public class Client {
       return null;
     }
   }
-  public ArrayList<Email> receiveEmail(String host, int port, String email, Date lastmail) {
+  public ArrayList<Email> receiveEmail( String email, Date lastmail,boolean isSend) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
-      outputStream.writeObject("RECEIVEEMAIL");
+      if(isSend) {
+        outputStream.writeObject("RECEIVESENDEMAIL");
+      }else{
+        outputStream.writeObject("RECEIVEEMAIL");
+      }
       outputStream.flush();
       socket.setSoTimeout(5000);
       if(inputStream.readObject().equals(true)){
@@ -130,27 +134,7 @@ public class Client {
       return new ArrayList<>();
     }
   }
-  public ArrayList<Email> receivesendEmail(String host, int port, String email, Date lastmail) {
-    try {
-      outputStream.writeObject(token);
-      outputStream.flush();
-      outputStream.writeObject("RECEIVESENDEMAIL");
-      outputStream.flush();
-      socket.setSoTimeout(5000);
-      if(inputStream.readObject().equals(true)){
-        System.out.println("Server pronto a ricevere le email");
-      }
-      outputStream.writeObject(email);
-      outputStream.flush();
-      outputStream.writeObject(lastmail);
-      outputStream.flush();
-      socket.setSoTimeout(5000);
-      return (ArrayList<Email>) inputStream.readObject();
-    } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }
-  }
+
 
   public boolean SendMail(String host, int port, Email email) {
     try {
@@ -192,11 +176,15 @@ public class Client {
       return false;
     }
   }
-  public boolean DeleteMail(String host, int port,  Email email) {
+  public boolean DeleteMail(Email email,boolean isInbox) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
-      outputStream.writeObject("DELETEMAIL");
+      if(isInbox) {
+        outputStream.writeObject("DELETEMAILRECEIVED");
+      }else{
+      outputStream.writeObject("DELETEMAILSEND");
+      }
       outputStream.flush();
       outputStream.writeObject(email);
       outputStream.flush();
