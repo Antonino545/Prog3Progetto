@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.scene.control.TextArea;
 
-public class Server {
+public class ServerModel {
 	private ServerSocket serverSocket;
 	final Map<UUID, String> authenticatedTokens;
 
@@ -17,7 +17,7 @@ public class Server {
 	final TextArea textArea; // TextArea per visualizzare l'output
 
 	// Costruttore che accetta una TextArea per visualizzare l'output
-	public Server(TextArea textArea) {
+	public ServerModel(TextArea textArea) {
 		this.textArea = textArea;
 		this.authenticatedTokens = new ConcurrentHashMap<>();
   }

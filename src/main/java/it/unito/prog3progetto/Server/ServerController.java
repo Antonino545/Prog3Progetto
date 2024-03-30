@@ -1,6 +1,5 @@
 package it.unito.prog3progetto.Server;
 
-import it.unito.prog3progetto.Server.Server;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -10,11 +9,11 @@ public class ServerController {
   @FXML
   public TextArea logTextArea;
 
-  private Server server;
+  private ServerModel server;
 
   @FXML
   public void initialize() {
-    server = new Server(logTextArea);
+    server = new ServerModel(logTextArea);
   }
 
   // Dichiarazione della variabile di stato del server

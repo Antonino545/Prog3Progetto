@@ -15,13 +15,13 @@ import java.util.*;
  */
 class ClientHandler implements Runnable {
   private static final Object lock = new Object();
-  private final Server server;
+  private final ServerModel server;
   private final Socket socket;
   private ObjectInputStream inStream;
   private ObjectOutputStream outStream;
   private String userMail;
 
-  public ClientHandler(Server server, Socket socket) {
+  public ClientHandler(ServerModel server, Socket socket) {
     this.server = server;
     this.socket = socket;
   }
