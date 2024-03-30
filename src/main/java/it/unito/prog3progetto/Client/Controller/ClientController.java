@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static it.unito.prog3progetto.Model.Lib.alert;
+
 
 public class ClientController implements MailListObserver {
   @FXML
@@ -97,8 +99,8 @@ public class ClientController implements MailListObserver {
     }
   }
 
-  public void logout(ActionEvent actionEvent) throws IOException {
-    Lib lib = new Lib();
+  public void logout() throws IOException {
+
     client = null;
     loadLogin(primaryStage);
   }
@@ -122,7 +124,8 @@ public class ClientController implements MailListObserver {
         return;
       }
       mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserMail(), lastEmail.getDatesendMail()));
-      System.out.println("Email ricevute");}
+
+      }
       else {
         Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
         if(lastEmail == null) {
@@ -130,10 +133,9 @@ public class ClientController implements MailListObserver {
           return;
         }
         mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserMail(), lastEmail.getDatesendMail()));
-        System.out.println("Email sends received");
       }
     } else {
-      System.out.println("Connessione al server non riuscita");
+      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   }
 
@@ -151,25 +153,24 @@ public class ClientController implements MailListObserver {
       }
       System.out.println("Email ricevute");
     } else {
-      System.out.println("Connessione al server non riuscita");
+      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   }
 
 
   public void deleteEmail(Email email) {
-    System.out.println("Prova di eliminazione email");
     if (client.connectToServer(host, port)) {
       if (client.DeleteMail(host, port, email)) {
         mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
         previousReceivedEmails.remove(email); // Rimuovi l'email dalla lista delle email ricevute precedentemente
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
 
-        Lib.alert("Email eliminata", Alert.AlertType.INFORMATION);
+        alert("Email eliminata", Alert.AlertType.INFORMATION);
       } else {
-        Lib.alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
+        alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
       }
     } else {
-      Lib.alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   }
 
@@ -185,9 +186,9 @@ public class ClientController implements MailListObserver {
       mailSendListModel.clear();
       mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserMail(), null));
       previousSentEmails.addAll(mailSendListModel.getEmails());
-      System.out.println("Email ricevute");
+
     } else {
-      System.out.println("Connessione al server non riuscita");
+      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   isInbox = false;
 
