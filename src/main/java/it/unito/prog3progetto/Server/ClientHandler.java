@@ -6,10 +6,9 @@ import javafx.application.Platform;
 
 import java.io.*;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static it.unito.prog3progetto.Model.Lib.readEmails;
-import static it.unito.prog3progetto.Model.Lib.writeswmail;
 
 /**
  * this class is used to handle the client requests and send the response back to the client
@@ -50,6 +49,7 @@ class ClientHandler implements Runnable {
         return;
       }
       Platform.runLater(() -> server.textArea.appendText("User is authenticated.\n"));
+      assert clientObject instanceof UUID;
       userMail = getUserEmail((UUID) clientObject);
 
       clientObject = inStream.readObject();
@@ -88,8 +88,7 @@ class ClientHandler implements Runnable {
       outStream.flush();
       userObject = inStream.readObject();
 
-      if (userObject instanceof User) {
-        User user = (User) userObject;
+      if (userObject instanceof User user) {
         boolean isAuthenticated = authenticateUser(user);
         outStream.writeObject(isAuthenticated);
         outStream.flush();
@@ -107,6 +106,7 @@ class ClientHandler implements Runnable {
           //          saveAuthenticatedTokensToFile(); // Salva i token dopo l'autenticazione
           outStream.writeObject(token);
           outStream.flush();
+          saveAuthenticatedTokensToFile();
           Platform.runLater(() -> server.textArea.appendText("Authentication successful for user " + userEmail + ".\n"));
         } else {
           Platform.runLater(() -> server.textArea.appendText("Authentication failed for user " + user.getEmail() + ".\n"));
@@ -164,6 +164,7 @@ class ClientHandler implements Runnable {
       Object userMailObject = inStream.readObject();
       String userMail = (String) userMailObject;
       Date lastEmailDate = (Date) inStream.readObject();
+      System.out.println("Received email request for user: " + userMail + " with last email date: " + lastEmailDate);
       ArrayList<Email> mails = new ArrayList<Email>();
       if (b) mails = fetchReceivedEmails(userMail, lastEmailDate);
       else mails = fetchSendEmails(userMail, lastEmailDate);
@@ -218,9 +219,9 @@ class ClientHandler implements Runnable {
 
   private boolean sendMail(Email email) {
     boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
-    writeswmail(email.getSender(), email, true, server.textArea);
+    writeswmail(email.getSender(), email, true);
     for (String destination : email.getDestinations()) {
-      success = writeswmail(destination, email, false, server.textArea);
+      success = writeswmail(destination, email, false);
     }
 
     return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
@@ -235,16 +236,21 @@ class ClientHandler implements Runnable {
 
   private ArrayList<Email> fetchSendEmails(String usermail, Date lastEmailDate) throws IOException {
     synchronized (lock) {
+
       return readEmails(usermail, lastEmailDate, true);
+
     }
   }
 
-  public synchronized static void DeletemailByid(String usermail, String uuidToDelete) {
+  public synchronized static void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
+    System.out.println("Deleting email with id: " + uuidToDelete);
+
     synchronized (lock) {
 
       List<String> linesToKeep = new ArrayList<>();
-
-      try (BufferedReader br = new BufferedReader(new FileReader(usermail + ".txt"))) {
+      String filename = sendmail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
+      System.out.println(filename);
+      try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
         String line;
         while ((line = br.readLine()) != null) {
           if (!line.contains(uuidToDelete)) {
@@ -255,7 +261,7 @@ class ClientHandler implements Runnable {
         e.printStackTrace();
       }
 
-      try (BufferedWriter bw = new BufferedWriter(new FileWriter(usermail + ".txt"))) {
+      try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
         for (String line : linesToKeep) {
           bw.write(line);
           bw.newLine();
@@ -272,7 +278,7 @@ class ClientHandler implements Runnable {
       outStream.flush();
       Object mailObject = inStream.readObject();
       if (mailObject instanceof Email email) {
-        DeletemailByid(userMail, email.getId().toString());
+        DeletemailByid(userMail, email.getId().toString(),false);
         outStream.writeObject(true);
         outStream.flush();
         Platform.runLater(() -> server.textArea.appendText("Email deleted successfully.\n"));
@@ -282,6 +288,77 @@ class ClientHandler implements Runnable {
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
     }
+  }
+  /**
+   * Read emails from a file
+   * @param lastEmailDate The date of the last email received
+   * @return An ArrayList of Email objects
+   * @throws IOException If an I/O error occurs
+   */
+  public  ArrayList<Email> readEmails(String usermail, Date lastEmailDate, boolean sendemail)  {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+    ArrayList<Email> emails = new ArrayList<>();
+    try {
+      // Determina il nome del file in base al tipo di email
+      String filename = sendemail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
+
+      File file = new File(filename);
+      Scanner scanner = new Scanner(file);
+      while (scanner.hasNextLine()) {
+        String line = scanner.nextLine();
+        String[] parts = line.split(" , ");
+        if (parts.length >= 6) {
+          String sender = parts[0];
+          String destinationsString = parts[1];
+          String subject = parts[2];
+          String content = parts[3];
+          String dateString = parts[4];
+          String idString = parts[5];
+          String[] destinationsArray = destinationsString.substring(1, destinationsString.length() - 1).split(", ");
+          ArrayList<String> destinations = new ArrayList<>(Arrays.asList(destinationsArray));
+          Date date = dateFormat.parse(dateString);
+          UUID id = UUID.fromString(idString);
+          // Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
+          if (lastEmailDate == null || date.after(lastEmailDate)) {
+            Email email = new Email(sender, destinations, subject, content, date, id);
+            emails.add(email);
+          }
+        }
+      }
+      scanner.close();
+    } catch (FileNotFoundException | ParseException e) {
+      // In caso di eccezione, restituisci l'elenco vuoto
+      Platform.runLater(() -> server.textArea.appendText("Received email list is empty.\n"));
+    }
+    return emails;
+
+
+  }
+
+  public  boolean writeswmail(String destination, Email email, boolean sendmail) {
+    boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
+
+    try {
+      // Determina il nome del file in base al tipo di email
+      String filename = sendmail ? "Server/" + destination + "_sent.txt" : "Server/" + destination + "_received.txt";
+
+      // Scrivi l'email nel file corretto
+      try (FileWriter fileWriter = new FileWriter(filename, true);
+           BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        // Scrivi l'email nel file
+        bufferedWriter.write(email.emailNoEndLine().toString());
+        bufferedWriter.newLine();
+        success = true; // L'invio dell'email è riuscito per questo destinatario
+        Platform.runLater(() -> server.textArea.appendText("Email sent successfully to " + destination + ".\n"));
+      } catch (IOException e) {
+        Platform.runLater(() -> server.textArea.appendText("Error in sending email to " + destination + ".\n"));
+        e.printStackTrace();
+      }
+    } catch (Exception e) {
+      Platform.runLater(() -> server.textArea.appendText("Error in sending email to " + destination + ".\n"));
+      e.printStackTrace();
+    }
+    return success;
   }
 
 }

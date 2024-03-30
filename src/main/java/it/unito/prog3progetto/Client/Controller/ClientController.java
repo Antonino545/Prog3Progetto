@@ -29,7 +29,7 @@ public class ClientController implements MailListObserver {
   private ListView<Email> mailListView;
   public HBox sendemail;
 
-  public boolean imininbox = false;
+  public boolean isInbox = false;
   private Stage primaryStage;
   private Client client;
   private MailListModel mailReceivedListModel,mailSendListModel;
@@ -52,7 +52,7 @@ public class ClientController implements MailListObserver {
       sendmaillabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
       sendemails();
       inboxemail();
-      imininbox = true;
+      isInbox = true;
     }
   }
 
@@ -113,15 +113,25 @@ public class ClientController implements MailListObserver {
     primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
     primaryStage.show();
   }
-  public void Refresh() throws IOException {
-    if (client != null && client.connectToServer(host, port)) {
-      Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getFirst();
+  public void Refresh() {
+    if (client != null && client.connectToServer(host, port) ) {
+      if(isInbox){
+      Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getLast();
       if(lastEmail == null) {
         FullRefresh();
         return;
       }
       mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserMail(), lastEmail.getDatesendMail()));
-      System.out.println("Email ricevute");
+      System.out.println("Email ricevute");}
+      else {
+        Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
+        if(lastEmail == null) {
+          FullRefresh();
+          return;
+        }
+        mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserMail(), lastEmail.getDatesendMail()));
+        System.out.println("Email sends received");
+      }
     } else {
       System.out.println("Connessione al server non riuscita");
     }
@@ -129,10 +139,16 @@ public class ClientController implements MailListObserver {
 
   public void FullRefresh()  {
 
-    if(client.connectToServer(host, port)){
-      mailReceivedListModel.clear();
-      mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserMail(), null));
 
+    if(client.connectToServer(host, port)){
+      if(isInbox){
+        mailReceivedListModel.clear();
+        mailReceivedListModel.addEmails(client.receiveEmail(host, port, client.getUserMail(), null));
+      }
+      else {
+        mailSendListModel.clear();
+        mailSendListModel.addEmails(client.receivesendEmail(host, port, client.getUserMail(), null));
+      }
       System.out.println("Email ricevute");
     } else {
       System.out.println("Connessione al server non riuscita");
@@ -145,6 +161,7 @@ public class ClientController implements MailListObserver {
     if (client.connectToServer(host, port)) {
       if (client.DeleteMail(host, port, email)) {
         mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
+        previousReceivedEmails.remove(email); // Rimuovi l'email dalla lista delle email ricevute precedentemente
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
 
         Lib.alert("Email eliminata", Alert.AlertType.INFORMATION);
@@ -172,7 +189,7 @@ public class ClientController implements MailListObserver {
     } else {
       System.out.println("Connessione al server non riuscita");
     }
-  imininbox = false;
+  isInbox = false;
 
   }
 
@@ -191,7 +208,7 @@ public class ClientController implements MailListObserver {
     // Memorizza le email ricevute precedentemente
     previousReceivedEmails.clear();
     previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
-    imininbox = true;
+    isInbox = true;
     // Modifica lo stile della HBox
 
   }
