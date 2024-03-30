@@ -10,10 +10,10 @@ import java.util.UUID;
 public class TestClient {
   public static void main(String[] args) {
     // Creazione dei client con le rispettive credenziali
-    Client[] clients = {
-            new Client("luca.verdi@progmail.com"),
-            new Client("stefano.bianchi@progmail.com"),
-            new Client("marco.gialli@progmail.com"),
+    ClientModel[] clientModels = {
+            new ClientModel("luca.verdi@progmail.com"),
+            new ClientModel("stefano.bianchi@progmail.com"),
+            new ClientModel("marco.gialli@progmail.com"),
     };
 
     String host = "127.0.0.1";
@@ -23,42 +23,42 @@ public class TestClient {
     String randomContent = generateRandomMultilineText();
 
     // Connessione e invio delle email per ogni client
-    for (Client client : clients) {
+    for (ClientModel clientModel : clientModels) {
       Thread thread = new Thread(() -> {
-        if (client.connectToServer(host, port)) {
-          System.out.println("Connessione al server riuscita per " + client.getUserMail());
-          UUID token = client.sendAndCheckCredentials(host, port, client.getUserMail(), "password");
-          client.setToken(token);
+        if (clientModel.connectToServer(host, port)) {
+          System.out.println("Connessione al server riuscita per " + clientModel.getUserMail());
+          UUID token = clientModel.sendAndCheckCredentials(host, port, clientModel.getUserMail(), "password");
+          clientModel.setToken(token);
           if (token != null) {
-            System.out.println("Credenziali corrette per " + client.getUserMail());
+            System.out.println("Credenziali corrette per " + clientModel.getUserMail());
             // Operazione specifica per ogni thread
-            performThreadOperation(client, host, port, randomContent);
+            performThreadOperation(clientModel, host, port, randomContent);
           } else {
-            System.out.println("Credenziali incorrette per " + client.getUserMail());
+            System.out.println("Credenziali incorrette per " + clientModel.getUserMail());
           }
         } else {
-          System.out.println("Connessione al server non riuscita per " + client.getUserMail());
+          System.out.println("Connessione al server non riuscita per " + clientModel.getUserMail());
         }
       });
       thread.start();
     }
   }
 
-  private static void performThreadOperation(Client client, String host, int port, String randomContent) {
+  private static void performThreadOperation(ClientModel clientModel, String host, int port, String randomContent) {
     // Eseguire operazioni specifiche per ogni thread qui
-    // Ad esempio, invio di email per alcuni client e altre operazioni per altri
-    // Qui, invieremo email solo per il client con l'indirizzo "luca.verdi@progmail.com"
-    if (client.getUserMail().equals("luca.verdi@progmail.com")) {
+    // Ad esempio, invio di email per alcuni clientModel e altre operazioni per altri
+    // Qui, invieremo email solo per il clientModel con l'indirizzo "luca.verdi@progmail.com"
+    if (clientModel.getUserMail().equals("luca.verdi@progmail.com")) {
       for (int i = 0; i < 3; i++) {
         ArrayList<String> destinations = new ArrayList<>();
         destinations.add("luca.verdi@progmail.com");
-        if (client.connectToServer(host, port)) {
-          System.out.println(client.SendMail(host, port, new Email(client.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
+        if (clientModel.connectToServer(host, port)) {
+          System.out.println(clientModel.SendMail(host, port, new Email(clientModel.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
         }
       }
     } else {
-      // Altre operazioni per altri client
-      // Esempio: client diversi possono eseguire operazioni diverse qui
+      // Altre operazioni per altri clientModel
+      // Esempio: clientModel diversi possono eseguire operazioni diverse qui
     }
   }
 

@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Client.MailItemCell;
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.MailListModel;
@@ -30,9 +30,9 @@ public class ClientController implements MailListObserver {
   private ListView<Email> mailListView;
   public HBox sendemail;
 
-  public boolean isInbox = false;
+  public boolean isInbox ;
   private Stage primaryStage;
-  private Client client;
+  private ClientModel clientModel;
   private MailListModel mailReceivedListModel,mailSendListModel;
   private ArrayList<Email> previousSentEmails = new ArrayList<>();
   private ArrayList<Email> previousReceivedEmails = new ArrayList<>();
@@ -41,10 +41,10 @@ public class ClientController implements MailListObserver {
   private final int port = 4445;
 
 
-  public void initialize(Client client) throws IOException {
-    this.client = client;
-    if (client != null) {
-      email.setText(client.getUserMail());
+  public void initialize(ClientModel clientModel) throws IOException {
+    this.clientModel = clientModel;
+    if (clientModel != null) {
+      email.setText(clientModel.getUserMail());
       mailReceivedListModel = new MailListModel();
       mailSendListModel=new MailListModel();
       mailReceivedListModel.addObserver(this); // Registra il controller come osservatore
@@ -60,7 +60,7 @@ public class ClientController implements MailListObserver {
   @Override
   public void onEmailAdded(Email email) {
     mailListView.getItems().add(email); // Aggiorna la ListView aggiungendo l'email
-    mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this,client));
+    mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this, clientModel));
   }
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire la rimozione di email
@@ -85,7 +85,7 @@ public class ClientController implements MailListObserver {
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize("sendmail",client);
+      controller.initialize("sendmail", clientModel);
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Dettagli Email");
@@ -98,13 +98,13 @@ public class ClientController implements MailListObserver {
   }
 
   public void logout() throws IOException {
-    if(client.connectToServer(host, port))
-    client.logout();
+    if(clientModel.connectToServer(host, port))
+    clientModel.logout();
     else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
     loadLogin(primaryStage);
-    client.closeConnections();
+    clientModel.closeConnections();
   }
   public  void loadLogin(Stage primaryStage) throws IOException {
     FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Login.fxml").toURI().toURL());
@@ -114,18 +114,18 @@ public class ClientController implements MailListObserver {
     Scene scene = new Scene(root);
     scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
     primaryStage.setScene(scene);
-    primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
+    primaryStage.setTitle("Email ClientModel - Progetto di Programmazione 3");
     primaryStage.show();
   }
   public void Refresh() {
-    if (client != null && client.connectToServer(host, port) ) {
+    if (clientModel != null && clientModel.connectToServer(host, port) ) {
       if(isInbox){
       Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getLast();
       if(lastEmail == null) {
         FullRefresh();
         return;
       }
-      mailReceivedListModel.addEmails(client.receiveEmail( client.getUserMail(), lastEmail.getDatesendMail(),false));
+      mailReceivedListModel.addEmails(clientModel.receiveEmail( clientModel.getUserMail(), lastEmail.getDatesendMail(),false));
 
       }
       else {
@@ -134,21 +134,21 @@ public class ClientController implements MailListObserver {
           FullRefresh();
           return;
         }
-        mailSendListModel.addEmails(client.receiveEmail( client.getUserMail(), lastEmail.getDatesendMail(),true));}
+        mailSendListModel.addEmails(clientModel.receiveEmail( clientModel.getUserMail(), lastEmail.getDatesendMail(),true));}
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   }
 
   public void FullRefresh()  {
-    if(client.connectToServer(host, port)){
+    if(clientModel.connectToServer(host, port)){
       if(isInbox){
         mailReceivedListModel.clear();
-        mailReceivedListModel.addEmails(client.receiveEmail(client.getUserMail(), null,false));
+        mailReceivedListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,false));
       }
       else {
         mailSendListModel.clear();
-        mailSendListModel.addEmails(client.receiveEmail(client.getUserMail(), null,true));
+        mailSendListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,true));
       }
       System.out.println("Email ricevute");
     } else {
@@ -158,10 +158,21 @@ public class ClientController implements MailListObserver {
 
 
   public void deleteEmail(Email email) {
-    if (client.connectToServer(host, port)) {
-      if (client.DeleteMail(email,isInbox)) {
-        mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
-        previousReceivedEmails.remove(email); // Rimuovi l'email dalla lista delle email ricevute precedentemente
+    System.out.println(isInbox);
+    System.out.println("Email eliminata:");
+    System.out.println(email);
+    if (clientModel.connectToServer(host, port)) {
+      if (clientModel.DeleteMail(email,isInbox)) {
+        System.out.println(isInbox);
+        if(isInbox) {
+          mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
+          previousReceivedEmails.remove(email); // Rimuovi l'email dalla lista delle email ricevute precedentemente
+        } else{
+
+          mailSendListModel.removeEmail(email);
+          previousSentEmails.remove(email);
+
+        }
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
 
         alert("Email eliminata", Alert.AlertType.INFORMATION);
@@ -175,41 +186,41 @@ public class ClientController implements MailListObserver {
 
   @FXML
   public void sendemails() {
+    isInbox = false;
     changeButton(sendemail,inbox);
     if (!previousSentEmails.isEmpty()) {
       mailListView.getItems().setAll(previousSentEmails);
       return;
     }
-    if (client.connectToServer(host, port)) {
+    if (clientModel.connectToServer(host, port)) {
       mailSendListModel.clear();
-      mailSendListModel.addEmails(client.receiveEmail(client.getUserMail(), null,true));
+      mailSendListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,true));
       previousSentEmails.addAll(mailSendListModel.getEmails());
 
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
-  isInbox = false;
+
 
   }
 
 
   public void inboxemail() {
     changeButton(inbox,sendemail);
-    // Se ci sono email ricevute precedentemente, non richiederle nuovamente al server
+    isInbox = true;
     if (!previousReceivedEmails.isEmpty()) {
       mailListView.getItems().setAll(previousReceivedEmails);
       return;
     }
 
-    if (client.connectToServer(host, port)) {
+    if (clientModel.connectToServer(host, port)) {
       mailReceivedListModel.clear();
-      mailReceivedListModel.addEmails(client.receiveEmail(client.getUserMail(), null,false));
+      mailReceivedListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,false));
       previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
 
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
-    isInbox = true;
 
   }
 

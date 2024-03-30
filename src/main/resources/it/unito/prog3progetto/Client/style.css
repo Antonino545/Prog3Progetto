@@ -13,9 +13,16 @@
     -fx-border-radius: 5;
     -fx-control-inner-background: #44475A;
 }
+.emailitem:hover {
+    -fx-background-color: #44475A;
+    -fx-border-color: white;
+    -fx-text-fill: #F8F8F2;
+    -fx-border-radius: 5;
+    -fx-control-inner-background: #44475A;
+}
 .emailitem:selected {
     -fx-background-color: #44475A;
-    -fx-border-color: #BD93F9;
+    -fx-border-color:  white;
     -fx-text-fill: #F8F8F2;
     -fx-border-radius: 5;
     -fx-control-inner-background: #44475A;

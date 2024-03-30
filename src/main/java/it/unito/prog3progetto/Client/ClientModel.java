@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-public class Client {
+public class ClientModel {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
@@ -20,7 +20,7 @@ public class Client {
 
   private final int MAX_ATTEMPTS = 3;
 
-  public Client(String mail) {
+  public ClientModel(String mail) {
     this.mail = mail;
   }
 
@@ -64,7 +64,7 @@ public class Client {
       inputStream = new ObjectInputStream(socket.getInputStream());
       return true;
     } catch (ConnectException e) {
-      System.out.println("[Client " + this.mail + "] Server non raggiungibile");
+      System.out.println("[ClientModel " + this.mail + "] Server non raggiungibile");
       return false;
     } catch (IOException e) {
       e.printStackTrace();

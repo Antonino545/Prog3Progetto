@@ -22,7 +22,7 @@ public class ClientApplication extends Application {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
+        primaryStage.setTitle("Email ClientModel - Progetto di Programmazione 3");
         primaryStage.show();
     }
 

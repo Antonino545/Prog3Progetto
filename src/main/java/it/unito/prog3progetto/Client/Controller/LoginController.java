@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Client.ClientModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -58,10 +57,10 @@ public class LoginController {
         alert("Inserire un indirizzo email valido , Formato non valido");
         return;
       }
-      Client client = new Client(useremail);
+      ClientModel clientModel = new ClientModel(useremail);
     String host= "127.0.0.1";
     int port= 4445;
-    if(client.connectToServer(host, port)){
+    if(clientModel.connectToServer(host, port)){
       System.out.println("Connessione al server riuscita");
     }else{
       System.out.println("Connessione al server non riuscita");
@@ -69,8 +68,8 @@ public class LoginController {
       return;
     }
 
-      UUID token = client.sendAndCheckCredentials(host, port, useremail, password);
-    client.setToken(token);
+      UUID token = clientModel.sendAndCheckCredentials(host, port, useremail, password);
+    clientModel.setToken(token);
     if (token != null) {
       try {
         System.out.println("Login riuscito");
@@ -80,14 +79,14 @@ public class LoginController {
 
         clientController.setPrimaryStage(primaryStage);
 
-        // Imposta manualmente il client
-        clientController.initialize(client);
+        // Imposta manualmente il clientModel
+        clientController.initialize(clientModel);
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Client");
+        primaryStage.setTitle("ClientModel");
 
         // Aggiungi il listener per gestire le dimensioni della finestra quando è massimizzata
         primaryStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
@@ -115,7 +114,7 @@ public class LoginController {
     } else {
       // Handle unsuccessful login
       alert("Credenziali non valide");
-      client.closeConnections();
+      clientModel.closeConnections();
       return;
     }
 

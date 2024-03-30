@@ -23,10 +23,10 @@ public class MailItemCell extends ListCell<Email> {
   private final Stage primaryStage;
   private static final String host = "127.0.0.1";
   private static final int port = 4445;
-  private final Client client;
-  public MailItemCell(Stage primaryStage, ClientController clientController,Client client) {
+  private final ClientModel clientModel;
+  public MailItemCell(Stage primaryStage, ClientController clientController, ClientModel clientModel) {
     this.primaryStage = primaryStage;
-    this.client = client;
+    this.clientModel = clientModel;
     this.clientController = clientController;
   }
 
@@ -64,7 +64,7 @@ public class MailItemCell extends ListCell<Email> {
           Parent root = loader.load();
 
           MailDetailController controller = loader.getController();
-          controller.initialize(client,email);
+          controller.initialize(clientModel,email);
           Scene scene = new Scene(root);
           scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
           Stage stage = new Stage();

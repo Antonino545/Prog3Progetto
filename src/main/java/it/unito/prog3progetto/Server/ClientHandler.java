@@ -99,7 +99,7 @@ class ClientHandler implements Runnable {
         Platform.runLater(() -> server.textArea.appendText("Error logging out user.\n"));
       }
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      Platform.runLater(() -> server.textArea.appendText("Error logging out user.\n"));
     }
   }
 
@@ -117,15 +117,9 @@ class ClientHandler implements Runnable {
         UUID token = UUID.randomUUID();
         if (isAuthenticated) {
           String userEmail = user.getEmail();
-          UUID existingToken = getExistingToken(userEmail);
-          if (existingToken != null) {
-            // Sostituisci il token esistente
-            server.authenticatedTokens.remove(existingToken);
-          }
           synchronized (server.authenticatedTokens) { // Synchronize on the map itself
             server.authenticatedTokens.put(token, userEmail);
           }
-          //          saveAuthenticatedTokensToFile(); // Salva i token dopo l'autenticazione
           outStream.writeObject(token);
           outStream.flush();
           saveAuthenticatedTokensToFile();
@@ -159,7 +153,7 @@ class ClientHandler implements Runnable {
           writer.println(token + "," + server.authenticatedTokens.get(token));
         }
       } catch (IOException e) {
-        e.printStackTrace();
+      Platform.runLater(() -> server.textArea.appendText("Error saving authenticated tokens to file.\n"));
       }
     }
   }
@@ -176,7 +170,7 @@ class ClientHandler implements Runnable {
         Platform.runLater(() -> server.textArea.appendText("Error in sending email.\n"));
       }
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      Platform.runLater(() -> server.textArea.appendText("Error in sending email.\n"));
     }
   }
 
@@ -193,7 +187,7 @@ class ClientHandler implements Runnable {
       outStream.writeObject(mails);
       outStream.flush();
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      Platform.runLater(() -> server.textArea.appendText("Error in sending email to the client.\n"));
       // Gestisci l'eccezione
     }
   }
@@ -212,7 +206,7 @@ class ClientHandler implements Runnable {
         socket.close();
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      Platform.runLater(() -> server.textArea.appendText("Error closing streams.\n"));
     }
   }
 
@@ -263,7 +257,7 @@ class ClientHandler implements Runnable {
     }
   }
 
-  public synchronized static void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
+  public synchronized  void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
     System.out.println("Deleting email with id: " + uuidToDelete);
 
     synchronized (lock) {
@@ -278,7 +272,7 @@ class ClientHandler implements Runnable {
           }
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        Platform.runLater(() -> server.textArea.appendText("Error deleting email.\n"));
       }
 
       try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
@@ -287,7 +281,7 @@ class ClientHandler implements Runnable {
           bw.newLine();
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        Platform.runLater(() -> server.textArea.appendText("Error deleting email.\n"));
       }
     }
   }
@@ -306,7 +300,7 @@ class ClientHandler implements Runnable {
         Platform.runLater(() -> server.textArea.appendText("Error in deleting email.\n"));
       }
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      Platform.runLater(() -> server.textArea.appendText("Error in deleting email.\n"));
     }
   }
   /**
@@ -339,7 +333,7 @@ class ClientHandler implements Runnable {
           UUID id = UUID.fromString(idString);
           // Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
           if (lastEmailDate == null || date.after(lastEmailDate)) {
-            Email email = new Email(sender, destinations, subject, content, date, id);
+            Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->", "\n"), date, id);
             emails.add(email);
           }
         }
@@ -371,11 +365,10 @@ class ClientHandler implements Runnable {
         Platform.runLater(() -> server.textArea.appendText("Email sent successfully to " + destination + ".\n"));
       } catch (IOException e) {
         Platform.runLater(() -> server.textArea.appendText("Error in sending email to " + destination + ".\n"));
-        e.printStackTrace();
+
       }
     } catch (Exception e) {
       Platform.runLater(() -> server.textArea.appendText("Error in sending email to " + destination + ".\n"));
-      e.printStackTrace();
     }
     return success;
   }
