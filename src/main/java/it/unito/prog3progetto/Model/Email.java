@@ -35,7 +35,7 @@ public class Email implements Serializable {
     this.sender = sender;
     this.destinations = new ArrayList<>(destinations);
     this.subject = subject;
-    this.content = content;
+    this.content = content.replace("<--Accapo-->", "\n");
     this.datesendMail = datesendMail;
   }
   public UUID getId() {

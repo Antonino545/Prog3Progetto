@@ -59,7 +59,7 @@ public class ClientController implements MailListObserver {
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire l'aggiunta di email
   @Override
   public void onEmailAdded(Email email) {
-    mailListView.getItems().add(email.emailEndLine()); // Aggiorna la ListView aggiungendo l'email
+    mailListView.getItems().add(email); // Aggiorna la ListView aggiungendo l'email
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this,client));
   }
 

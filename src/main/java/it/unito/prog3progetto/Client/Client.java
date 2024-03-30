@@ -128,6 +128,7 @@ public class Client {
       outputStream.writeObject(lastmail);
       outputStream.flush();
       socket.setSoTimeout(5000);
+
       return (ArrayList<Email>) inputStream.readObject();
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
