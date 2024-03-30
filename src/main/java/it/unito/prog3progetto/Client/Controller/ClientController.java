@@ -98,9 +98,13 @@ public class ClientController implements MailListObserver {
   }
 
   public void logout() throws IOException {
-
-    client = null;
+    if(client.connectToServer(host, port))
+    client.logout();
+    else {
+      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+    }
     loadLogin(primaryStage);
+    client.closeConnections();
   }
   public  void loadLogin(Stage primaryStage) throws IOException {
     FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Login.fxml").toURI().toURL());

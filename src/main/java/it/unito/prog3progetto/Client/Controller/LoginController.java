@@ -74,9 +74,6 @@ public class LoginController {
     if (token != null) {
       try {
         System.out.println("Login riuscito");
-
-
-        saveUserEmailToFile(useremail);
         FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Client.fxml").toURI().toURL());
         Parent root = loader.load();
         ClientController clientController = loader.getController();
@@ -124,13 +121,7 @@ public class LoginController {
 
 
   }
-  private static void saveUserEmailToFile(String userEmail) throws IOException {
-    String fileName = "user_email.txt";
-    try (FileWriter writer = new FileWriter(fileName)) {
-      writer.write(userEmail);
-      System.out.println("Email dell'utente salvata con successo nel file: " + fileName);
-    }
-  }
+
   public void alert(String message){
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Errore di accesso");

@@ -68,9 +68,7 @@ class ClientHandler implements Runnable {
           handleDeleteEmailRequest(false);
           break;
         case "LOGOUT":
-          server.authenticatedTokens.remove((UUID) clientObject);
-          outStream.writeObject(true);
-          outStream.flush();
+          handleLogoutRequest();
           break;
         default:
           outStream.writeObject(false);
@@ -81,6 +79,27 @@ class ClientHandler implements Runnable {
       Platform.runLater(() -> server.textArea.appendText("Error communicating with the client: " + e.getMessage() + ".\n"));
     } finally {
       closeStreams();
+    }
+  }
+
+  private void handleLogoutRequest() {
+    try {
+      outStream.writeObject(true);
+      outStream.flush();
+      Object tokenObject = inStream.readObject();
+      if (tokenObject instanceof UUID token) {
+        server.authenticatedTokens.remove(token);
+        saveAuthenticatedTokensToFile();
+        outStream.writeObject(true);
+        outStream.flush();
+        Platform.runLater(() -> server.textArea.appendText("User logged out successfully.\n"));
+      } else {
+        outStream.writeObject(false);
+        outStream.flush();
+        Platform.runLater(() -> server.textArea.appendText("Error logging out user.\n"));
+      }
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
     }
   }
 
@@ -167,8 +186,7 @@ class ClientHandler implements Runnable {
       Object userMailObject = inStream.readObject();
       String userMail = (String) userMailObject;
       Date lastEmailDate = (Date) inStream.readObject();
-      System.out.println("Received email request for user: " + userMail + " with last email date: " + lastEmailDate);
-      ArrayList<Email> mails = new ArrayList<Email>();
+      ArrayList<Email> mails;
       if (isinbox) mails = fetchReceivedEmails(userMail, lastEmailDate);
       else mails = fetchSendEmails(userMail, lastEmailDate);
       Platform.runLater(() -> server.textArea.appendText("Sending email to the client with email: " + userMail + ".\n"));
@@ -252,7 +270,6 @@ class ClientHandler implements Runnable {
 
       List<String> linesToKeep = new ArrayList<>();
       String filename = sendmail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
-      System.out.println(filename);
       try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
         String line;
         while ((line = br.readLine()) != null) {
@@ -296,7 +313,6 @@ class ClientHandler implements Runnable {
    * Read emails from a file
    * @param lastEmailDate The date of the last email received
    * @return An ArrayList of Email objects
-   * @throws IOException If an I/O error occurs
    */
   public  ArrayList<Email> readEmails(String usermail, Date lastEmailDate, boolean sendemail)  {
     SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");

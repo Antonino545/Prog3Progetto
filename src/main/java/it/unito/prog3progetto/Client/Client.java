@@ -164,6 +164,8 @@ public class Client {
       outputStream.flush();
       outputStream.writeObject("LOGOUT");
       outputStream.flush();
+      outputStream.writeObject(token);
+      outputStream.flush();
       socket.setSoTimeout(5000);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
