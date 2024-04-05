@@ -62,10 +62,10 @@ class ClientHandler implements Runnable {
           handleReceiveEmailRequest("RECEIVEEMAIL".equals(clientObject.toString()));
           break;
         case "DELETEMAILRECEIVED":
-          handleDeleteEmailRequest(true);
+          handleDeleteEmailRequest(false);
           break;
         case "DELETEMAILSEND":
-          handleDeleteEmailRequest(false);
+          handleDeleteEmailRequest(true);
           break;
         case "LOGOUT":
           handleLogoutRequest();
@@ -263,7 +263,9 @@ class ClientHandler implements Runnable {
     synchronized (lock) {
 
       List<String> linesToKeep = new ArrayList<>();
+      System.out.println("sendmail: " + sendmail);
       String filename = sendmail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
+      System.out.println("filename: " + filename);
       try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
         String line;
         while ((line = br.readLine()) != null) {

@@ -48,18 +48,15 @@ public class TestClient {
     // Eseguire operazioni specifiche per ogni thread qui
     // Ad esempio, invio di email per alcuni clientModel e altre operazioni per altri
     // Qui, invieremo email solo per il clientModel con l'indirizzo "luca.verdi@progmail.com"
-    if (clientModel.getUserMail().equals("luca.verdi@progmail.com")) {
+
       for (int i = 0; i < 3; i++) {
         ArrayList<String> destinations = new ArrayList<>();
-        destinations.add("luca.verdi@progmail.com");
+        destinations.add("marco.gialli@progmail.com");
         if (clientModel.connectToServer(host, port)) {
           System.out.println(clientModel.SendMail(host, port, new Email(clientModel.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
         }
       }
-    } else {
-      // Altre operazioni per altri clientModel
-      // Esempio: clientModel diversi possono eseguire operazioni diverse qui
-    }
+
   }
 
   // Metodo di esempio per generare testo casuale multiriga

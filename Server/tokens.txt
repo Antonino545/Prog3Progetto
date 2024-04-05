@@ -1,0 +1,15 @@
+e2c3f4b3-2562-401f-aaaa-472155d20414,luca.verdi@progmail.com
+479a55e0-00ad-41b8-b247-e3a2c7b33db8,luca.verdi@progmail.com
+e9b2a4ad-b702-4dcd-a813-9f8ac3d85634,marco.gialli@progmail.com
+1b8c495b-1639-45a5-9e33-e0c0b3dd84e0,luca.verdi@progmail.com
+82a09e4b-26ba-4701-9b5f-1d09bb605120,marco.gialli@progmail.com
+838287f9-0908-4283-afc1-51f44db07f92,luca.verdi@progmail.com
+3f66c420-ecb0-4e10-ac85-a4a811ad744c,marco.gialli@progmail.com
+c0abe515-d58e-4a0e-ab43-eec00afe45d2,stefano.bianchi@progmail.com
+d90a7e90-c5d5-484c-a6ae-7a907070d85f,luca.verdi@progmail.com
+c0e09ce3-3247-49fd-97d5-7c0e9ea961df,marco.gialli@progmail.com
+cdc34037-c3e7-4d20-9ed1-b235aaa42e25,stefano.bianchi@progmail.com
+5db3a087-8f66-4419-b059-1a1dd3bf75ea,stefano.bianchi@progmail.com
+0d516387-5c94-43aa-b2f9-fcb2ea4eb751,luca.verdi@progmail.com
+2e35b7d1-18d8-4120-a455-447304319415,luca.verdi@progmail.com
+eed47245-cba2-4966-b270-8b707f588153,andrea.rossi@progmail.com
