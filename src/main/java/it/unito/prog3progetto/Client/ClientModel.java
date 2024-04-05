@@ -35,26 +35,36 @@ public class ClientModel {
   }
 
   public boolean connectToServer(String host, int port) {
-    int attempts = 0;
-    boolean success = false;
+    Thread connectionThread = new Thread(() -> {
+      int attempts = 0;
+      boolean success = false;
 
-    while (attempts < MAX_ATTEMPTS && !success) {
-      attempts++;
-      success = tryCommunication(host, port);
+      while (attempts < MAX_ATTEMPTS && !success) {
+        attempts++;
+        success = tryCommunication(host, port);
 
-      if (success) {
-        continue;
+        if (!success) {
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
       }
+    });
 
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    connectionThread.start();
+
+    try {
+      connectionThread.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
-    return success;
+    return true;
   }
+
+
 
   private boolean tryCommunication(String host, int port) {
     try {

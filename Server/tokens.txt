@@ -1,8 +1,10 @@
 d8d2fa79-5e71-46b2-ab92-984567592ca4,stefano.bianchi@progmail.com
 b404f7e3-432f-4238-a370-032b793750df,stefano.bianchi@progmail.com
+a37ecfad-6b39-4c00-a77e-97b2b4f27971,stefano.bianchi@progmail.com
 2fc99861-a76b-4cb6-afb8-977844195dea,stefano.bianchi@progmail.com
 e7929ca2-6ef6-4d70-94ed-e0a2ca9a0024,stefano.bianchi@progmail.com
 2270ebcd-de45-473f-89c8-c8233dc5a38e,stefano.bianchi@progmail.com
+01bcaff7-e26f-45af-91a1-3bfc191bc965,luca.verdi@progmail.com
 1ba92e0c-b287-4eab-b777-f3e78245bdb5,marco.gialli@progmail.com
 0039feb0-9b09-459d-949d-1ef4ccd82660,stefano.bianchi@progmail.com
 e43956ba-ec4b-443c-adbf-ffde0ca6659f,stefano.bianchi@progmail.com
@@ -16,4 +18,6 @@ c77935b7-9352-4a9c-8284-78201af2d421,stefano.bianchi@progmail.com
 9aed726b-19d0-4f3a-943c-97825f4edf45,stefano.bianchi@progmail.com
 36ca8e91-ab3b-4218-a091-73556061b9c4,stefano.bianchi@progmail.com
 fd137148-b602-473a-8246-000dcd56d127,stefano.bianchi@progmail.com
+e34e1784-710c-40da-9b85-3ff899ad63f5,stefano.bianchi@progmail.com
+e2eb6437-db47-4186-9568-68f2dd351dc9,marco.gialli@progmail.com
 7d2374af-636d-499e-99dc-160157be7923,stefano.bianchi@progmail.com

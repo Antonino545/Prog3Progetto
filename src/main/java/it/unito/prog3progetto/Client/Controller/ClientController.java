@@ -85,7 +85,7 @@ public class ClientController implements MailListObserver {
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize("sendmail", clientModel);
+      controller.initialize( clientModel);
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Dettagli Email");

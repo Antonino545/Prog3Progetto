@@ -24,9 +24,8 @@ public class NewMailController {
   private ClientModel clientModel;
 
 
-  public void initialize(String action, ClientModel clientModel) throws IOException {
+  public void initialize( ClientModel clientModel) throws IOException {
   this.clientModel = clientModel;
- if(action.equals("sendmail")){
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(event -> {
         try {
@@ -35,9 +34,9 @@ public class NewMailController {
           throw new RuntimeException(e);
         }
       });
-  }
 
   }
+
 public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, ClientModel clientModel) {
     EventHandler<ActionEvent> handler = event -> {
         try {
