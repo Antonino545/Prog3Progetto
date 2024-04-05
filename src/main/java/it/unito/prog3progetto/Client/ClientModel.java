@@ -1,15 +1,13 @@
 package it.unito.prog3progetto.Client;
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.User;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.UUID;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class ClientModel {
   private Socket socket = null;
@@ -19,6 +17,9 @@ public class ClientModel {
   private UUID token;
 
   private final int MAX_ATTEMPTS = 3;
+  private final int DEFAULT_TIMEOUT = 5000;
+
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
 
   public ClientModel(String mail) {
     this.mail = mail;
@@ -27,15 +28,17 @@ public class ClientModel {
   public String getUserMail() {
     return mail;
   }
+
   public UUID getToken() {
     return token;
   }
+
   public void setToken(UUID token) {
     this.token = token;
   }
 
   public boolean connectToServer(String host, int port) {
-    Thread connectionThread = new Thread(() -> {
+    Future<Boolean> future = executor.submit(() -> {
       int attempts = 0;
       boolean success = false;
 
@@ -45,26 +48,23 @@ public class ClientModel {
 
         if (!success) {
           try {
-            Thread.sleep(1000);
+            Thread.sleep(DEFAULT_TIMEOUT);
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
         }
       }
+
+      return success;
     });
 
-    connectionThread.start();
-
     try {
-      connectionThread.join();
-    } catch (InterruptedException e) {
+      return future.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException | ExecutionException | TimeoutException e) {
       e.printStackTrace();
+      return false;
     }
-
-    return true;
   }
-
-
 
   private boolean tryCommunication(String host, int port) {
     try {
@@ -88,13 +88,13 @@ public class ClientModel {
       User user = new User(email, password);
       outputStream.writeObject("LOGIN");
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
       if(inputStream.readObject().equals(true)){
         System.out.println("Server pronto a ricevere le credenziali");
       }
       outputStream.writeObject(user);
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
         Object token = inputStream.readObject();
@@ -119,7 +119,7 @@ public class ClientModel {
       return null;
     }
   }
-  public ArrayList<Email> receiveEmail( String email, Date lastmail,boolean isSend) {
+  public ArrayList<Email> receiveEmail(String email, Date lastmail, boolean isSend) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
@@ -129,7 +129,7 @@ public class ClientModel {
         outputStream.writeObject("RECEIVEEMAIL");
       }
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
       if(inputStream.readObject().equals(true)){
         System.out.println("Server pronto a ricevere le email");
       }
@@ -137,7 +137,7 @@ public class ClientModel {
       outputStream.flush();
       outputStream.writeObject(lastmail);
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
 
       return (ArrayList<Email>) inputStream.readObject();
     } catch (IOException | ClassNotFoundException e) {
@@ -149,14 +149,14 @@ public class ClientModel {
 
   public boolean SendMail(String host, int port, Email email) {
     try {
-      System.out.println(token);
+      System.out.println("Prova di invio email");
       outputStream.writeObject(token);
       outputStream.flush();
       outputStream.writeObject("SENDMAIL");
       outputStream.flush();
       outputStream.writeObject(email);
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
         System.out.println("Email inviata con successo.");
@@ -177,7 +177,7 @@ public class ClientModel {
       outputStream.flush();
       outputStream.writeObject(token);
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
         System.out.println("Logout effettuato con successo.");
@@ -202,7 +202,7 @@ public class ClientModel {
       outputStream.flush();
       outputStream.writeObject(email);
       outputStream.flush();
-      socket.setSoTimeout(5000);
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
         System.out.println("Email Cancellata con successo.");

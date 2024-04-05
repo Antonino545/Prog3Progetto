@@ -70,6 +70,9 @@ class ClientHandler implements Runnable {
         case "LOGOUT":
           handleLogoutRequest();
           break;
+        case "CLOSE_CONNECTION":
+          closeStreams();
+          break;
         default:
           outStream.writeObject(false);
           outStream.flush();
@@ -149,14 +152,30 @@ class ClientHandler implements Runnable {
   private void saveAuthenticatedTokensToFile() {
     synchronized (server.authenticatedTokens) { // Synchronize on the map itself
       try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
+        Map<String, Integer> emailSessionCount = new HashMap<>(); // Map to keep track of session count for each email
         for (UUID token : server.authenticatedTokens.keySet()) {
-          writer.println(token + "," + server.authenticatedTokens.get(token));
+          String email = server.authenticatedTokens.get(token);
+
+          // Increment session count for the current email
+          int sessionCount = emailSessionCount.getOrDefault(email, 0) + 1;
+
+          // Check if the session count exceeds the limit
+          if (sessionCount > 5) {
+            continue; // Skip saving this token if the session count exceeds the limit
+          }
+
+          // Save the token to the file
+          writer.println(token + "," + email);
+
+          // Update session count for the current email
+          emailSessionCount.put(email, sessionCount);
         }
       } catch (IOException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error saving authenticated tokens to file.\n"));
+        Platform.runLater(() -> server.textArea.appendText("Error saving authenticated tokens to file.\n"));
       }
     }
   }
+
   private synchronized void handleSendMailRequest() {
     try {
       outStream.writeObject(true);

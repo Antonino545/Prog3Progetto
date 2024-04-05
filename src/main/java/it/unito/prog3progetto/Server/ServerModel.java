@@ -57,24 +57,67 @@ public class ServerModel {
 	private void loadAuthenticatedTokensFromFile() {
 		try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
 			String line;
+			Map<String, Integer> emailSessionCount = new HashMap<>(); // Mappa per tenere traccia del numero di sessioni per ogni email
+			List<String> linesToRemove = new ArrayList<>(); // Lista per tenere traccia delle righe da rimuovere dal file
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(",");
 				if (parts.length == 2) {
 					UUID token = UUID.fromString(parts[0]);
 					String email = parts[1];
+
+					// Controlla se l'email ha già raggiunto il limite di sessioni
+					int sessionCount = emailSessionCount.getOrDefault(email, 0);
+					if (sessionCount >= 5) {
+						// Se ha raggiunto il limite, aggiungi la riga alla lista delle righe da rimuovere
+						linesToRemove.add(line);
+						continue; // Passa alla riga successiva
+					}
+
+					// Aggiungi il token all'elenco dei token autenticati
 					authenticatedTokens.put(token, email);
+
+					// Aggiorna il conteggio delle sessioni per l'email corrente
+					emailSessionCount.put(email, sessionCount + 1);
 				}
 			}
+
+			// Rimuovi le righe obsolete dal file
+			removeLinesFromFile("Server/tokens.txt", linesToRemove);
+
 		} catch (IOException e) {
 			// Se il file non esiste o ci sono altri errori di lettura, semplicemente non carichiamo i token.
 			// Questo può essere gestito diversamente a seconda dei requisiti.
 			textArea.appendText("Impossibile caricare i token degli utenti dal file.\n");
 		}
 	}
+	private void removeLinesFromFile(String filePath, List<String> linesToRemove) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			List<String> lines = new ArrayList<>();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				// Aggiungi tutte le righe tranne quelle da rimuovere
+				if (!linesToRemove.contains(line)) {
+					lines.add(line);
+				}
+			}
+
+			// Sovrascrivi il file con le righe aggiornate
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+				for (String l : lines) {
+					writer.write(l);
+					writer.newLine();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 
-		List<String> readDatabaseFromFile() {
+	List<String> readDatabaseFromFile() {
 			List<String> database = new ArrayList<>();
 
 			try (BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(getClass().getResource("credentials.txt")).getFile()))) {

@@ -99,7 +99,12 @@ public class ClientController implements MailListObserver {
 
   public void logout() throws IOException {
     if(clientModel.connectToServer(host, port))
-    clientModel.logout();
+      if(clientModel.logout()){
+        alert("Logout effettuato", Alert.AlertType.INFORMATION);
+      }
+    else {
+      alert("Errore durante il logout", Alert.AlertType.ERROR);
+    }
     else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
@@ -158,9 +163,6 @@ public class ClientController implements MailListObserver {
 
 
   public void deleteEmail(Email email) {
-    System.out.println(isInbox);
-    System.out.println("Email eliminata:");
-    System.out.println(email);
     if (clientModel.connectToServer(host, port)) {
       if (clientModel.DeleteMail(email,isInbox)) {
         System.out.println(isInbox);
@@ -176,11 +178,14 @@ public class ClientController implements MailListObserver {
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
 
         alert("Email eliminata", Alert.AlertType.INFORMATION);
+        System.out.println("Email eliminata");
       } else {
         alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
+        System.out.println("Errore durante l'eliminazione dell'email");
       }
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      System.out.println("Connessione al server non riuscita");
     }
   }
 
