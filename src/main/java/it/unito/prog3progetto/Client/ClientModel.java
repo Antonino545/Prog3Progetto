@@ -139,6 +139,7 @@ public class ClientModel {
 
   public boolean SendMail(String host, int port, Email email) {
     try {
+      System.out.println(token);
       outputStream.writeObject(token);
       outputStream.flush();
       outputStream.writeObject("SENDMAIL");

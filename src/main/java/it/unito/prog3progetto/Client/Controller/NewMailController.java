@@ -36,8 +36,9 @@ public class NewMailController {
         }
       });
   }
+
   }
-public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date) {
+public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, ClientModel clientModel) {
     EventHandler<ActionEvent> handler = event -> {
         try {
             sendMail();
@@ -45,12 +46,40 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
             throw new RuntimeException(e);
         }
     };
-
+    this.clientModel = clientModel;
     String prefix = action.equals("reply") ? "Re: " : action.equals("forward") ? "Fwd: " : "ReALL: ";
-    String destinations = action.equals("replyall") ? String.join(",", Destination) + "," + sender : sender;
+  String destinations;
 
+  if (action.equals("replyall")) {
+    if (Destination.size() > 1) {
+      // Se ci sono più di un destinatario, li concateniamo con il mittente
+      StringBuilder stringBuilder = new StringBuilder();
+      for (String destination : Destination) {
+        stringBuilder.append(destination).append(",");
+      }
+      stringBuilder.append(sender);
+      destinations = stringBuilder.toString();
+    } else if (Destination.size() == 1) {
+      // Se c'è solo un destinatario, concateniamo solo quel destinatario e il mittente
+      destinations = Destination.getFirst() + "," + sender;
+      destinationsfield.setText(destinations);
+      destinationsfield.setEditable(false);
+
+    } else {
+      // Se non ci sono destinatari, usiamo solo il mittente
+      destinations = sender;
+      destinationsfield.setText(destinations);
+      destinationsfield.setEditable(false);
+
+    }
+  } else if(!action.equals("forward")) {
+
+    destinations = sender;
     destinationsfield.setText(destinations);
     destinationsfield.setEditable(false);
+
+
+  }
     subjectfield.setText(prefix + subject);
     ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " + date + " da" + sender + "\n" + content);
     sendmailbutton.setOnAction(handler);
@@ -59,7 +88,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
   public void sendMail() throws IOException {
     if(this.clientModel == null){
      alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
-      System.out.println("Errore durante l'invio dell'email");
+      System.out.println("Errore durante l'invio dell'email il Client e null");
       return;
     }
     System.out.println("Prova di invio email");

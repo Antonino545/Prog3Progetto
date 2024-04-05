@@ -58,8 +58,8 @@ public class LoginController {
         return;
       }
       ClientModel clientModel = new ClientModel(useremail);
-    String host= "127.0.0.1";
-    int port= 4445;
+      String host= "127.0.0.1";
+      int port= 4445;
     if(clientModel.connectToServer(host, port)){
       System.out.println("Connessione al server riuscita");
     }else{
@@ -68,7 +68,7 @@ public class LoginController {
       return;
     }
 
-      UUID token = clientModel.sendAndCheckCredentials(host, port, useremail, password);
+    UUID token = clientModel.sendAndCheckCredentials(host, port, useremail, password);
     clientModel.setToken(token);
     if (token != null) {
       try {
