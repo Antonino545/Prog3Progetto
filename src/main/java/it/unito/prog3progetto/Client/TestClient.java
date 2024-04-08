@@ -52,7 +52,7 @@ public class TestClient {
         ArrayList<String> destinations = new ArrayList<>();
         destinations.add("stefano.bianchi@progmail.com");
         if (clientModel.connectToServer(host, port)) {
-          System.out.println(clientModel.SendMail(host, port, new Email(clientModel.getUserMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
+          System.out.println(clientModel.SendMail( new Email(clientModel.getUserMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
         }
       }
 

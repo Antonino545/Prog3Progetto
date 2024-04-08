@@ -20,6 +20,7 @@ class ClientHandler implements Runnable {
   private ObjectInputStream inStream;
   private ObjectOutputStream outStream;
   private String userMail;
+  private List<String> database;
 
   public ClientHandler(ServerModel server, Socket socket) {
     this.server = server;
@@ -70,6 +71,9 @@ class ClientHandler implements Runnable {
         case "LOGOUT":
           handleLogoutRequest();
           break;
+        case "CHECKEMAIL":
+           handleCheckEmailRequest();
+          break;
         case "CLOSE_CONNECTION":
           closeStreams();
           break;
@@ -82,6 +86,21 @@ class ClientHandler implements Runnable {
       Platform.runLater(() -> server.textArea.appendText("Error communicating with the client: " + e.getMessage() + ".\n"));
     } finally {
       closeStreams();
+    }
+  }
+
+  private void handleCheckEmailRequest() {
+    try {
+
+      outStream.writeObject(true);
+      outStream.flush();
+      Object userMailObject = inStream.readObject();
+      String userMail = (String) userMailObject;
+      boolean isEmail = Checkemail(userMail);
+      outStream.writeObject(isEmail);
+      outStream.flush();
+    } catch (IOException | ClassNotFoundException e) {
+      Platform.runLater(() -> server.textArea.appendText("Error in checking email.\n"));
     }
   }
 
@@ -239,7 +258,7 @@ class ClientHandler implements Runnable {
   // Metodo per autenticare l'utente confrontando le credenziali con un database
   private boolean authenticateUser(User user) {
     // Legge il database di credenziali da file
-    List<String> database = server.readDatabaseFromFile();
+   database = server.readDatabaseFromFile();
 
     // Verifica se le credenziali dell'utente sono presenti nel database
     for (String entry : database) {
@@ -259,6 +278,16 @@ class ClientHandler implements Runnable {
     }
 
     return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
+  }
+  private boolean Checkemail(String usermail){
+    database = server.readDatabaseFromFile();
+    for (String entry : database) {
+      String[] parts = entry.split(",");
+      if (parts.length == 2 && parts[0].trim().equals(usermail)) {
+        return true; // Se le credenziali sono corrette, restituisce true
+      }
+    }
+    return false; // Se le credenziali non corrispondono, restituisce false
   }
 
 

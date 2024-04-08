@@ -147,7 +147,7 @@ public class ClientModel {
   }
 
 
-  public boolean SendMail(String host, int port, Email email) {
+  public boolean SendMail( Email email) {
     try {
       System.out.println("Prova di invio email");
       outputStream.writeObject(token);
@@ -215,7 +215,20 @@ public class ClientModel {
       return false;
     }
   }
-
+  public boolean CheckEmail(String email) {
+    try {
+      outputStream.writeObject(token);
+      outputStream.flush();
+      outputStream.writeObject("CHECKEMAIL");
+      outputStream.flush();
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
+      System.out.println(inputStream.readObject());
+      return false;
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
 
   public void closeConnections() {
     try {

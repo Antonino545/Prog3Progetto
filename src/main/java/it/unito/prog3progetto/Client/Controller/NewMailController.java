@@ -120,14 +120,14 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
 
     if (success) {
+
       Email email = new Email(clientModel.getUserMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
 
       String host= "127.0.0.1";
       int port= 4445;
       if (this.clientModel.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
-        if (this.clientModel.SendMail(host, port, email)) {
-          System.out.println(email);
+        if (this.clientModel.SendMail( email)) {
           Stage stage = (Stage) subjectfield.getScene().getWindow();
           stage.close();
           alert("Email inviata", Alert.AlertType.INFORMATION);
