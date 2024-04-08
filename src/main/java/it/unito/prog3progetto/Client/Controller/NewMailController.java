@@ -62,20 +62,17 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
       // Se c'è solo un destinatario, concateniamo solo quel destinatario e il mittente
       destinations = Destination.getFirst() + "," + sender;
       destinationsfield.setText(destinations);
-      destinationsfield.setEditable(false);
 
     } else {
       // Se non ci sono destinatari, usiamo solo il mittente
       destinations = sender;
       destinationsfield.setText(destinations);
-      destinationsfield.setEditable(false);
 
     }
   } else if(!action.equals("forward")) {
 
     destinations = sender;
     destinationsfield.setText(destinations);
-    destinationsfield.setEditable(false);
 
 
   }
@@ -109,12 +106,6 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
     String[] destinationsArray = destination.split(",");
     Set<String> uniqueDestinations = new HashSet<>(Arrays.asList(destinationsArray));
-
-    if (uniqueDestinations.size() < destinationsArray.length) {
-      alert("I destinatari devono essere tutti diversi", Alert.AlertType.ERROR);
-      System.out.println("I destinatari devono essere tutti diversi");
-      return;
-    }
 
     String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
