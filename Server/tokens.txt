@@ -7,9 +7,9 @@ f87a61f7-45cb-434b-8326-b93ad2469c56,luca.verdi@progmail.com
 d8d2fa79-5e71-46b2-ab92-984567592ca4,stefano.bianchi@progmail.com
 4eb89b14-15be-4a73-9643-242489530e17,marco.gialli@progmail.com
 ad678390-9b16-411a-b3c3-76d34573781a,luca.verdi@progmail.com
+b71474f1-5865-4926-8b13-cc5eaefe7497,stefano.bianchi@progmail.com
 b404f7e3-432f-4238-a370-032b793750df,stefano.bianchi@progmail.com
 d8b16c36-d4b8-4871-b4c4-9632f913db2f,stefano.bianchi@progmail.com
 b2b5dd3c-cba2-4f27-a84a-14ea4671b899,marco.gialli@progmail.com
 ca68729a-cf5e-45f3-b936-6f81e147a3aa,marco.gialli@progmail.com
-2fc99861-a76b-4cb6-afb8-977844195dea,stefano.bianchi@progmail.com
-7e406a1f-7820-407e-846a-c85e2236f90a,marco.gialli@progmail.com
+147989f0-b13b-4fc9-87a8-73a61418ce08,marco.gialli@progmail.com

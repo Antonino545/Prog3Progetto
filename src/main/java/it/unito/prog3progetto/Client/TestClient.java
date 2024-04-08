@@ -12,7 +12,6 @@ public class TestClient {
     // Creazione dei client con le rispettive credenziali
     ClientModel[] clientModels = {
             new ClientModel("luca.verdi@progmail.com"),
-            new ClientModel("stefano.bianchi@progmail.com"),
             new ClientModel("marco.gialli@progmail.com"),
     };
 
@@ -51,9 +50,9 @@ public class TestClient {
 
       for (int i = 0; i < 3; i++) {
         ArrayList<String> destinations = new ArrayList<>();
-        destinations.add("marco.gialli@progmail.com");
+        destinations.add("stefano.bianchi@progmail.com");
         if (clientModel.connectToServer(host, port)) {
-          System.out.println(clientModel.SendMail(host, port, new Email(clientModel.getUserMail(), destinations, "Oggetto", randomContent, Date.from(java.time.Instant.now()))));
+          System.out.println(clientModel.SendMail(host, port, new Email(clientModel.getUserMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
         }
       }
 

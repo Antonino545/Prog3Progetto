@@ -270,7 +270,6 @@ class ClientHandler implements Runnable {
 
   private ArrayList<Email> fetchSendEmails(String usermail, Date lastEmailDate) throws IOException {
     synchronized (lock) {
-
       return readEmails(usermail, lastEmailDate, true);
 
     }

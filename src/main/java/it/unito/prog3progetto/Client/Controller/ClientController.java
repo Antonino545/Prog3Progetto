@@ -5,6 +5,8 @@ import it.unito.prog3progetto.Client.MailItemCell;
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.MailListModel;
 import it.unito.prog3progetto.Model.MailListObserver;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +43,7 @@ public class ClientController implements MailListObserver {
   private final String host = "127.0.0.1";
   private final int port = 4445;
 
+  private Timeline autoRefreshTimeline;
 
   public void initialize(ClientModel clientModel) throws IOException {
     this.clientModel = clientModel;
@@ -54,14 +58,19 @@ public class ClientController implements MailListObserver {
       sendemails();
       inboxemail();
     }
+    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
+    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+    autoRefreshTimeline.play();
   }
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire l'aggiunta di email
   @Override
   public void onEmailAdded(Email email) {
-    mailListView.getItems().add(email); // Aggiorna la ListView aggiungendo l'email
+    // Aggiunge l'email all'inizio della ListView
+    mailListView.getItems().addFirst(email);
     mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this, clientModel));
   }
+
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire la rimozione di email
   @Override
