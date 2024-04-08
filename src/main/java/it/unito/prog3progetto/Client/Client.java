@@ -1,15 +1,17 @@
 package it.unito.prog3progetto.Client;
+
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.User;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.*;
-import java.util.*;
+import java.io.*;
+import java.net.ConnectException;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.*;
 
-public class ClientModel {
+public class Client {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
@@ -21,7 +23,7 @@ public class ClientModel {
 
   private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-  public ClientModel(String mail) {
+  public Client(String mail) {
     this.mail = mail;
   }
 
@@ -70,8 +72,9 @@ public class ClientModel {
     try {
       socket = new Socket(host, port);
       outputStream = new ObjectOutputStream(socket.getOutputStream());
-      outputStream.flush();
       inputStream = new ObjectInputStream(socket.getInputStream());
+
+      outputStream.flush();
       return true;
     } catch (ConnectException e) {
       System.out.println("[ClientModel " + this.mail + "] Server non raggiungibile");
@@ -82,14 +85,13 @@ public class ClientModel {
     }
   }
 
-
   public UUID sendAndCheckCredentials(String host, int port, String email, String password) {
     try {
       User user = new User(email, password);
       outputStream.writeObject("LOGIN");
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
-      if(inputStream.readObject().equals(true)){
+      if (inputStream.readObject().equals(true)) {
         System.out.println("Server pronto a ricevere le credenziali");
       }
       outputStream.writeObject(user);
@@ -109,28 +111,26 @@ public class ClientModel {
         System.out.println("Credenziali errate.");
         return null;
       }
-    } catch (SocketTimeoutException e) {
+    } catch (Exception e) {
       System.out.println("Timeout di connessione");
       closeConnections();
       return null;
-    } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
-      closeConnections();
-      return null;
     }
+
   }
+
   public ArrayList<Email> receiveEmail(String email, Date lastmail, boolean isSend) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
-      if(isSend) {
+      if (isSend) {
         outputStream.writeObject("RECEIVESENDEMAIL");
-      }else{
+      } else {
         outputStream.writeObject("RECEIVEEMAIL");
       }
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
-      if(inputStream.readObject().equals(true)){
+      if (inputStream.readObject().equals(true)) {
         System.out.println("Server pronto a ricevere le email");
       }
       outputStream.writeObject(email);
@@ -146,8 +146,7 @@ public class ClientModel {
     }
   }
 
-
-  public boolean SendMail( Email email) {
+  public boolean SendMail(Email email) {
     try {
       System.out.println("Prova di invio email");
       outputStream.writeObject(token);
@@ -169,12 +168,19 @@ public class ClientModel {
       return false;
     }
   }
-  public boolean logout(){
+
+  public boolean logout() {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
       outputStream.writeObject("LOGOUT");
       outputStream.flush();
+      if (inputStream.readObject().equals(true)) {
+        System.out.println("Server pronto a fare il logout");
+      } else {
+        System.out.println("Errore durante il logout.");
+        return false;
+      }
       outputStream.writeObject(token);
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
@@ -190,14 +196,40 @@ public class ClientModel {
       return false;
     }
   }
-  public boolean DeleteMail(Email email,boolean isInbox) {
+
+  public boolean CheckEmail(String email) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
-      if(isInbox) {
+      outputStream.writeObject("CHECKEMAIL");
+      outputStream.flush();
+      inputStream.readObject();
+      outputStream.writeObject(email);
+      outputStream.flush();
+      socket.setSoTimeout(DEFAULT_TIMEOUT);
+      boolean success = (boolean) inputStream.readObject();
+      if (success) {
+        System.out.println("Email esistente.");
+      } else {
+        System.out.println("Email non esistente.");
+      }
+      return success;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public boolean DeleteMail(Email email, boolean isInbox) {
+    try {
+      outputStream.writeObject(token);
+      outputStream.flush();
+      if (isInbox) {
         outputStream.writeObject("DELETEMAILRECEIVED");
-      }else{
-      outputStream.writeObject("DELETEMAILSEND");
+      } else {
+        outputStream.writeObject("DELETEMAILSEND");
       }
       outputStream.flush();
       outputStream.writeObject(email);
@@ -210,20 +242,6 @@ public class ClientModel {
         System.out.println("Errore durante la cancellazione dell'email.");
       }
       return success;
-    } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
-      return false;
-    }
-  }
-  public boolean CheckEmail(String email) {
-    try {
-      outputStream.writeObject(token);
-      outputStream.flush();
-      outputStream.writeObject("CHECKEMAIL");
-      outputStream.flush();
-      socket.setSoTimeout(DEFAULT_TIMEOUT);
-      System.out.println(inputStream.readObject());
-      return false;
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
       return false;
@@ -246,7 +264,4 @@ public class ClientModel {
       e.printStackTrace();
     }
   }
-
-
-
 }

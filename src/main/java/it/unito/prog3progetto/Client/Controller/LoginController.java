@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Client.ClientModel;
+import it.unito.prog3progetto.Client.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -57,7 +57,7 @@ public class LoginController {
         alert("Inserire un indirizzo email valido , Formato non valido");
         return;
       }
-      ClientModel clientModel = new ClientModel(useremail);
+      Client clientModel = new Client(useremail);
       String host= "127.0.0.1";
       int port= 4445;
     if(clientModel.connectToServer(host, port)){

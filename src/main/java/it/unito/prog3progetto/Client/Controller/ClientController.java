@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Client.ClientModel;
+import it.unito.prog3progetto.Client.Client;
 import it.unito.prog3progetto.Client.MailItemCell;
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.MailListModel;
@@ -35,7 +35,7 @@ public class ClientController implements MailListObserver {
 
   public boolean isInbox ;
   private Stage primaryStage;
-  private ClientModel clientModel;
+  private Client clientModel;
   private MailListModel mailReceivedListModel,mailSendListModel;
   private ArrayList<Email> previousSentEmails = new ArrayList<>();
   private ArrayList<Email> previousReceivedEmails = new ArrayList<>();
@@ -45,7 +45,7 @@ public class ClientController implements MailListObserver {
 
   private Timeline autoRefreshTimeline;
 
-  public void initialize(ClientModel clientModel) throws IOException {
+  public void initialize(Client clientModel) throws IOException {
     this.clientModel = clientModel;
     if (clientModel != null) {
       email.setText(clientModel.getUserMail());
@@ -58,9 +58,9 @@ public class ClientController implements MailListObserver {
       sendemails();
       inboxemail();
     }
-//    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
-//    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
-//    autoRefreshTimeline.play();
+    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
+    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+    autoRefreshTimeline.play();
   }
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire l'aggiunta di email

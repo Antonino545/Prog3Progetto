@@ -10,9 +10,8 @@ import java.util.UUID;
 public class TestClient {
   public static void main(String[] args) {
     // Creazione dei client con le rispettive credenziali
-    ClientModel[] clientModels = {
-            new ClientModel("luca.verdi@progmail.com"),
-            new ClientModel("marco.gialli@progmail.com"),
+    Client[] clientModels = {
+            new Client("marco.gialli@progmail.com"),
     };
 
     String host = "127.0.0.1";
@@ -22,7 +21,7 @@ public class TestClient {
     String randomContent = generateRandomMultilineText();
 
     // Connessione e invio delle email per ogni client
-    for (ClientModel clientModel : clientModels) {
+    for (Client clientModel : clientModels) {
       Thread thread = new Thread(() -> {
         if (clientModel.connectToServer(host, port)) {
           System.out.println("Connessione al server riuscita per " + clientModel.getUserMail());
@@ -30,8 +29,10 @@ public class TestClient {
           clientModel.setToken(token);
           if (token != null) {
             System.out.println("Credenziali corrette per " + clientModel.getUserMail());
-            // Operazione specifica per ogni thread
-            performThreadOperation(clientModel, host, port, randomContent);
+            if (clientModel.connectToServer(host, port)) {
+              clientModel.CheckEmail("stefano.bianchi@progmail.com");
+            }
+
           } else {
             System.out.println("Credenziali incorrette per " + clientModel.getUserMail());
           }
@@ -43,7 +44,7 @@ public class TestClient {
     }
   }
 
-  private static void performThreadOperation(ClientModel clientModel, String host, int port, String randomContent) {
+  private static void performThreadOperation(Client clientModel, String host, int port, String randomContent) {
     // Eseguire operazioni specifiche per ogni thread qui
     // Ad esempio, invio di email per alcuni clientModel e altre operazioni per altri
     // Qui, invieremo email solo per il clientModel con l'indirizzo "luca.verdi@progmail.com"

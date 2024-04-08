@@ -1,5 +1,5 @@
 package it.unito.prog3progetto.Client.Controller;
-import it.unito.prog3progetto.Client.ClientModel;
+import it.unito.prog3progetto.Client.Client;
 import it.unito.prog3progetto.Model.Email;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,10 +21,10 @@ public class NewMailController {
   public TextArea ContentField;
   @FXML
   public Button sendmailbutton;
-  private ClientModel clientModel;
+  private Client clientModel;
 
 
-  public void initialize( ClientModel clientModel) throws IOException {
+  public void initialize( Client clientModel) throws IOException {
   this.clientModel = clientModel;
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(event -> {
@@ -37,7 +37,7 @@ public class NewMailController {
 
   }
 
-public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, ClientModel clientModel) {
+public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, Client clientModel) {
     EventHandler<ActionEvent> handler = event -> {
         try {
             sendMail();
@@ -125,6 +125,16 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
       String host= "127.0.0.1";
       int port= 4445;
+
+        for(String dest: uniqueDestinations){
+          if(this.clientModel.connectToServer(host, port)) System.out.println("Connessione al server riuscita");
+          if(this.clientModel.CheckEmail(dest)) System.out.println("Email esistente");
+          else{
+            alert("Email non esistente", Alert.AlertType.ERROR);
+            System.out.println("Email non esistente: "+ dest);
+            return;
+          }
+        }
       if (this.clientModel.connectToServer(host, port)) {
         System.out.println("Connessione al server riuscita");
         if (this.clientModel.SendMail( email)) {

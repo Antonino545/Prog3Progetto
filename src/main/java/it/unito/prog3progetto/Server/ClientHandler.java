@@ -54,6 +54,7 @@ class ClientHandler implements Runnable {
       userMail = getUserEmail((UUID) clientObject);
 
       clientObject = inStream.readObject();
+      System.out.println("clientObject: " + clientObject);
       switch (clientObject.toString()) {
         case "SENDMAIL":
           handleSendMailRequest();
@@ -91,16 +92,17 @@ class ClientHandler implements Runnable {
 
   private void handleCheckEmailRequest() {
     try {
-
       outStream.writeObject(true);
       outStream.flush();
-      Object userMailObject = inStream.readObject();
-      String userMail = (String) userMailObject;
-      boolean isEmail = Checkemail(userMail);
-      outStream.writeObject(isEmail);
-      outStream.flush();
-    } catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error in checking email.\n"));
+      Object mailObject = inStream.readObject();
+      if (mailObject instanceof String email) {
+        boolean isSent = Checkemail(email);
+        System.out.println("isSent: " + isSent);
+        outStream.writeObject(isSent);
+        outStream.flush();
+      }
+    }catch (IOException | ClassNotFoundException e) {
+      Platform.runLater(() -> server.textArea.appendText("Error in sending email.\n"));
     }
   }
 
@@ -279,7 +281,7 @@ class ClientHandler implements Runnable {
 
     return success; // Restituisci true solo se l'email è stata inviata con successo a tutti i destinatari
   }
-  private boolean Checkemail(String usermail){
+  boolean Checkemail(String usermail){
     database = server.readDatabaseFromFile();
     for (String entry : database) {
       String[] parts = entry.split(",");
@@ -421,5 +423,6 @@ class ClientHandler implements Runnable {
     }
     return success;
   }
+
 
 }

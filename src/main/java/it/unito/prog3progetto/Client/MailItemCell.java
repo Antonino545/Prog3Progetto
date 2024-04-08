@@ -23,8 +23,8 @@ public class MailItemCell extends ListCell<Email> {
   private final Stage primaryStage;
   private static final String host = "127.0.0.1";
   private static final int port = 4445;
-  private final ClientModel clientModel;
-  public MailItemCell(Stage primaryStage, ClientController clientController, ClientModel clientModel) {
+  private final Client clientModel;
+  public MailItemCell(Stage primaryStage, ClientController clientController, Client clientModel) {
     this.primaryStage = primaryStage;
     this.clientModel = clientModel;
     this.clientController = clientController;
