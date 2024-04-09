@@ -7,12 +7,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyEvent;
 
 
 public class LoginController {
@@ -29,9 +32,25 @@ public class LoginController {
     }
 
    public void initialize() {
+     emailTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+       @Override
+       public void handle(KeyEvent event) {
+         if (event.getCode().equals(KeyCode.ENTER)) {
+           Login();
+         }
+       }
+     });
 
-       // Creazione della lista di oggetti MailItem
+     passwordTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+       @Override
+       public void handle(KeyEvent event) {
+         if (event.getCode().equals(KeyCode.ENTER)) {
+           Login();
+         }
+       }
+     });
    }
+
 
     public String getEmailFieldValue() {
         return emailTextField.getText();

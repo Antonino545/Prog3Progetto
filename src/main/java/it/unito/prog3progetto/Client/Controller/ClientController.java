@@ -118,6 +118,7 @@ public class ClientController implements MailListObserver {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
     loadLogin(primaryStage);
+    autoRefreshTimeline.stop();
     clientModel.closeConnections();
   }
   public  void loadLogin(Stage primaryStage) throws IOException {

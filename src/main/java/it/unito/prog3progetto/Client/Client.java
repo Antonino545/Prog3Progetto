@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.*;
 
-public class Client {
+public class  Client {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
@@ -21,7 +21,7 @@ public class Client {
   private final int MAX_ATTEMPTS = 3;
   private final int DEFAULT_TIMEOUT = 5000;
 
-  private ExecutorService executor = Executors.newSingleThreadExecutor();
+  private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
   public Client(String mail) {
     this.mail = mail;

@@ -3,24 +3,20 @@ package it.unito.prog3progetto.Server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javafx.scene.control.TextArea;
 
 public class ServerModel {
 	private ServerSocket serverSocket;
 	final Map<UUID, String> authenticatedTokens;
-
-
 	final TextArea textArea; // TextArea per visualizzare l'output
 
 	// Costruttore che accetta una TextArea per visualizzare l'output
 	public ServerModel(TextArea textArea) {
 		this.textArea = textArea;
 		this.authenticatedTokens = new ConcurrentHashMap<>();
-  }
+	}
 
 	// Metodo per avviare il server e metterlo in ascolto su una porta specifica
 	private volatile boolean isRunning = true; // Flag to control the server's running state
@@ -55,41 +51,59 @@ public class ServerModel {
 	}
 
 	private void loadAuthenticatedTokensFromFile() {
-		try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
-			String line;
-			Map<String, Integer> emailSessionCount = new HashMap<>(); // Mappa per tenere traccia del numero di sessioni per ogni email
-			List<String> linesToRemove = new ArrayList<>(); // Lista per tenere traccia delle righe da rimuovere dal file
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(",");
-				if (parts.length == 2) {
-					UUID token = UUID.fromString(parts[0]);
-					String email = parts[1];
+		try {
+			createServerDirectoryIfNotExists(); // Assicura che la cartella "Server" esista
 
-					// Controlla se l'email ha già raggiunto il limite di sessioni
-					int sessionCount = emailSessionCount.getOrDefault(email, 0);
-					if (sessionCount >= 5) {
-						// Se ha raggiunto il limite, aggiungi la riga alla lista delle righe da rimuovere
-						linesToRemove.add(line);
-						continue; // Passa alla riga successiva
+			try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
+				String line;
+				Map<String, Integer> emailSessionCount = new HashMap<>(); // Mappa per tenere traccia del numero di sessioni per ogni email
+				List<String> linesToRemove = new ArrayList<>(); // Lista per tenere traccia delle righe da rimuovere dal file
+				while ((line = reader.readLine()) != null) {
+					String[] parts = line.split(",");
+					if (parts.length == 2) {
+						UUID token = UUID.fromString(parts[0]);
+						String email = parts[1];
+
+						// Controlla se l'email ha già raggiunto il limite di sessioni
+						int sessionCount = emailSessionCount.getOrDefault(email, 0);
+						if (sessionCount >= 5) {
+							// Se ha raggiunto il limite, aggiungi la riga alla lista delle righe da rimuovere
+							linesToRemove.add(line);
+							continue; // Passa alla riga successiva
+						}
+
+						// Aggiungi il token all'elenco dei token autenticati
+						authenticatedTokens.put(token, email);
+
+						// Aggiorna il conteggio delle sessioni per l'email corrente
+						emailSessionCount.put(email, sessionCount + 1);
 					}
-
-					// Aggiungi il token all'elenco dei token autenticati
-					authenticatedTokens.put(token, email);
-
-					// Aggiorna il conteggio delle sessioni per l'email corrente
-					emailSessionCount.put(email, sessionCount + 1);
 				}
+
+				// Rimuovi le righe obsolete dal file
+				removeLinesFromFile("Server/tokens.txt", linesToRemove);
+
+			} catch (IOException e) {
+				// Se il file non esiste o ci sono altri errori di lettura, semplicemente non carichiamo i token.
+				// Questo può essere gestito diversamente a seconda dei requisiti.
+				textArea.appendText("Impossibile caricare i token degli utenti dal file.\n");
 			}
-
-			// Rimuovi le righe obsolete dal file
-			removeLinesFromFile("Server/tokens.txt", linesToRemove);
-
 		} catch (IOException e) {
-			// Se il file non esiste o ci sono altri errori di lettura, semplicemente non carichiamo i token.
-			// Questo può essere gestito diversamente a seconda dei requisiti.
-			textArea.appendText("Impossibile caricare i token degli utenti dal file.\n");
+			e.printStackTrace();
 		}
 	}
+
+	private void createServerDirectoryIfNotExists() throws IOException {
+		File serverDirectory = new File("Server");
+		if (!serverDirectory.exists()) {
+			if (serverDirectory.mkdir()) {
+				textArea.appendText("Cartella 'Server' creata con successo.\n");
+			} else {
+				throw new IOException("Impossibile creare la cartella 'Server'.");
+			}
+		}
+	}
+
 	private void removeLinesFromFile(String filePath, List<String> linesToRemove) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 			List<String> lines = new ArrayList<>();
@@ -115,22 +129,17 @@ public class ServerModel {
 		}
 	}
 
-
-
 	List<String> readDatabaseFromFile() {
-			List<String> database = new ArrayList<>();
+		List<String> database = new ArrayList<>();
 
-			try (BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(getClass().getResource("credentials.txt")).getFile()))) {
-				String line;
-				while ((line = br.readLine()) != null) {
-					database.add(line); // Aggiunge ogni riga del file al database
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+		try (BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(getClass().getResource("credentials.txt")).getFile()))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				database.add(line); // Aggiunge ogni riga del file al database
 			}
-			return database;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
-
-
+		return database;
 	}
+}

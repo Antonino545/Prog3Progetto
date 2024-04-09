@@ -11,7 +11,7 @@ public class TestClient {
   public static void main(String[] args) {
     // Creazione dei client con le rispettive credenziali
     Client[] clientModels = {
-            new Client("marco.gialli@progmail.com"),
+            new Client("luca.verdi@progmail.com"),
     };
 
     String host = "127.0.0.1";
@@ -30,7 +30,7 @@ public class TestClient {
           if (token != null) {
             System.out.println("Credenziali corrette per " + clientModel.getUserMail());
             if (clientModel.connectToServer(host, port)) {
-              clientModel.CheckEmail("stefano.bianchi@progmail.com");
+              performThreadOperation(clientModel, host, port, randomContent);
             }
 
           } else {
