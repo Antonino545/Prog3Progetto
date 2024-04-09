@@ -54,7 +54,6 @@ class ClientHandler implements Runnable {
       userMail = getUserEmail((UUID) clientObject);
 
       clientObject = inStream.readObject();
-      System.out.println("clientObject: " + clientObject);
       switch (clientObject.toString()) {
         case "SENDMAIL":
           handleSendMailRequest();
@@ -97,7 +96,6 @@ class ClientHandler implements Runnable {
       Object mailObject = inStream.readObject();
       if (mailObject instanceof String email) {
         boolean isSent = Checkemail(email);
-        System.out.println("isSent: " + isSent);
         outStream.writeObject(isSent);
         outStream.flush();
       }
@@ -307,14 +305,11 @@ class ClientHandler implements Runnable {
   }
 
   public synchronized  void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
-    System.out.println("Deleting email with id: " + uuidToDelete);
 
     synchronized (lock) {
 
       List<String> linesToKeep = new ArrayList<>();
-      System.out.println("sendmail: " + sendmail);
       String filename = sendmail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
-      System.out.println("filename: " + filename);
       try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
         String line;
         while ((line = br.readLine()) != null) {
