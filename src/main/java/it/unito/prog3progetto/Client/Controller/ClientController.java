@@ -35,7 +35,7 @@ public class ClientController implements MailListObserver {
 
   public boolean isInbox ;
   private Stage primaryStage;
-  private Client clientModel;
+  private Client Client;
   private MailListModel mailReceivedListModel,mailSendListModel;
   private ArrayList<Email> previousSentEmails = new ArrayList<>();
   private ArrayList<Email> previousReceivedEmails = new ArrayList<>();
@@ -46,7 +46,7 @@ public class ClientController implements MailListObserver {
   private Timeline autoRefreshTimeline;
 
   public void initialize(Client clientModel) throws IOException {
-    this.clientModel = clientModel;
+    this.Client = clientModel;
     if (clientModel != null) {
       email.setText(clientModel.getUserMail());
       mailReceivedListModel = new MailListModel();
@@ -68,59 +68,62 @@ public class ClientController implements MailListObserver {
   public void onEmailAdded(Email email) {
     // Aggiunge l'email all'inizio della ListView
     mailListView.getItems().addFirst(email);
-    mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this, clientModel));
+    mailListView.setCellFactory(param -> new MailItemCell(primaryStage, this, Client));
   }
 
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire la rimozione di email
   @Override
   public void onEmailRemoved(Email email) {
-    mailListView.getItems().remove(email); // Rimuovi l'email dalla ListView
+    mailListView.getItems().remove(email);
   }
-
+  // Implementazione del metodo dell'interfaccia MailListObserver per gestire la rimozione di tutte le email
   @Override
   public void onAllEmailsRemoved() {
-    mailListView.getItems().clear(); // Rimuovi tutti gli email dalla ListView
-
+    mailListView.getItems().clear();
   }
 
-
+  // Metodo per impostare il riferimento alla finestra principale
   public void setPrimaryStage(Stage primaryStage) {
     this.primaryStage = primaryStage;
   }
 
+  /**
+   * Metodo per aprire la finestra per la creazione di una nuova email
+   */
   public void NewEmail() {
     try {
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize( clientModel);
+      controller.initialize(Client); // Durante l'inizializzazione del controller, passa il riferimento al client
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
-      stage.setTitle("Dettagli Email");
-      stage.setResizable(false);
+      stage.setTitle("Nuova Email");
       stage.show();
     } catch (IOException e) {
       e.printStackTrace();
-      // Gestisci l'eccezione in modo appropriato
     }
   }
-
+/*
+  Esegue il logout dell'utente e torna alla schermata di login
+ */
   public void logout() throws IOException {
-    if(clientModel.connectToServer(host, port))
-      if(clientModel.logout()){
+    if(Client.connectToServer(host, port))
+      if(Client.logout()){
         alert("Logout effettuato", Alert.AlertType.INFORMATION);
       }
     else {
-      alert("Errore durante il logout", Alert.AlertType.ERROR);
+      System.out.println("Errore durante il logout");
     }
     else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
-    loadLogin(primaryStage);
-    autoRefreshTimeline.stop();
-    clientModel.closeConnections();
+    loadLogin(primaryStage);// Carica la schermata di login
+    autoRefreshTimeline.stop();// Ferma il refresh automatico
+    Client.closeConnections();// Chiude le connessioni con il server
   }
+
   public  void loadLogin(Stage primaryStage) throws IOException {
     FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Login.fxml").toURI().toURL());
     Parent root = loader.load();
@@ -129,18 +132,22 @@ public class ClientController implements MailListObserver {
     Scene scene = new Scene(root);
     scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
     primaryStage.setScene(scene);
-    primaryStage.setTitle("Email ClientModel - Progetto di Programmazione 3");
+    primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
     primaryStage.show();
   }
+
+  /**
+   * Metodo per aggiornare la lista delle email ricevute o inviate
+   */
   public void Refresh() {
-    if (clientModel != null && clientModel.connectToServer(host, port) ) {
+    if (Client != null && Client.connectToServer(host, port) ) {
       if(isInbox){
       Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getLast();
       if(lastEmail == null) {
         FullRefresh();
         return;
       }
-      mailReceivedListModel.addEmails(clientModel.receiveEmail( clientModel.getUserMail(), lastEmail.getDatesendMail(),false));
+      mailReceivedListModel.addEmails(Client.receiveEmail( Client.getUserMail(), lastEmail.getDatesendMail(),false));
 
       }
       else {
@@ -149,21 +156,21 @@ public class ClientController implements MailListObserver {
           FullRefresh();
           return;
         }
-        mailSendListModel.addEmails(clientModel.receiveEmail( clientModel.getUserMail(), lastEmail.getDatesendMail(),true));}
+        mailSendListModel.addEmails(Client.receiveEmail( Client.getUserMail(), lastEmail.getDatesendMail(),true));}
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
   }
 
   public void FullRefresh()  {
-    if(clientModel.connectToServer(host, port)){
+    if(Client.connectToServer(host, port)){
       if(isInbox){
         mailReceivedListModel.clear();
-        mailReceivedListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,false));
+        mailReceivedListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,false));
       }
       else {
         mailSendListModel.clear();
-        mailSendListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,true));
+        mailSendListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,true));
       }
       System.out.println("Email ricevute");
     } else {
@@ -173,8 +180,8 @@ public class ClientController implements MailListObserver {
 
 
   public void deleteEmail(Email email) {
-    if (clientModel.connectToServer(host, port)) {
-      if (clientModel.DeleteMail(email,isInbox)) {
+    if (Client.connectToServer(host, port)) {
+      if (Client.DeleteMail(email,isInbox)) {
         System.out.println(isInbox);
         if(isInbox) {
           mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
@@ -207,9 +214,9 @@ public class ClientController implements MailListObserver {
       mailListView.getItems().setAll(previousSentEmails);
       return;
     }
-    if (clientModel.connectToServer(host, port)) {
+    if (Client.connectToServer(host, port)) {
       mailSendListModel.clear();
-      mailSendListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,true));
+      mailSendListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,true));
       previousSentEmails.addAll(mailSendListModel.getEmails());
 
     } else {
@@ -228,9 +235,9 @@ public class ClientController implements MailListObserver {
       return;
     }
 
-    if (clientModel.connectToServer(host, port)) {
+    if (Client.connectToServer(host, port)) {
       mailReceivedListModel.clear();
-      mailReceivedListModel.addEmails(clientModel.receiveEmail(clientModel.getUserMail(), null,false));
+      mailReceivedListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,false));
       previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
 
     } else {
