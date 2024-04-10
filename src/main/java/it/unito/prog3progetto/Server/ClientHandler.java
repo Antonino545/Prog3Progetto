@@ -49,7 +49,6 @@ class ClientHandler implements Runnable {
         outStream.flush();
         return;
       }
-      Platform.runLater(() -> server.textArea.appendText("User is authenticated.\n"));
       assert clientObject instanceof UUID;
       userMail = getUserEmail((UUID) clientObject);
 
@@ -82,8 +81,8 @@ class ClientHandler implements Runnable {
           outStream.flush();
           break;
       }
-    } catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error communicating with the client: " + e.getMessage() + ".\n"));
+    } catch (IOException  | ClassNotFoundException e) {
+      if(e.getMessage()!=null) Platform.runLater(() -> server.textArea.appendText("Error communicating with the client: " + e.getMessage() + ".\n"));
     } finally {
       closeStreams();
     }

@@ -190,6 +190,9 @@ spinner.setVisible(true);
 
 
   public void FullRefresh()  {
+    spinner.setVisible(true);
+
+    new Thread(() -> {
     if(Client.connectToServer(host, port)){
       if(isInbox){
         mailReceivedListModel.clear();
@@ -203,6 +206,8 @@ spinner.setVisible(true);
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
+    }).start();
+    Platform.runLater(() -> spinner.setVisible(false));
   }
 
 

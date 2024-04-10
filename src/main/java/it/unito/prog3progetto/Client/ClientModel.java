@@ -150,6 +150,7 @@ public class ClientModel {
       outputStream.flush();
       Object receivedObject = inputStream.readObject();
       if (receivedObject instanceof ArrayList) {
+        System.out.println("Email ricevute con successo.");
         return (ArrayList<Email>) receivedObject;
       } else {
         System.out.println("Il dato ricevuto non è un ArrayList<Email>.");

@@ -28,13 +28,10 @@ public class ServerController {
       serverThread.setDaemon(true);
       serverThread.start();
 
-      // Aggiungi un messaggio di avvio alla TextArea
-
-      // Imposta lo stato del server come avviato
       serverAvviato = true;
     } else {
       // Se il server è già avviato, segnala che è già in esecuzione
-      logTextArea.appendText("Il server è già avviato.\n");
+       logTextArea.appendText("Il server è già avviato.\n");
     }
   }
   public void closeServer(){
