@@ -7,6 +7,7 @@ import it.unito.prog3progetto.Model.MailListModel;
 import it.unito.prog3progetto.Model.MailListObserver;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -29,6 +31,7 @@ public class ClientController implements MailListObserver {
   @FXML
   public Label indexLengthLabel,email,sendmaillabel;
   public HBox inbox;
+  public ProgressIndicator spinner;
   @FXML
   private ListView<Email> mailListView;
   public HBox sendemail;
@@ -111,6 +114,8 @@ public class ClientController implements MailListObserver {
   public void logout() throws IOException {
     if(Client.connectToServer(host, port))
       if(Client.logout()){
+        loadLogin(primaryStage);// Carica la schermata di login
+
         alert("Logout effettuato", Alert.AlertType.INFORMATION);
       }
     else {
@@ -119,7 +124,6 @@ public class ClientController implements MailListObserver {
     else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
-    loadLogin(primaryStage);// Carica la schermata di login
     autoRefreshTimeline.stop();// Ferma il refresh automatico
     Client.closeConnections();// Chiude le connessioni con il server
   }
@@ -132,6 +136,8 @@ public class ClientController implements MailListObserver {
     Scene scene = new Scene(root);
     scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
     primaryStage.setScene(scene);
+    primaryStage.setWidth(500);
+    primaryStage.setHeight(600);
     primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
     primaryStage.show();
   }
@@ -140,27 +146,46 @@ public class ClientController implements MailListObserver {
    * Metodo per aggiornare la lista delle email ricevute o inviate
    */
   public void Refresh() {
-    if (Client != null && Client.connectToServer(host, port) ) {
-      if(isInbox){
-      Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getLast();
-      if(lastEmail == null) {
-        FullRefresh();
-        return;
-      }
-      mailReceivedListModel.addEmails(Client.receiveEmail( Client.getUserMail(), lastEmail.getDatesendMail(),false));
+    // Mostra lo spinner
+spinner.setVisible(true);
 
-      }
-      else {
-        Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
-        if(lastEmail == null) {
-          FullRefresh();
-          return;
+    new Thread(() -> {
+      boolean connectionSuccessful = false;
+
+      if (Client != null && Client.connectToServer(host, port)) {
+        connectionSuccessful = true;
+
+        if (isInbox) {
+          Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getLast();
+          if (lastEmail == null) {
+            FullRefresh();
+            return;
+          }
+          mailReceivedListModel.addEmails(Client.receiveEmail(Client.getUserMail(), lastEmail.getDatesendMail(), false));
+
+        } else {
+          Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
+          if (lastEmail == null) {
+            FullRefresh();
+            return;
+          }
+          mailSendListModel.addEmails(Client.receiveEmail(Client.getUserMail(), lastEmail.getDatesendMail(), true));
         }
-        mailSendListModel.addEmails(Client.receiveEmail( Client.getUserMail(), lastEmail.getDatesendMail(),true));}
-    } else {
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
-    }
+      }
+
+      // Nasconde lo spinner
+      Platform.runLater(() -> spinner.setVisible(false));
+      if (!connectionSuccessful) {
+        autoRefreshTimeline.setDelay(autoRefreshTimeline.getCurrentTime().add(autoRefreshTimeline.getCurrentTime()));
+
+        Platform.runLater(() -> {
+          alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+        });
+      }
+    }).start();
   }
+
+
 
   public void FullRefresh()  {
     if(Client.connectToServer(host, port)){

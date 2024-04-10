@@ -11,7 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300" minWidth="300"  xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.Controller.ClientController">
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.StackPane?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300" minWidth="300" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.Controller.ClientController">
    <left>
       <VBox  spacing="10.0" styleClass="left-pannel" stylesheets="@style.css" BorderPane.alignment="CENTER">
          <children>
@@ -85,8 +87,12 @@
                      <VBox spacing="10">
                         <Button onAction="#logout" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Logout" />
                         <Button onAction="#Refresh" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Refresh" />
-                     </VBox>
 
+                     </VBox>
+                     <StackPane>
+                        <ProgressIndicator style="-fx-min-height: 100px;-fx-min-width: 100px"  fx:id="spinner" visible="false"/>
+
+                     </StackPane>
                   </children>
                </VBox>
             </VBox>
@@ -94,6 +100,9 @@
       </VBox>
    </left>
    <center>
-      <ListView fx:id="mailListView" prefHeight="400" prefWidth="600" styleClass="Listmail" />
+
+      <ListView fx:id="mailListView" prefHeight="400" prefWidth="600" styleClass="Listmail" >
+
+      </ListView>
    </center>
 </BorderPane>

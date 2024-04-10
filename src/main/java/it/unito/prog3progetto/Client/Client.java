@@ -18,7 +18,7 @@ public class  Client {
   private final String mail;
   private UUID token;
 
-  private final int MAX_ATTEMPTS = 3;
+  private final int MAX_ATTEMPTS = 1  ;
   private final int DEFAULT_TIMEOUT = 5000;
 
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -40,7 +40,7 @@ public class  Client {
   }
 
   public boolean connectToServer(String host, int port) {
-    Future<Boolean> future = executor.submit(() -> {
+    Thread connectionThread = new Thread(() -> {
       int attempts = 0;
       boolean success = false;
 
@@ -56,17 +56,19 @@ public class  Client {
           }
         }
       }
-
-      return success;
     });
 
+    connectionThread.start();
+
     try {
-      return future.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+      connectionThread.join(DEFAULT_TIMEOUT);
+      return !connectionThread.isAlive();
+    } catch (InterruptedException e) {
       e.printStackTrace();
       return false;
     }
   }
+
 
   private boolean tryCommunication(String host, int port) {
     try {
@@ -84,7 +86,6 @@ public class  Client {
       return false;
     }
   }
-
   public UUID sendAndCheckCredentials(String host, int port, String email, String password) {
     try {
       User user = new User(email, password);

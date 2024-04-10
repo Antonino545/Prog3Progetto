@@ -69,7 +69,9 @@ public class MailItemCell extends ListCell<Email> {
           scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
           Stage stage = new Stage();
           stage.setScene(scene);
-
+          stage.setTitle("Dettagli Email");
+          stage.setMinHeight(400);
+          stage.setMinWidth(600);
           stage.show();
 
 

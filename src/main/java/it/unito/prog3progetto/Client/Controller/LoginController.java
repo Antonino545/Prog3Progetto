@@ -1,28 +1,34 @@
 package it.unito.prog3progetto.Client.Controller;
 
 import it.unito.prog3progetto.Client.Client;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
+import static it.unito.prog3progetto.Model.Lib.alert;
+
 
 public class LoginController {
-    @FXML
-    private TextField emailTextField;
-    @FXML
-    private TextField passwordTextField;
+  @FXML
+  private ProgressIndicator spinner;
+
+  @FXML
+  private TextField emailTextField;
+  @FXML
+  private TextField passwordField;
 
     private Stage primaryStage; // Reference to your primary stage
 
@@ -31,123 +37,96 @@ public class LoginController {
         this.primaryStage = primaryStage;
     }
 
-   public void initialize() {
-     emailTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-       @Override
-       public void handle(KeyEvent event) {
-         if (event.getCode().equals(KeyCode.ENTER)) {
-           Login();
-         }
-       }
-     });
+  public void initialize() {
+    emailTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ENTER)) {
+          loginAsync();
+        }
+      }
+    });
 
-     passwordTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-       @Override
-       public void handle(KeyEvent event) {
-         if (event.getCode().equals(KeyCode.ENTER)) {
-           Login();
-         }
-       }
-     });
-   }
+    passwordField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ENTER)) {
+          loginAsync();
+        }
+      }
+    });
 
+  }
 
     public String getEmailFieldValue() {
         return emailTextField.getText();
 
     }
-    public String getPasswordFieldValue() {
-        return passwordTextField.getText();
-    }
+
     @FXML
 
 
 
-  private void Login() {
-    String useremail = emailTextField.getText();
-    String password = passwordTextField.getText();
+    private void loginAsync() {
+      String useremail = emailTextField.getText();
+      String password = passwordField.getText();
 
-      if(Objects.equals(useremail, "") || Objects.equals(password, "")){
-        alert("Inserire email e password");
+      if (Objects.equals(useremail, "") || Objects.equals(password, "")) {
+        Platform.runLater(() -> alert("Inserire email e password", Alert.AlertType.ERROR));
         return;
       }
+
       String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
       if (!useremail.matches(emailPattern)) {
-        alert("Inserire un indirizzo email valido , Formato non valido");
+        Platform.runLater(() -> alert("Inserire un indirizzo email valido, Formato non valido", Alert.AlertType.ERROR));
         return;
       }
+
+      String host = "127.0.0.1";
+      int port = 4445;
+      spinner.setVisible(true);
       Client clientModel = new Client(useremail);
-      String host= "127.0.0.1";
-      int port= 4445;
-    if(clientModel.connectToServer(host, port)){
-      System.out.println("Connessione al server riuscita");
-    }else{
-      System.out.println("Connessione al server non riuscita");
-      alert("Connessione al server non riuscita");
-      return;
-    }
+      CompletableFuture.supplyAsync(() -> {
 
-    UUID token = clientModel.sendAndCheckCredentials(host, port, useremail, password);
-    clientModel.setToken(token);
-    if (token != null) {
-      try {
-        System.out.println("Login riuscito");
-        FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Client.fxml").toURI().toURL());
-        Parent root = loader.load();
-        ClientController clientController = loader.getController();
+        if (clientModel.connectToServer(host, port)) {
+          System.out.println("Connessione al server riuscita");
+          UUID token = clientModel.sendAndCheckCredentials(host, port, useremail, password);
+          clientModel.setToken(token);
+          return token;
+        } else {
+          return null;
+        }
+      }).thenAccept(token -> {
+        if (token != null) {
+          Platform.runLater(() -> spinner.setVisible(false));
 
-        clientController.setPrimaryStage(primaryStage);
-
-        // Imposta manualmente il clientModel
-        clientController.initialize(clientModel);
-
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
-
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("ClientModel");
-
-        // Aggiungi il listener per gestire le dimensioni della finestra quando è massimizzata
-        primaryStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-          if (newValue) { // Se la finestra è massimizzata
-            // Imposta le dimensioni minime in base alle dimensioni correnti
-            primaryStage.setMinWidth(primaryStage.getWidth());
-            primaryStage.setMinHeight(primaryStage.getHeight());
-          } else { // Se la finestra non è massimizzata
-            // Ripristina le dimensioni minime predefinite
-            primaryStage.setMinWidth(300); // Imposta le dimensioni minime desiderate in base alle tue esigenze
-            primaryStage.setMinHeight(400); // Imposta le dimensioni minime desiderate in base alle tue esigenze
+          System.out.println("Login riuscito");
+          try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/unito/prog3progetto/Client/Client.fxml"));
+            Parent root = loader.load();
+            ClientController clientController = loader.getController();
+            clientController.setPrimaryStage(primaryStage);
+            clientController.initialize(clientModel); // Pass the clientModel
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/it/unito/prog3progetto/Client/style.css").toExternalForm());
+            Platform.runLater(() -> {
+              primaryStage.setScene(scene);
+              primaryStage.setTitle("Client Email - Progetto di Programmazione 3");
+              primaryStage.setMinHeight(600);
+              primaryStage.setMinWidth(800);
+              primaryStage.show();
+            });
+          } catch (IOException e) {
+            e.printStackTrace();
           }
-        });
+        } else {
+          Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+          Platform.runLater(() -> spinner.setVisible(false));
 
-        primaryStage.show();
-
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-
-
-
-
-    } else {
-      // Handle unsuccessful login
-      alert("Credenziali non valide");
-      clientModel.closeConnections();
-      return;
+        }
+      });
     }
 
-
-  }
-
-  public void alert(String message){
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("Errore di accesso");
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-
-  }
 
 
 
