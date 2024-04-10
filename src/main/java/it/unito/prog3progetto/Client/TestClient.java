@@ -24,20 +24,20 @@ public class TestClient {
     for (Client clientModel : clientModels) {
       Thread thread = new Thread(() -> {
         if (clientModel.connectToServer(host, port)) {
-          System.out.println("Connessione al server riuscita per " + clientModel.getUserMail());
-          UUID token = clientModel.sendAndCheckCredentials(host, port, clientModel.getUserMail(), "password");
+          System.out.println("Connessione al server riuscita per " + clientModel.getEMail());
+          UUID token = clientModel.sendAndCheckCredentials(clientModel.getEMail(), "password");
           clientModel.setToken(token);
           if (token != null) {
-            System.out.println("Credenziali corrette per " + clientModel.getUserMail());
+            System.out.println("Credenziali corrette per " + clientModel.getEMail());
             if (clientModel.connectToServer(host, port)) {
               performThreadOperation(clientModel, host, port, randomContent);
             }
 
           } else {
-            System.out.println("Credenziali incorrette per " + clientModel.getUserMail());
+            System.out.println("Credenziali incorrette per " + clientModel.getEMail());
           }
         } else {
-          System.out.println("Connessione al server non riuscita per " + clientModel.getUserMail());
+          System.out.println("Connessione al server non riuscita per " + clientModel.getEMail());
         }
       });
       thread.start();
@@ -53,7 +53,7 @@ public class TestClient {
         ArrayList<String> destinations = new ArrayList<>();
         destinations.add("stefano.bianchi@progmail.com");
         if (clientModel.connectToServer(host, port)) {
-          System.out.println(clientModel.SendMail( new Email(clientModel.getUserMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
+          System.out.println(clientModel.SendMail( new Email(clientModel.getEMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
         }
       }
 

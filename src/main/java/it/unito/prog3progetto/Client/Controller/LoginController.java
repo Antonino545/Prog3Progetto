@@ -90,7 +90,7 @@ public class LoginController {
 
         if (clientModel.connectToServer(host, port)) {
           System.out.println("Connessione al server riuscita");
-          UUID token = clientModel.sendAndCheckCredentials(host, port, useremail, password);
+          UUID token = clientModel.sendAndCheckCredentials(useremail, password);
           clientModel.setToken(token);
           return token;
         } else {

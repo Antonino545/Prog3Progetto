@@ -4,47 +4,45 @@ import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.User;
 
 import java.io.*;
-import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.*;
 
 public class  Client {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
-  private final String mail;
+  private final String email;
   private UUID token;
 
-  private final int MAX_ATTEMPTS = 1  ;
   private final int DEFAULT_TIMEOUT = 5000;
 
-  private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-  public Client(String mail) {
-    this.mail = mail;
+  public Client(String email) {
+    this.email = email;
   }
 
-  public String getUserMail() {
-    return mail;
+  public String getEMail() {
+    return email;
   }
 
-  public UUID getToken() {
-    return token;
-  }
 
   public void setToken(UUID token) {
     this.token = token;
   }
 
+  /**
+   * Metodo per connettersi al server tramite socket in piu tentativi
+   * @param host indirizzo del server
+   * @param port porta del server
+   * @return true se la connessione è andata a buon fine, false altrimenti
+   */
   public boolean connectToServer(String host, int port) {
-    Thread connectionThread = new Thread(() -> {
       int attempts = 0;
       boolean success = false;
-
-      while (attempts < MAX_ATTEMPTS && !success) {
+    int MAX_ATTEMPTS = 3;// Numero massimo di tentativi di connessione al server
+    while (attempts < MAX_ATTEMPTS && !success) {
         attempts++;
         success = tryCommunication(host, port);
 
@@ -52,24 +50,19 @@ public class  Client {
           try {
             Thread.sleep(DEFAULT_TIMEOUT);
           } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Errore durante il tentativo di connessione al server");
           }
         }
       }
-    });
-
-    connectionThread.start();
-
-    try {
-      connectionThread.join(DEFAULT_TIMEOUT);
-      return !connectionThread.isAlive();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-      return false;
+      return success;
     }
-  }
 
-
+  /**
+   * Metodo per provare a comunicare con il server
+   * @param host indirizzo del server
+   * @param port porta del server
+   * @return true se la comunicazione è andata a buon fine, false altrimenti
+   */
   private boolean tryCommunication(String host, int port) {
     try {
       socket = new Socket(host, port);
@@ -78,26 +71,34 @@ public class  Client {
 
       outputStream.flush();
       return true;
-    } catch (ConnectException e) {
-      System.out.println("[ClientModel " + this.mail + "] Server non raggiungibile");
-      return false;
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println("[ClientModel " + this.email + "] Server non raggiungibile");
       return false;
     }
   }
-  public UUID sendAndCheckCredentials(String host, int port, String email, String password) {
+
+  /**
+   * Metodo per inviare le credenziali al server e ricevere il token
+   * @param email email dell'utente
+   * @param password password dell'utente
+   * @return token dell'utente se le credenziali sono corrette, null altrimenti
+   */
+  public UUID sendAndCheckCredentials(String email, String password) {
     try {
-      User user = new User(email, password);
+      User user ;
       outputStream.writeObject("LOGIN");
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
       if (inputStream.readObject().equals(true)) {
         System.out.println("Server pronto a ricevere le credenziali");
+        user = new User(email, password);
+      }
+      else {
+        System.out.println("Errore durante il login il server non ha risposto correttamente");
+        return null;
       }
       outputStream.writeObject(user);
       outputStream.flush();
-      socket.setSoTimeout(DEFAULT_TIMEOUT);
       boolean success = (boolean) inputStream.readObject();
       if (success) {
         Object token = inputStream.readObject();
@@ -112,48 +113,74 @@ public class  Client {
         System.out.println("Credenziali errate.");
         return null;
       }
-    } catch (Exception e) {
+    } catch (SocketTimeoutException e) {
       System.out.println("Timeout di connessione");
+    } catch (IOException | ClassNotFoundException e) {
+      System.out.println("Errore durante la comunicazione con il server.");
+    } finally {
       closeConnections();
-      return null;
     }
-
+    return null;
   }
 
+  /**
+   * Metodo per ricevere le email
+   * @param email email dell'utente
+   * @param lastmail ultima email ricevuta
+   * @param isSend true se si vogliono ricevere le email inviate, false altrimenti
+   * @return lista delle email ricevute
+   */
   public ArrayList<Email> receiveEmail(String email, Date lastmail, boolean isSend) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
-      if (isSend) {
-        outputStream.writeObject("RECEIVESENDEMAIL");
-      } else {
-        outputStream.writeObject("RECEIVEEMAIL");
-      }
+
+      outputStream.writeObject(isSend ? "RECEIVESENDEMAIL" : "RECEIVEEMAIL");
       outputStream.flush();
-      socket.setSoTimeout(DEFAULT_TIMEOUT);
+
       if (inputStream.readObject().equals(true)) {
-        System.out.println("Server pronto a ricevere le email");
+        System.out.println("Server pronto a inviare le mail ricevere le email");
+      } else {
+        System.out.println("Errore durante il recupero delle email il server non ha risposto correttamente");
+        return new ArrayList<>();
       }
       outputStream.writeObject(email);
       outputStream.flush();
       outputStream.writeObject(lastmail);
       outputStream.flush();
-      socket.setSoTimeout(DEFAULT_TIMEOUT);
-
-      return (ArrayList<Email>) inputStream.readObject();
+      Object receivedObject = inputStream.readObject();
+      if (receivedObject instanceof ArrayList) {
+        return (ArrayList<Email>) receivedObject;
+      } else {
+        System.out.println("Il dato ricevuto non è un ArrayList<Email>.");
+        return new ArrayList<>();
+      }
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      System.out.println("Errore durante la comunicazione con il server. Errore:" + e.getMessage());
       return new ArrayList<>();
+    }finally {
+      closeConnections();
     }
   }
 
+
+  /**
+   * Metodo per inviare una email
+   * @param email email da inviare
+   * @return true se l'invio è andato a buon fine, false altrimenti
+   */
   public boolean SendMail(Email email) {
     try {
-      System.out.println("Prova di invio email");
       outputStream.writeObject(token);
       outputStream.flush();
       outputStream.writeObject("SENDMAIL");
       outputStream.flush();
+      if (inputStream.readObject().equals(true)) {
+        System.out.println("Server pronto a inviare la email");
+      } else {
+        System.out.println("Errore durante l'invio dell'email server non ha risposto correttamente");
+        return false;
+      }
       outputStream.writeObject(email);
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
@@ -165,11 +192,17 @@ public class  Client {
       }
       return success;
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      System.out.println("Errore durante l'invio della mail .\n Errore:" + e.getMessage());
       return false;
+    }finally {
+      closeConnections();
     }
   }
 
+  /**
+   * Metodo per fare il logout
+   * @return true se il logout è andato a buon fine, false altrimenti
+   */
   public boolean logout() {
     try {
       outputStream.writeObject(token);
@@ -179,7 +212,7 @@ public class  Client {
       if (inputStream.readObject().equals(true)) {
         System.out.println("Server pronto a fare il logout");
       } else {
-        System.out.println("Errore durante il logout.");
+        System.out.println("Errore durante il logout il server non ha risposto correttamente");
         return false;
       }
       outputStream.writeObject(token);
@@ -193,36 +226,49 @@ public class  Client {
       }
       return success;
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      System.out.println("Errore durante il logout.\n Errore:" + e.getMessage());
       return false;
+    }
+    finally {
+      closeConnections();
     }
   }
 
+  /**
+   * Metodo per controllare se l'email esiste
+   * @param email email da controllare
+   * @return true se l'email esiste, false altrimenti
+   */
   public boolean CheckEmail(String email) {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
       outputStream.writeObject("CHECKEMAIL");
       outputStream.flush();
-      inputStream.readObject();
+      if (inputStream.readObject().equals(true)) {
+        System.out.println("Server pronto a fare il check dell'email");
+      } else {
+        System.out.println("Errore durante il check dell'email il server non ha risposto correttamente");
+        return false;
+      }
       outputStream.writeObject(email);
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
-      boolean success = (boolean) inputStream.readObject();
-      if (success) {
-        System.out.println("Email esistente.");
-      } else {
-        System.out.println("Email non esistente.");
-      }
-      return success;
-    } catch (IOException e) {
-      e.printStackTrace();
+      return (boolean) inputStream.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      System.out.println("Errore durante il check dell'email.\n Errore:" + e.getMessage());
       return false;
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
+    } finally {
+      closeConnections();
     }
   }
 
+  /**
+   * Metodo per cancellare una email
+   * @param email email da cancellare
+   * @param isInbox true se l'email è nella casella di posta in arrivo, false altrimenti
+   * @return true se l'email è stata cancellata, false altrimenti
+   */
   public boolean DeleteMail(Email email, boolean isInbox) {
     try {
       outputStream.writeObject(token);
@@ -233,6 +279,12 @@ public class  Client {
         outputStream.writeObject("DELETEMAILSEND");
       }
       outputStream.flush();
+      if (inputStream.readObject().equals(true)) {
+        System.out.println("Server pronto a cancellare l'email");
+      } else {
+        System.out.println("Errore durante la cancellazione dell'email il server non ha risposto correttamente");
+        return false;
+      }
       outputStream.writeObject(email);
       outputStream.flush();
       socket.setSoTimeout(DEFAULT_TIMEOUT);
@@ -244,11 +296,18 @@ public class  Client {
       }
       return success;
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      System.out.println("Errore durante la cancellazione dell'email.\n Errore:" + e.getMessage());
       return false;
+    }
+    finally {
+      closeConnections();
     }
   }
 
+  /**
+   * Metodo per chiudere le connessioni
+   *
+   */
   public void closeConnections() {
     try {
       if (outputStream != null) {
@@ -262,7 +321,7 @@ public class  Client {
       if (socket != null)
         socket.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println("Errore durante la chiusura delle connessioni.+ Errore:" + e.getMessage());
     }
   }
 }

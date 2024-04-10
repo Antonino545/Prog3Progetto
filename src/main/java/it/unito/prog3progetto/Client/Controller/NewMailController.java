@@ -112,7 +112,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
     if (success) {
 
-      Email email = new Email(clientModel.getUserMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
+      Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
 
       String host= "127.0.0.1";
       int port= 4445;

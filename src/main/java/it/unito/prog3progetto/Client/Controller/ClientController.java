@@ -51,7 +51,7 @@ public class ClientController implements MailListObserver {
   public void initialize(Client clientModel) throws IOException {
     this.Client = clientModel;
     if (clientModel != null) {
-      email.setText(clientModel.getUserMail());
+      email.setText(clientModel.getEMail());
       mailReceivedListModel = new MailListModel();
       mailSendListModel=new MailListModel();
       mailReceivedListModel.addObserver(this); // Registra il controller come osservatore
@@ -103,6 +103,8 @@ public class ClientController implements MailListObserver {
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Nuova Email");
+      stage.setMinHeight(400);
+      stage.setMinWidth(600);
       stage.show();
     } catch (IOException e) {
       e.printStackTrace();
@@ -161,7 +163,7 @@ spinner.setVisible(true);
             FullRefresh();
             return;
           }
-          mailReceivedListModel.addEmails(Client.receiveEmail(Client.getUserMail(), lastEmail.getDatesendMail(), false));
+          mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), false));
 
         } else {
           Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
@@ -169,7 +171,7 @@ spinner.setVisible(true);
             FullRefresh();
             return;
           }
-          mailSendListModel.addEmails(Client.receiveEmail(Client.getUserMail(), lastEmail.getDatesendMail(), true));
+          mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), true));
         }
       }
 
@@ -191,11 +193,11 @@ spinner.setVisible(true);
     if(Client.connectToServer(host, port)){
       if(isInbox){
         mailReceivedListModel.clear();
-        mailReceivedListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,false));
+        mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,false));
       }
       else {
         mailSendListModel.clear();
-        mailSendListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,true));
+        mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,true));
       }
       System.out.println("Email ricevute");
     } else {
@@ -241,7 +243,7 @@ spinner.setVisible(true);
     }
     if (Client.connectToServer(host, port)) {
       mailSendListModel.clear();
-      mailSendListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,true));
+      mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,true));
       previousSentEmails.addAll(mailSendListModel.getEmails());
 
     } else {
@@ -262,7 +264,7 @@ spinner.setVisible(true);
 
     if (Client.connectToServer(host, port)) {
       mailReceivedListModel.clear();
-      mailReceivedListModel.addEmails(Client.receiveEmail(Client.getUserMail(), null,false));
+      mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,false));
       previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
 
     } else {
