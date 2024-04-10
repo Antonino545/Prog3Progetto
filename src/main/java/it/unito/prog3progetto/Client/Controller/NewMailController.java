@@ -1,5 +1,5 @@
 package it.unito.prog3progetto.Client.Controller;
-import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Model.Email;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,10 +21,10 @@ public class NewMailController {
   public TextArea ContentField;
   @FXML
   public Button sendmailbutton;
-  private Client clientModel;
+  private ClientModel clientModel;
 
 
-  public void initialize( Client clientModel) throws IOException {
+  public void initialize( ClientModel clientModel) throws IOException {
   this.clientModel = clientModel;
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(event -> {
@@ -37,7 +37,7 @@ public class NewMailController {
 
   }
 
-public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, Client clientModel) {
+public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, ClientModel clientModel) {
     EventHandler<ActionEvent> handler = event -> {
         try {
             sendMail();

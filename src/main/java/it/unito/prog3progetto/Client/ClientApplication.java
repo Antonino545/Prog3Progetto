@@ -21,7 +21,6 @@ public class ClientApplication extends Application {
         controller.setPrimaryStage(primaryStage);
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
-
         primaryStage.setScene(scene);
         primaryStage.setWidth(500);
         primaryStage.setHeight(600);

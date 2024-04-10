@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-public class  Client {
+public class ClientModel {
   private Socket socket = null;
   private ObjectOutputStream outputStream = null;
   private ObjectInputStream inputStream = null;
@@ -19,7 +19,7 @@ public class  Client {
 
   private final int DEFAULT_TIMEOUT = 5000;
 
-  public Client(String email) {
+  public ClientModel(String email) {
     this.email = email;
   }
 

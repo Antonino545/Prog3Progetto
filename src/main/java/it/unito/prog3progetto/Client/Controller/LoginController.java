@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Client.ClientModel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -85,7 +85,7 @@ public class LoginController {
       String host = "127.0.0.1";
       int port = 4445;
       spinner.setVisible(true);
-      Client clientModel = new Client(useremail);
+      ClientModel clientModel = new ClientModel(useremail);
       CompletableFuture.supplyAsync(() -> {
 
         if (clientModel.connectToServer(host, port)) {

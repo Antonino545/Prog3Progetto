@@ -1,6 +1,6 @@
 package it.unito.prog3progetto.Client.Controller;
 
-import it.unito.prog3progetto.Client.Client;
+import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Model.Email;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -22,9 +22,9 @@ public class MailDetailController {
   ArrayList<String> destinations;
   public Label datalabel;
   UUID id;
-  private Client clientModel;
+  private ClientModel clientModel;
 
-  public void initialize(Client clientModel, Email email) throws IOException {
+  public void initialize(ClientModel clientModel, Email email) throws IOException {
     this.clientModel = clientModel;
     senderLabel.setText(email.getSender());
     subjectLabel.setText(email.getSubject());
