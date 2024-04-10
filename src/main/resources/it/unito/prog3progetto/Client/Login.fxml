@@ -47,8 +47,8 @@
             </PasswordField>
 
             <StackPane>
-                <Button alignment="CENTER" onAction="#loginAsync" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="75.0" prefWidth="417.0"
-                        text="Accedi"  styleClass="button-primary">
+                <Button alignment="CENTER" onAction="#login" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="75.0" prefWidth="417.0"
+                        text="Accedi" styleClass="button-primary">
                     <font>
                         <Font size="43.0"/>
                     </font>

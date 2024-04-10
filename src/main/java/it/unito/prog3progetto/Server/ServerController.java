@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Server;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -34,6 +35,15 @@ public class ServerController {
     } else {
       // Se il server è già avviato, segnala che è già in esecuzione
       logTextArea.appendText("Il server è già avviato.\n");
+    }
+  }
+  public void closeServer(){
+    if(serverAvviato){
+      serverAvviato = false;
+      server.close();
+      Platform.runLater(() -> logTextArea.appendText("Server chiuso.\n"));
+    } else {
+      logTextArea.appendText("Il server non è attivo.\n");
     }
   }
 

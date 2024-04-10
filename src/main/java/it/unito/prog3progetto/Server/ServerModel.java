@@ -22,8 +22,13 @@ public class ServerModel {
 	private volatile boolean isRunning = true; // Flag to control the server's running state
 
 	public void listen(int port) {
+
 		try {
 			serverSocket = new ServerSocket(port);
+			isRunning = true;
+			System.out.println("ServerModel.listen");
+			System.out.println("port = " + port);
+			System.out.println(isRunning);
 			textArea.appendText("Server avviato sulla porta: " + port + ". In attesa di connessioni...\n");
 
 			loadAuthenticatedTokensFromFile(); // Carica i token dal file al avvio del server
@@ -36,13 +41,14 @@ public class ServerModel {
 			}
 
 		} catch (IOException e) {
-			textArea.appendText("Errore nell'avvio del server sulla porta " + port + ".\n");
+
+			if(isRunning)// se il server non è stato chiuso volontariamente dall'utente dai un messaggio di errore
+				textArea.appendText("Errore nell'avvio del server sulla porta " + port + ".\n" + e.getMessage() + "\n");
 
 		} finally {
 			try {
 				if (serverSocket != null)
 					serverSocket.close();
-				textArea.appendText("Server chiuso.\n");
 
 			} catch (IOException e) {
 				textArea.appendText("Errore nella chiusura del server.\n");
@@ -142,4 +148,16 @@ public class ServerModel {
 		}
 		return database;
 	}
+
+	public void close() {
+		try {
+			isRunning = false;
+			if (serverSocket != null && !serverSocket.isClosed()) {
+				serverSocket.close();
+			}
+		} catch (IOException e) {
+			textArea.appendText("Errore nella chiusura del server socket.\n");
+		}
+	}
+
 }

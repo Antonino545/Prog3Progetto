@@ -17,20 +17,33 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Classe per la rappresentazione grafica di una singola email nella lista delle email
+ */
 public class MailItemCell extends ListCell<Email> {
   private static ClientController clientController;
   private final ClientModel client;
   private static final String host = "127.0.0.1";
   private static final int port = 4445;
 
+  /**
+   * Costruttore della classe MailItemCell
+   * @param clientController Controller del client
+   * @param client Modello del client
+   */
   public MailItemCell(ClientController clientController, ClientModel client) {
     this.client = client;
     MailItemCell.clientController = clientController;
   }
 
+  /**
+   * Metodo per aggiornare la grafica di una singola email
+   * @param email Email da visualizzare
+   * @param empty Flag per indicare se la cella è vuota
+   */
   @Override
   protected void updateItem(Email email, boolean empty) {
-    super.updateItem(email, empty);
+    super.updateItem(email, empty); // Chiama il metodo della superclasse
     if (email != null && !empty) {
       HBox hbox = new HBox();
       VBox vbox = new VBox();
@@ -40,7 +53,7 @@ public class MailItemCell extends ListCell<Email> {
       Label subjectLabel = new Label("Oggetto: " + email.getSubject());
       Label dateLabel = new Label("Data: " + email.getItalianDate());
       Label contentLabel = new Label(email.getContent().split("\n")[0]); // Mostra solo la prima riga del contenuto
-      vbox.getChildren().addAll(senderLabel, dateLabel, subjectLabel, contentLabel, toLabel);
+      vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
       Button deleteButton = new Button("Cancella");
       deleteButton.getStyleClass().add("button-primary");
       deleteButton.setOnAction(event -> deleteEmail(email));
