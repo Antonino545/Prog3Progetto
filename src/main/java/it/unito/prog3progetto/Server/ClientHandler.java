@@ -22,6 +22,7 @@ class ClientHandler implements Runnable {
   private String userMail;
   private List<String> database;
 
+
   public ClientHandler(ServerModel server, Socket socket) {
     this.server = server;
     this.socket = socket;
@@ -34,25 +35,30 @@ class ClientHandler implements Runnable {
   private String getUserEmail(UUID token) {
     return server.authenticatedTokens.get(token);
   }
+
+  /**
+   *  Questo metodo viene eseguito quando il thread viene avviato
+   *  e gestisce le richieste del client in base all'oggetto inviato dal client
+   */
   @Override
   public void run() {
     try {
-      openStreams();
-      Object clientObject = inStream.readObject();
+      openStreams();// Apre gli stream di input e output per comunicare con il client
+      Object clientObject = inStream.readObject(); // Legge l'oggetto inviato dal client
       if (clientObject != null && clientObject.toString().equals("LOGIN")) {
         handleLoginRequest();
         return;
       }
-
+      // Verifica se l'utente è autenticato
       if (!isAuthenticated(clientObject instanceof UUID ? (UUID) clientObject : null)) {
         Platform.runLater(() -> server.textArea.appendText("User is not authenticated.\n"));
+        // Invia false al client per indicare che l'utente non è autenticato
         outStream.writeObject(false);
         outStream.flush();
         return;
       }
       assert clientObject instanceof UUID;
       userMail = getUserEmail((UUID) clientObject);
-
       clientObject = inStream.readObject();
       switch (clientObject.toString()) {
         case "SENDMAIL":

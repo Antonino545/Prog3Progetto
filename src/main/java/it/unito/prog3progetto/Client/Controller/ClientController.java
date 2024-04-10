@@ -40,8 +40,6 @@ public class ClientController implements MailListObserver {
   private Stage primaryStage;
   private ClientModel Client;
   private MailListModel mailReceivedListModel,mailSendListModel;
-  private ArrayList<Email> previousSentEmails = new ArrayList<>();
-  private ArrayList<Email> previousReceivedEmails = new ArrayList<>();
 
   private final String host = "127.0.0.1";
   private final int port = 4445;
@@ -230,11 +228,9 @@ public class ClientController implements MailListObserver {
         System.out.println(isInbox);
         if(isInbox) {
           mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
-          previousReceivedEmails.remove(email); // Rimuovi l'email dalla lista delle email ricevute precedentemente
         } else{
 
           mailSendListModel.removeEmail(email);
-          previousSentEmails.remove(email);
 
         }
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
@@ -255,14 +251,14 @@ public class ClientController implements MailListObserver {
   public void sendemails() {
     isInbox = false;
     changeButton(sendemail,inbox);
-    if (!previousSentEmails.isEmpty()) {
-      mailListView.getItems().setAll(previousSentEmails);
+    if (!mailSendListModel.getEmails().isEmpty()) {
+      Refresh();
+      mailListView.getItems().setAll(mailSendListModel.getEmails());
       return;
     }
     if (Client.connectToServer(host, port)) {
       mailSendListModel.clear();
       mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,true));
-      previousSentEmails.addAll(mailSendListModel.getEmails());
 
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
@@ -275,15 +271,15 @@ public class ClientController implements MailListObserver {
   public void inboxemail() {
     changeButton(inbox,sendemail);
     isInbox = true;
-    if (!previousReceivedEmails.isEmpty()) {
-      mailListView.getItems().setAll(previousReceivedEmails);
+    if (!mailReceivedListModel.getEmails().isEmpty()) {
+      Refresh();
+      mailListView.getItems().setAll(mailReceivedListModel.getEmails());
       return;
     }
 
     if (Client.connectToServer(host, port)) {
       mailReceivedListModel.clear();
       mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,false));
-      previousReceivedEmails.addAll(mailReceivedListModel.getEmails());
 
     } else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);

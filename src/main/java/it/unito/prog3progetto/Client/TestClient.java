@@ -51,7 +51,7 @@ public class TestClient {
 
       for (int i = 0; i < 3; i++) {
         ArrayList<String> destinations = new ArrayList<>();
-        destinations.add("stefano.bianchi@progmail.com");
+        destinations.add("luca.verdi@progmail.com");
         if (clientModel.connectToServer(host, port)) {
           System.out.println(clientModel.SendMail( new Email(clientModel.getEMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
         }

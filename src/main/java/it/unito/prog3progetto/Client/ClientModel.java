@@ -134,7 +134,6 @@ public class ClientModel {
     try {
       outputStream.writeObject(token);
       outputStream.flush();
-
       outputStream.writeObject(isSend ? "RECEIVESENDEMAIL" : "RECEIVEEMAIL");
       outputStream.flush();
 
