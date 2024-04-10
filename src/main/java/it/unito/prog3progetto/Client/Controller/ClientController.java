@@ -99,7 +99,7 @@ public class ClientController implements MailListObserver {
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize(Client); // Durante l'inizializzazione del controller, passa il riferimento al client
+      controller.initialize(Client,this); // Durante l'inizializzazione del controller, passa il riferimento al client
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Nuova Email");
@@ -116,40 +116,51 @@ public class ClientController implements MailListObserver {
   public void logout() throws IOException {
     if(Client.connectToServer(host, port))
       if(Client.logout()){
-        loadLogin(primaryStage);// Carica la schermata di login
-
         alert("Logout effettuato", Alert.AlertType.INFORMATION);
       }
+
     else {
       System.out.println("Errore durante il logout");
     }
     else {
       alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
+    loadLogin(primaryStage);// Carica la schermata di login
+
     autoRefreshTimeline.stop();// Ferma il refresh automatico
     Client.closeConnections();// Chiude le connessioni con il server
   }
 
-  public  void loadLogin(Stage primaryStage) throws IOException {
-    FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Login.fxml").toURI().toURL());
-    Parent root = loader.load();
-    LoginController controller = loader.getController();
-    controller.setPrimaryStage(primaryStage);
-    Scene scene = new Scene(root);
-    scene.getStylesheets().add(new File("src/main/resources/it/unito/prog3progetto/Client/style.css").toURI().toURL().toExternalForm());
-    primaryStage.setScene(scene);
-    primaryStage.setWidth(500);
-    primaryStage.setHeight(600);
-    primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
-    primaryStage.show();
+  public void loadLogin(Stage primaryStage) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/unito/prog3progetto/Client/Login.fxml"));
+      Parent root = loader.load();
+      LoginController controller = loader.getController();
+      controller.setPrimaryStage(primaryStage);
+      Scene scene = new Scene(root);
+      scene.getStylesheets().add(getClass().getResource("/it/unito/prog3progetto/Client/style.css").toExternalForm());
+      primaryStage.setScene(scene);
+      primaryStage.setWidth(500);
+      primaryStage.setHeight(600);
+      primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
+      primaryStage.show();
+    } catch (IOException e) {
+      handleException("Errore durante il caricamento della schermata di login", e);
+    }
   }
+
+  private void handleException(String message, Exception e) {
+    alert(message, Alert.AlertType.ERROR);
+    e.printStackTrace();
+  }
+
 
   /**
    * Metodo per aggiornare la lista delle email ricevute o inviate
    */
   public void Refresh() {
     // Mostra lo spinner
-spinner.setVisible(true);
+    spinner.setVisible(true);
 
     new Thread(() -> {
       boolean connectionSuccessful = false;
@@ -163,7 +174,7 @@ spinner.setVisible(true);
             FullRefresh();
             return;
           }
-          mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), false));
+          Platform.runLater(() -> mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), false)));
 
         } else {
           Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
@@ -171,12 +182,13 @@ spinner.setVisible(true);
             FullRefresh();
             return;
           }
-          mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), true));
+          Platform.runLater(() ->   mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), true)));
         }
       }
 
       // Nasconde lo spinner
       Platform.runLater(() -> spinner.setVisible(false));
+
       if (!connectionSuccessful) {
         autoRefreshTimeline.setDelay(autoRefreshTimeline.getCurrentTime().add(autoRefreshTimeline.getCurrentTime()));
 
@@ -186,6 +198,7 @@ spinner.setVisible(true);
       }
     }).start();
   }
+
 
 
 

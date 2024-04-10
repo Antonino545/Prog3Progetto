@@ -127,7 +127,7 @@ public class ServerModel {
 	List<String> readDatabaseFromFile() {
 		List<String> database = new ArrayList<>();
 
-		try (BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(getClass().getResource("credentials.txt")).getFile()))) {
+		try (BufferedReader br = new BufferedReader(new FileReader("Server/credentials.txt"))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				database.add(line); // Aggiunge ogni riga del file al database

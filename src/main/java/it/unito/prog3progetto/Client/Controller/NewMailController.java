@@ -23,8 +23,10 @@ public class NewMailController {
   public Button sendmailbutton;
   private ClientModel clientModel;
 
+  private static ClientController clientController;
 
-  public void initialize( ClientModel clientModel) throws IOException {
+  public void initialize( ClientModel clientModel,ClientController clientController) throws IOException {
+    NewMailController.clientController = clientController;
   this.clientModel = clientModel;
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(event -> {
@@ -131,6 +133,8 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
         if (this.clientModel.SendMail( email)) {
           Stage stage = (Stage) subjectfield.getScene().getWindow();
           stage.close();
+          clientController.Refresh();
+
           alert("Email inviata", Alert.AlertType.INFORMATION);
           System.out.println("Email inviata");
         } else {

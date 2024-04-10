@@ -27,6 +27,7 @@ class ClientHandler implements Runnable {
     this.socket = socket;
   }
   private boolean isAuthenticated(UUID token) {
+    if(token==null) return false;
     return server.authenticatedTokens.containsKey(token);
   }
 
