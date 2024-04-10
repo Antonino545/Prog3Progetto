@@ -55,6 +55,14 @@ public class TestClient {
         if (clientModel.connectToServer(host, port)) {
           System.out.println(clientModel.SendMail( new Email(clientModel.getEMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
         }
+        if (clientModel.connectToServer(host, port)) {
+          System.out.println("Stampa email inviate da " + clientModel.getEMail() + ":");
+          System.out.println(clientModel.receiveEmail(clientModel.getEMail(),null,true));
+        }
+        if (clientModel.connectToServer(host, port)) {
+          System.out.println("Stampa email ricevute da " + clientModel.getEMail() + ":");
+          System.out.println(clientModel.receiveEmail(clientModel.getEMail(),null,false));
+        }
       }
 
   }

@@ -157,18 +157,10 @@ class ClientHandler implements Runnable {
     }
   }
 
-  private UUID getExistingToken(String userEmail) {
-    for (Map.Entry<UUID, String> entry : server.authenticatedTokens.entrySet()) {
-      if (entry.getValue().equals(userEmail)) {
-        return entry.getKey();
-      }
-    }
-    return null;
-  }
 
 
   private void saveAuthenticatedTokensToFile() {
-    synchronized (server.authenticatedTokens) { // Synchronize on the map itself
+
       try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
         Map<String, Integer> emailSessionCount = new HashMap<>(); // Map to keep track of session count for each email
         for (UUID token : server.authenticatedTokens.keySet()) {
@@ -191,7 +183,7 @@ class ClientHandler implements Runnable {
       } catch (IOException e) {
         Platform.runLater(() -> server.textArea.appendText("Error saving authenticated tokens to file.\n"));
       }
-    }
+
   }
 
   private synchronized void handleSendMailRequest() {

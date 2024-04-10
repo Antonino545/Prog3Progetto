@@ -9,7 +9,7 @@ import javafx.scene.control.TextArea;
 
 public class ServerModel {
 	private ServerSocket serverSocket;
-	final Map<UUID, String> authenticatedTokens;
+	final ConcurrentHashMap<UUID, String> authenticatedTokens;
 	final TextArea textArea; // TextArea per visualizzare l'output
 
 	// Costruttore che accetta una TextArea per visualizzare l'output
