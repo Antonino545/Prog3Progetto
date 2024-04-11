@@ -56,7 +56,7 @@ public class ClientController implements MailListObserver {
       mailSendListModel.addObserver(this);
       indexLengthLabel.textProperty().bind(mailReceivedListModel.sizeProperty().asString());
       sendmaillabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
-      sendemails();
+      FullRefresh();
       inboxemail();
     }
     autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
@@ -240,6 +240,7 @@ public class ClientController implements MailListObserver {
 
   @FXML
   public void sendemails() {
+
     if (!isInbox)
       return;
     isInbox = false;
