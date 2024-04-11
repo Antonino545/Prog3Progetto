@@ -2,27 +2,22 @@ package it.unito.prog3progetto.Client.Controller;
 
 import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Model.Email;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-
-import java.util.ArrayList;
-import java.util.UUID;
+import static it.unito.prog3progetto.Model.Lib.alert;
 
 public class MailDetailController {
   @FXML
@@ -36,24 +31,26 @@ public class MailDetailController {
   @FXML
   private Label dateLabel;
 
-  private SimpleStringProperty senderProperty = new SimpleStringProperty();
-  private SimpleStringProperty subjectProperty = new SimpleStringProperty();
-  private SimpleStringProperty contentProperty = new SimpleStringProperty();
-  private SimpleListProperty<String> destinationsProperty = new SimpleListProperty<>();
-  private SimpleStringProperty dateProperty = new SimpleStringProperty();
+  private final SimpleStringProperty senderProperty = new SimpleStringProperty();
+  private final SimpleStringProperty subjectProperty = new SimpleStringProperty();
+  private final SimpleStringProperty contentProperty = new SimpleStringProperty();
+  private final SimpleListProperty<String> destinationsProperty = new SimpleListProperty<>();
+  private final SimpleStringProperty dateProperty = new SimpleStringProperty();
 
-  private UUID id;
   private ClientModel clientModel;
   ArrayList<String> destinations;
 
+  /**
+   * Metodo per inizializzare la finestra di dettaglio di una email
+   * @param clientModel Modello del client
+   * @param email Email da visualizzare
+   */
   public void initialize(ClientModel clientModel, Email email) {
     this.clientModel = clientModel;
-    id = email.getId();
     senderProperty.set(email.getSender());
     subjectProperty.set(email.getSubject());
     contentProperty.set(email.getContent());
     dateProperty.set(email.getItalianDate());
-    ObservableList<String> destinationsObservable = FXCollections.observableArrayList(email.getDestinations());
     destinationsProperty.set(FXCollections.observableArrayList(email.getDestinations()));
     destinationsLabel.textProperty().bind(destinationsProperty.asString());
     senderLabel.textProperty().bind(senderProperty);
@@ -65,7 +62,10 @@ public class MailDetailController {
 
   }
 
-  public void handleReply(ActionEvent actionEvent) {
+  /**
+   *  Metodo per rispondere ad una email
+   */
+  public void handleReply() {
     try {
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
 
@@ -78,11 +78,14 @@ public class MailDetailController {
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-      e.printStackTrace();
+      alert("Errore durante l'apertura della finestra di REPLY :"+e.getMessage() , Alert.AlertType.ERROR);
     }
   }
 
-  public void handleReplyAll(ActionEvent actionEvent) {
+  /**
+   * Metodo per rispondere a tutti i destinatari di una email
+   */
+  public void handleReplyAll() {
     try {
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
 
@@ -95,15 +98,16 @@ public class MailDetailController {
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-      e.printStackTrace();
+     alert("Errore durante l'apertura della finestra di REPLY ALL:"+e.getMessage() , Alert.AlertType.ERROR);
     }
   }
 
-  public void handleForward(ActionEvent actionEvent) {
+  /**
+   * Metodo per inoltrare una email ad un altro destinatario
+   */
+  public void handleForward() {
     try {
-
       FXMLLoader loader = new FXMLLoader(new File("src/main/resources/it/unito/prog3progetto/Client/Newemail.fxml").toURI().toURL());
-
       Parent root = loader.load();
       NewMailController controller = loader.getController();
       controller.initialize("forward", senderLabel.getText(),null, subjectLabel.getText(), contentLabel.getText(), dateLabel.getText(),clientModel);
@@ -113,14 +117,8 @@ public class MailDetailController {
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-      e.printStackTrace();
+      alert("Errore durante l'apertura della finestra di Forward:"+e.getMessage() , Alert.AlertType.ERROR);
     }
   }
-
-
-
-
-
-
 
 }

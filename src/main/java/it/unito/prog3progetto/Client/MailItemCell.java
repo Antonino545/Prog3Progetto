@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
+import static it.unito.prog3progetto.Model.Lib.alert;
+
 /**
  * Classe per la rappresentazione grafica di una singola email nella lista delle email
  */
 public class MailItemCell extends ListCell<Email> {
   private static ClientController clientController;
   private final ClientModel client;
-  private static final String host = "127.0.0.1";
-  private static final int port = 4445;
 
   /**
    * Costruttore della classe MailItemCell
@@ -44,8 +44,8 @@ public class MailItemCell extends ListCell<Email> {
    * @param empty Flag per indicare se la cella è vuota
    */
   @Override
-  protected void updateItem(Email email, boolean empty) {
-    super.updateItem(email, empty); // Chiama il metodo della superclasse
+  protected void updateItem(Email email, boolean empty) {// viene chiamato ogni volta che viene aggiornata la cella con una nuova email
+    super.updateItem(email, empty);
     if (email != null && !empty) {
       HBox hbox = new HBox();
       VBox vbox = new VBox();
@@ -66,6 +66,7 @@ public class MailItemCell extends ListCell<Email> {
       toLabel.textProperty().bind(DestinationProperty);
       dateLabel.textProperty().bind(dateProperty);
       subjectLabel.textProperty().bind(subjectProperty);vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
+      contentLabel.textProperty().bind(contentProperty);
       Button deleteButton = new Button("Cancella");
       deleteButton.getStyleClass().add("button-primary");
       deleteButton.setOnAction(event -> deleteEmail(email));
@@ -80,6 +81,10 @@ public class MailItemCell extends ListCell<Email> {
     }
   }
 
+  /**
+   * Metodo per cancellare un'email dalla lista delle email
+   * @param email Email da cancellare
+   */
   private void deleteEmail(Email email) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("Conferma Cancella Email");
@@ -91,6 +96,10 @@ public class MailItemCell extends ListCell<Email> {
     }
   }
 
+  /**
+   * Metodo per aprire la finestra di dettaglio di una email
+   * @param email Email da visualizzare
+   */
   private void openMailDetailView(Email email) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("MailDetailView.fxml"));
@@ -107,7 +116,7 @@ public class MailItemCell extends ListCell<Email> {
       stage.setMinWidth(600);
       stage.show();
     } catch (IOException e) {
-      System.out.println("Errore durante l'apertura della finestra di dettaglio email: " + e.getMessage());
+      alert("Errore durante l'apertura della finestra di dettaglio email", Alert.AlertType.ERROR);
     }
   }
 }

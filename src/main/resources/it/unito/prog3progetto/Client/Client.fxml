@@ -90,7 +90,7 @@
 
                      </VBox>
                      <StackPane>
-                        <ProgressIndicator style="-fx-min-height: 100px;-fx-min-width: 100   px"  fx:id="spinner" visible="false"/>
+                        <ProgressIndicator style="-fx-min-height: 100px;-fx-min-width: 100px"  fx:id="spinner" visible="false"/>
 
                      </StackPane>
                   </children>
