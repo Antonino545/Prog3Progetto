@@ -22,11 +22,11 @@
             </HBox>
             <HBox>
                 <Label text="Destinario/i: " textFill="WHITE" />
-                <Label fx:id="destinationslabel" textFill="WHITE" />
+                <Label fx:id="destinationsLabel" textFill="WHITE" />
             </HBox>
             <HBox>
                 <Label text="Data:" textFill="WHITE" />
-                <Label fx:id="datalabel" textFill="WHITE" />
+                <Label fx:id="dateLabel" textFill="WHITE" />
             </HBox>
             <HBox>
                 <Label text="Oggetto: " textFill="WHITE" />

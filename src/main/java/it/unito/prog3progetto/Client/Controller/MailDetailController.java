@@ -2,6 +2,8 @@ package it.unito.prog3progetto.Client.Controller;
 
 import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Model.Email;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,34 +16,54 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class MailDetailController {
-  public Label senderLabel;
-  public Label subjectLabel;
-  public Label contentLabel;
-  public Label destinationslabel;
-  ArrayList<String> destinations;
-  public Label datalabel;
-  UUID id;
+  @FXML
+  private Label senderLabel;
+  @FXML
+  private Label subjectLabel;
+  @FXML
+  private Label contentLabel;
+  @FXML
+  private Label destinationsLabel;
+  @FXML
+  private Label dateLabel;
+
+  private SimpleStringProperty senderProperty = new SimpleStringProperty();
+  private SimpleStringProperty subjectProperty = new SimpleStringProperty();
+  private SimpleStringProperty contentProperty = new SimpleStringProperty();
+  private SimpleListProperty<String> destinationsProperty = new SimpleListProperty<>();
+  private SimpleStringProperty dateProperty = new SimpleStringProperty();
+
+  private UUID id;
   private ClientModel clientModel;
+  ArrayList<String> destinations;
 
-  public void initialize(ClientModel clientModel, Email email) throws IOException {
+  public void initialize(ClientModel clientModel, Email email) {
     this.clientModel = clientModel;
-    senderLabel.setText(email.getSender());
-    subjectLabel.setText(email.getSubject());
-    contentLabel.setText(email.getContent());
-    destinationslabel.setText(email.getDestinations().toString());
+    id = email.getId();
+    senderProperty.set(email.getSender());
+    subjectProperty.set(email.getSubject());
+    contentProperty.set(email.getContent());
+    dateProperty.set(email.getItalianDate());
+    ObservableList<String> destinationsObservable = FXCollections.observableArrayList(email.getDestinations());
+    destinationsProperty.set(FXCollections.observableArrayList(email.getDestinations()));
+    destinationsLabel.textProperty().bind(destinationsProperty.asString());
+    senderLabel.textProperty().bind(senderProperty);
+    subjectLabel.textProperty().bind(subjectProperty);
+    contentLabel.textProperty().bind(contentProperty);
+    destinationsLabel.textProperty().bind(destinationsProperty.asString());
+    dateLabel.textProperty().bind(dateProperty);
     destinations=email.getDestinations();
-    datalabel.setText(email.getItalianDate());
-    id=email.getId();
-    senderLabel.setMouseTransparent(false);
-    subjectLabel.setMouseTransparent(false);
-    contentLabel.setMouseTransparent(false);
-    destinationslabel.setMouseTransparent(false);
-    datalabel.setMouseTransparent(false);
+
   }
-
-
-
 
   public void handleReply(ActionEvent actionEvent) {
     try {
@@ -49,7 +71,7 @@ public class MailDetailController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize("reply", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), datalabel.getText(),clientModel);
+      controller.initialize("reply", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), dateLabel.getText(),clientModel);
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Reply Email");
@@ -66,7 +88,7 @@ public class MailDetailController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize("replyall", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), datalabel.getText(),clientModel);
+      controller.initialize("replyall", senderLabel.getText(),destinations, subjectLabel.getText(), contentLabel.getText(), dateLabel.getText(),clientModel);
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Reply All Email");
@@ -84,7 +106,7 @@ public class MailDetailController {
 
       Parent root = loader.load();
       NewMailController controller = loader.getController();
-      controller.initialize("forward", senderLabel.getText(),null, subjectLabel.getText(), contentLabel.getText(), datalabel.getText(),clientModel);
+      controller.initialize("forward", senderLabel.getText(),null, subjectLabel.getText(), contentLabel.getText(), dateLabel.getText(),clientModel);
       Stage stage = new Stage();
       stage.setScene(new Scene(root));
       stage.setTitle("Forward Email");
