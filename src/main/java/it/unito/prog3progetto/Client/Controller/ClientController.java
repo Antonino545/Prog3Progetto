@@ -200,25 +200,16 @@ public class ClientController implements MailListObserver {
 
 
 
-  public void FullRefresh()  {
-    spinner.setVisible(true);
-
-    new Thread(() -> {
-    if(Client.connectToServer(host, port)){
-      if(isInbox){
+  public void FullRefresh() {
+    if (Client != null && Client.connectToServer(host, port)) {
+      if (isInbox) {
         mailReceivedListModel.clear();
-        mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,false));
-      }
-      else {
+        mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null, false));
+      } else {
         mailSendListModel.clear();
-        mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,true));
+        mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null, true));
       }
-      System.out.println("Email ricevute");
-    } else {
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
     }
-    }).start();
-    Platform.runLater(() -> spinner.setVisible(false));
   }
 
 
@@ -249,42 +240,36 @@ public class ClientController implements MailListObserver {
 
   @FXML
   public void sendemails() {
+    if (!isInbox)
+      return;
     isInbox = false;
-    changeButton(sendemail,inbox);
-    if (!mailSendListModel.getEmails().isEmpty()) {
-      Refresh();
+    changeButton(sendemail, inbox);
+    if (mailSendListModel.getEmails().isEmpty()) {
+      FullRefresh();
       mailListView.getItems().setAll(mailSendListModel.getEmails());
       return;
-    }
-    if (Client.connectToServer(host, port)) {
-      mailSendListModel.clear();
-      mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,true));
-
     } else {
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      mailListView.setItems(mailSendListModel.getEmails());
+      mailListView.refresh();
     }
-
 
   }
 
 
+  @FXML
   public void inboxemail() {
-    changeButton(inbox,sendemail);
+    if(isInbox)
+      return;
     isInbox = true;
-    if (!mailReceivedListModel.getEmails().isEmpty()) {
-      Refresh();
+    changeButton(inbox, sendemail);
+    if (mailReceivedListModel.getEmails().isEmpty()) {
+      FullRefresh();
       mailListView.getItems().setAll(mailReceivedListModel.getEmails());
       return;
-    }
-
-    if (Client.connectToServer(host, port)) {
-      mailReceivedListModel.clear();
-      mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null,false));
-
     } else {
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      mailListView.setItems(mailReceivedListModel.getEmails());
+      mailListView.refresh();
     }
-
   }
 
   public void changeButton(HBox first, HBox second){

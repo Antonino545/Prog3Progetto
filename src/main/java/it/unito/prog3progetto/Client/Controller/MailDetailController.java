@@ -33,6 +33,11 @@ public class MailDetailController {
     destinations=email.getDestinations();
     datalabel.setText(email.getItalianDate());
     id=email.getId();
+    senderLabel.setMouseTransparent(false);
+    subjectLabel.setMouseTransparent(false);
+    contentLabel.setMouseTransparent(false);
+    destinationslabel.setMouseTransparent(false);
+    datalabel.setMouseTransparent(false);
   }
 
 

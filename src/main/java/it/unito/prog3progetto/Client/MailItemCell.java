@@ -3,6 +3,8 @@ package it.unito.prog3progetto.Client;
 import it.unito.prog3progetto.Client.Controller.ClientController;
 import it.unito.prog3progetto.Client.Controller.MailDetailController;
 import it.unito.prog3progetto.Model.Email;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -47,13 +49,23 @@ public class MailItemCell extends ListCell<Email> {
     if (email != null && !empty) {
       HBox hbox = new HBox();
       VBox vbox = new VBox();
-      Label senderLabel = new Label("Da: " + email.getSender());
+      Label senderLabel = new Label();
       senderLabel.setStyle("-fx-font-weight: bold;");
-      Label toLabel = new Label("A: " + email.getDestinations());
-      Label subjectLabel = new Label("Oggetto: " + email.getSubject());
-      Label dateLabel = new Label("Data: " + email.getItalianDate());
-      Label contentLabel = new Label(email.getContent().split("\n")[0]); // Mostra solo la prima riga del contenuto
-      vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
+      Label toLabel = new Label();
+      Label subjectLabel = new Label();
+      Label dateLabel = new Label();
+      Label contentLabel = new Label();
+
+      // Bind dei dati dell'email alle label
+      StringProperty senderProperty = new SimpleStringProperty(email.getSender());
+      StringProperty DestinationProperty = new SimpleStringProperty(email.getDestinations().toString());
+      StringProperty dateProperty = new SimpleStringProperty(email.getItalianDate());
+      StringProperty subjectProperty = new SimpleStringProperty(email.getSubject());
+      StringProperty contentProperty = new SimpleStringProperty(email.getContent().split("\n")[0]);
+      senderLabel.textProperty().bind(senderProperty);
+      toLabel.textProperty().bind(DestinationProperty);
+      dateLabel.textProperty().bind(dateProperty);
+      subjectLabel.textProperty().bind(subjectProperty);vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
       Button deleteButton = new Button("Cancella");
       deleteButton.getStyleClass().add("button-primary");
       deleteButton.setOnAction(event -> deleteEmail(email));
