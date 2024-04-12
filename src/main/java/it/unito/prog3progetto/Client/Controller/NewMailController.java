@@ -1,15 +1,14 @@
 package it.unito.prog3progetto.Client.Controller;
 import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Model.Email;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.*;
-
 import static it.unito.prog3progetto.Model.Lib.alert;
 
 public class NewMailController {
@@ -17,6 +16,8 @@ public class NewMailController {
   public TextField subjectfield;
   @FXML
   public TextField destinationsfield;
+  public ProgressIndicator spinner;
+
   @FXML
   public TextArea ContentField;
   @FXML
@@ -111,7 +112,10 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
     String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
+    // Mostra lo spinner
+    spinner.setVisible(true);
 
+    new Thread(() -> {
     if (success) {
 
       Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
@@ -121,9 +125,13 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
         for(String dest: uniqueDestinations){
           if(this.clientModel.connectToServer(host, port)) System.out.println("Connessione al server riuscita");
+          else {
+            Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+            return;
+          }
           if(this.clientModel.CheckEmail(dest)) System.out.println("Email esistente");
           else{
-            alert("Email non esistente", Alert.AlertType.ERROR);
+            Platform.runLater(() -> alert("Email non esistente: "+ dest, Alert.AlertType.ERROR));
             System.out.println("Email non esistente: "+ dest);
             return;
           }
@@ -134,21 +142,23 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
           Stage stage = (Stage) subjectfield.getScene().getWindow();
           stage.close();
           clientController.Refresh();
-
-          alert("Email inviata", Alert.AlertType.INFORMATION);
+        Platform.runLater(() -> alert("Email inviata", Alert.AlertType.INFORMATION));
           System.out.println("Email inviata");
         } else {
           System.out.println("Errore durante l'invio dell'email");
-          alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
+          Platform.runLater(() -> alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR));
         }
       } else {
         System.out.println("Connessione al server non riuscita");
-        alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+        Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
       }
     } else {
-      alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR);
+      Platform.runLater(() -> alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR));
       System.out.println("Email non inviata, controllare i destinatari");
     }
+      Platform.runLater(() -> spinner.setVisible(false));
+
+    }).start();
   }
 
   public boolean confirmDialog(String message) {
