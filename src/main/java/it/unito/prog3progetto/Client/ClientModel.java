@@ -17,9 +17,13 @@ public class ClientModel {
   private final String email;
   private UUID token;
 
+  private final String host ;
+  private final int port ;
   private final int DEFAULT_TIMEOUT = 5000;
 
-  public ClientModel(String email) {
+  public ClientModel(String email, String host, int port) {
+    this.host = host;
+    this.port = port;
     this.email = email;
   }
 
@@ -34,17 +38,15 @@ public class ClientModel {
 
   /**
    * Metodo per connettersi al server tramite socket in piu tentativi
-   * @param host indirizzo del server
-   * @param port porta del server
    * @return true se la connessione è andata a buon fine, false altrimenti
    */
-  public boolean connectToServer(String host, int port) {
+  public boolean connectToServer() {
       int attempts = 0;
       boolean success = false;
     int MAX_ATTEMPTS = 3;// Numero massimo di tentativi di connessione al server
     while (attempts < MAX_ATTEMPTS && !success) {
         attempts++;
-        success = tryCommunication(host, port);
+        success = tryCommunication();
 
         if (!success) {
           try {
@@ -59,11 +61,9 @@ public class ClientModel {
 
   /**
    * Metodo per provare a comunicare con il server
-   * @param host indirizzo del server
-   * @param port porta del server
    * @return true se la comunicazione è andata a buon fine, false altrimenti
    */
-  private boolean tryCommunication(String host, int port) {
+  private boolean tryCommunication() {
     try {
       socket = new Socket(host, port);
       outputStream = new ObjectOutputStream(socket.getOutputStream());

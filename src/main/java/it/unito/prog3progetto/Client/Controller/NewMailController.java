@@ -124,7 +124,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
       int port= 4445;
 
         for(String dest: uniqueDestinations){
-          if(this.clientModel.connectToServer(host, port)) System.out.println("Connessione al server riuscita");
+          if(this.clientModel.connectToServer()) System.out.println("Connessione al server riuscita");
           else {
             Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
             return;
@@ -136,7 +136,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
             return;
           }
         }
-      if (this.clientModel.connectToServer(host, port)) {
+      if (this.clientModel.connectToServer()) {
         System.out.println("Connessione al server riuscita");
         if (this.clientModel.SendMail( email)) {
           Stage stage = (Stage) subjectfield.getScene().getWindow();

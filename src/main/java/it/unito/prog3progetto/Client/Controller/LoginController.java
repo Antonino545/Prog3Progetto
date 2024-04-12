@@ -83,11 +83,11 @@ public class LoginController {
       String host = "127.0.0.1";
       int port = 4445;
       spinner.setVisible(true);
-      ClientModel clientModel = new ClientModel(email);
+      ClientModel clientModel = new ClientModel(email,host,port);
 
 // Creazione di un nuovo thread per eseguire l'operazione asincrona
       Thread asyncThread = new Thread(() -> {
-        if (clientModel.connectToServer(host, port)) {
+        if (clientModel.connectToServer()) {
           System.out.println("Connessione al server riuscita");
           UUID token = clientModel.sendAndCheckCredentials(email, password);
           clientModel.setToken(token);

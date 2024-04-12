@@ -9,13 +9,14 @@ import java.util.UUID;
 
 public class TestClient {
   public static void main(String[] args) {
-    // Creazione dei client con le rispettive credenziali
-    ClientModel[] clientModels = {
-            new ClientModel("luca.verdi@progmail.com"),
-    };
-
     String host = "127.0.0.1";
     int port = 4445;
+    // Creazione dei client con le rispettive credenziali
+    ClientModel[] clientModels = {
+            new ClientModel("luca.verdi@progmail.com",host,port),
+    };
+
+
 
     // Testo randomico multiriga per il contenuto dell'email
     String randomContent = generateRandomMultilineText();
@@ -23,13 +24,13 @@ public class TestClient {
     // Connessione e invio delle email per ogni client
     for (ClientModel clientModel : clientModels) {
       Thread thread = new Thread(() -> {
-        if (clientModel.connectToServer(host, port)) {
+        if (clientModel.connectToServer()) {
           System.out.println("Connessione al server riuscita per " + clientModel.getEMail());
           UUID token = clientModel.sendAndCheckCredentials(clientModel.getEMail(), "password");
           clientModel.setToken(token);
           if (token != null) {
             System.out.println("Credenziali corrette per " + clientModel.getEMail());
-            if (clientModel.connectToServer(host, port)) {
+            if (clientModel.connectToServer()) {
               performThreadOperation(clientModel, host, port, randomContent);
             }
 
@@ -52,14 +53,14 @@ public class TestClient {
       for (int i = 0; i < 3; i++) {
         ArrayList<String> destinations = new ArrayList<>();
         destinations.add("stefano.bianchi@progmail.com");
-        if (clientModel.connectToServer(host, port)) {
+        if (clientModel.connectToServer()) {
           System.out.println(clientModel.SendMail( new Email(clientModel.getEMail(), destinations, "Ciaoooo son oio", randomContent, Date.from(java.time.Instant.now()))));
         }
-        if (clientModel.connectToServer(host, port)) {
+        if (clientModel.connectToServer()) {
           System.out.println("Stampa email inviate da " + clientModel.getEMail() + ":");
           System.out.println(clientModel.receiveEmail(clientModel.getEMail(),null,true));
         }
-        if (clientModel.connectToServer(host, port)) {
+        if (clientModel.connectToServer()) {
           System.out.println("Stampa email ricevute da " + clientModel.getEMail() + ":");
           System.out.println(clientModel.receiveEmail(clientModel.getEMail(),null,false));
         }

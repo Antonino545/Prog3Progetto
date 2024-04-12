@@ -22,7 +22,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Objects;
 
 import static it.unito.prog3progetto.Model.Lib.alert;
 
@@ -40,9 +40,6 @@ public class ClientController implements MailListObserver {
   private Stage primaryStage;
   private ClientModel Client;
   private MailListModel mailReceivedListModel,mailSendListModel;
-
-  private final String host = "127.0.0.1";
-  private final int port = 4445;
 
   private Timeline autoRefreshTimeline;
 
@@ -105,28 +102,33 @@ public class ClientController implements MailListObserver {
       stage.setMinWidth(600);
       stage.show();
     } catch (IOException e) {
-      e.printStackTrace();
+    alert("Errore durante l'apertura della finestra per la creazione di una nuova email", Alert.AlertType.ERROR);
     }
   }
 /*
   Esegue il logout dell'utente e torna alla schermata di login
  */
-  public void logout() throws IOException {
-    if(Client.connectToServer(host, port))
+  public void logout() {
+    spinner.setVisible(true);
+
+    new Thread(() -> {
+    if(Client.connectToServer())
       if(Client.logout()){
         alert("Logout effettuato", Alert.AlertType.INFORMATION);
       }
 
     else {
-      System.out.println("Errore durante il logout");
+      Platform.runLater(() -> alert("Errore durante il logout", Alert.AlertType.ERROR));
     }
     else {
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+    Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
     }
     loadLogin(primaryStage);// Carica la schermata di login
 
     autoRefreshTimeline.stop();// Ferma il refresh automatico
     Client.closeConnections();// Chiude le connessioni con il server
+  }).start();
+
   }
 
   public void loadLogin(Stage primaryStage) {
@@ -136,21 +138,17 @@ public class ClientController implements MailListObserver {
       LoginController controller = loader.getController();
       controller.setPrimaryStage(primaryStage);
       Scene scene = new Scene(root);
-      scene.getStylesheets().add(getClass().getResource("/it/unito/prog3progetto/Client/style.css").toExternalForm());
+      scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/it/unito/prog3progetto/Client/style.css")).toExternalForm());
       primaryStage.setScene(scene);
       primaryStage.setWidth(500);
       primaryStage.setHeight(600);
       primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
       primaryStage.show();
     } catch (IOException e) {
-      handleException("Errore durante il caricamento della schermata di login", e);
+      alert("Errore durante il caricamento della schermata di login", Alert.AlertType.ERROR);
     }
   }
 
-  private void handleException(String message, Exception e) {
-    alert(message, Alert.AlertType.ERROR);
-    e.printStackTrace();
-  }
 
 
   /**
@@ -163,7 +161,7 @@ public class ClientController implements MailListObserver {
     new Thread(() -> {
       boolean connectionSuccessful = false;
 
-      if (Client != null && Client.connectToServer(host, port)) {
+      if (Client != null && Client.connectToServer()) {
         connectionSuccessful = true;
 
         if (isInbox) {
@@ -190,9 +188,7 @@ public class ClientController implements MailListObserver {
       if (!connectionSuccessful) {
         autoRefreshTimeline.setDelay(autoRefreshTimeline.getCurrentTime().add(autoRefreshTimeline.getCurrentTime()));
 
-        Platform.runLater(() -> {
-          alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
-        });
+        Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
       }
     }).start();
   }
@@ -201,7 +197,7 @@ public class ClientController implements MailListObserver {
 
 
   public void FullRefresh() {
-    if (Client != null && Client.connectToServer(host, port)) {
+    if (Client != null && Client.connectToServer()) {
       if (isInbox) {
         mailReceivedListModel.clear();
         mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), null, false));
@@ -214,7 +210,7 @@ public class ClientController implements MailListObserver {
 
 
   public void deleteEmail(Email email) {
-    if (Client.connectToServer(host, port)) {
+    if (Client.connectToServer()) {
       if (Client.DeleteMail(email,isInbox)) {
         System.out.println(isInbox);
         if(isInbox) {
@@ -248,7 +244,6 @@ public class ClientController implements MailListObserver {
     if (mailSendListModel.getEmails().isEmpty()) {
       FullRefresh();
       mailListView.getItems().setAll(mailSendListModel.getEmails());
-      return;
     } else {
       mailListView.setItems(mailSendListModel.getEmails());
       mailListView.refresh();
@@ -266,7 +261,6 @@ public class ClientController implements MailListObserver {
     if (mailReceivedListModel.getEmails().isEmpty()) {
       FullRefresh();
       mailListView.getItems().setAll(mailReceivedListModel.getEmails());
-      return;
     } else {
       mailListView.setItems(mailReceivedListModel.getEmails());
       mailListView.refresh();
