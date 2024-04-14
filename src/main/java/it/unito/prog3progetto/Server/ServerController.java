@@ -29,20 +29,13 @@ public class ServerController {
       serverThread.setDaemon(true);
       serverThread.start();
       serverAvviato = true;
+
     } else {
       // Se il server è già avviato, segnala che è già in esecuzione
       server.appendToLog("Il server è già attivo.");
     }
   }
-  public void closeServer(){
-    if(serverAvviato){
-      serverAvviato = false;
-      server.close();
-      Platform.runLater(() -> server.appendToLog("Server chiuso."));
-    } else {
-      server.appendToLog("Il server non è attivo.");
-    }
-  }
+
 
 
 

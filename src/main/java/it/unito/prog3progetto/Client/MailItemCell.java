@@ -61,7 +61,12 @@ public class MailItemCell extends ListCell<Email> {
       StringProperty DestinationProperty = new SimpleStringProperty(email.getDestinations().toString());
       StringProperty dateProperty = new SimpleStringProperty(email.getItalianDate());
       StringProperty subjectProperty = new SimpleStringProperty(email.getSubject());
-      StringProperty contentProperty = new SimpleStringProperty(email.getContent().split("\n")[0]);
+      String content = email.getContent();
+      if (content.length() > 50) {
+        content = content.substring(0, 50);
+      }
+
+      StringProperty contentProperty = new SimpleStringProperty(content + "...");
       senderLabel.textProperty().bind(senderProperty);
       toLabel.textProperty().bind(DestinationProperty);
       dateLabel.textProperty().bind(dateProperty);

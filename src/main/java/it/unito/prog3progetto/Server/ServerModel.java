@@ -15,19 +15,25 @@ public class ServerModel {
 	private ServerSocket serverSocket;// Socket del server
 	final ConcurrentHashMap<UUID, String> authenticatedTokens;
 
-	private volatile boolean isRunning = true; // Flag to control the server's running state
-
+	volatile boolean isRunning = true; // Flag to control the server's running state
+	TextArea textArea;
 	private final StringProperty logText = new SimpleStringProperty(""); // Proprietà osservabile per il testo del log
 	public ServerModel(TextArea textArea) {
 		this.authenticatedTokens = new ConcurrentHashMap<>();
 		// Bind la proprietà del testo della TextArea alla proprietà osservabile logText
 		textArea.textProperty().bind(logText);
+		this.textArea = textArea;
 	}
 
 	// Metodi per aggiornare il log
-  void appendToLog(String message) {
-		Platform.runLater(() -> logText.set(logText.get() + message + "\n"));
+	void appendToLog(String message) {
+		Platform.runLater(() -> {
+			logText.set(logText.get() + message + "\n");
+			// Imposta il cursore alla fine del testo per far sì che la visualizzazione si sposti verso il basso
+			textArea.positionCaret(logText.get().length());
+		});
 	}
+
 
 	private void clearLog() {
 		Platform.runLater(() -> logText.set(""));
