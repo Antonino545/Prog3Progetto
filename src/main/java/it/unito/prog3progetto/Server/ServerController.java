@@ -37,6 +37,9 @@ public class ServerController {
   }
 
 
+  public void closeServer(ActionEvent actionEvent) {
+    server.close();
+    serverAvviato = false;
 
-
+  }
 }

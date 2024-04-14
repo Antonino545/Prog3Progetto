@@ -56,9 +56,9 @@ public class ClientController implements MailListObserver {
       FullRefresh();
       inboxemail();
     }
-    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
-    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
-    autoRefreshTimeline.play();
+//    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
+//    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+//    autoRefreshTimeline.play();
   }
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire l'aggiunta di email
