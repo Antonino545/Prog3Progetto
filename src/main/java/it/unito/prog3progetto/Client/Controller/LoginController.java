@@ -89,6 +89,13 @@ public class LoginController {
         if (clientModel.connectToServer()) {
           System.out.println("Connessione al server riuscita");
           UUID token = clientModel.sendAndCheckCredentials(email, password);
+          if(token == null){
+            Platform.runLater(() -> {
+              alert("Credenziali errate", Alert.AlertType.ERROR);
+              spinner.setVisible(false);
+            });
+            return;
+          }
           clientModel.setToken(token);
           Platform.runLater(() -> {
             spinner.setVisible(false);
