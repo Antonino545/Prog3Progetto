@@ -78,6 +78,7 @@ public class MailItemCell extends ListCell<Email> {
     } else {
       setText(null);
       setGraphic(null);
+      setOnMouseClicked(null);
     }
   }
 

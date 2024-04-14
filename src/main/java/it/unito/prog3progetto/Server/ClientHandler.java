@@ -51,7 +51,7 @@ class ClientHandler implements Runnable {
       }
       // Verifica se l'utente è autenticato
       if (!isAuthenticated(clientObject instanceof UUID ? (UUID) clientObject : null)) {
-        Platform.runLater(() -> server.textArea.appendText("User is not authenticated.\n"));
+        Platform.runLater(() -> server.appendToLog("User is not authenticated"));
         // Invia false al client per indicare che l'utente non è autenticato
         outStream.writeObject(false);
         outStream.flush();
@@ -89,7 +89,7 @@ class ClientHandler implements Runnable {
           break;
       }
     } catch (IOException  | ClassNotFoundException e) {
-      if(e.getMessage()!=null) Platform.runLater(() -> server.textArea.appendText("Error communicating with the client: " + e.getMessage() + ".\n"));
+      if(e.getMessage()!=null) Platform.runLater(() ->server.appendToLog("Error communicating with the client: " + e.getMessage() + "."));
     } finally {
       closeStreams();
     }
@@ -106,7 +106,7 @@ class ClientHandler implements Runnable {
         outStream.flush();
       }
     }catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error in sending email.\n"));
+      Platform.runLater(() ->server.appendToLog("Error in sending email."));
     }
   }
 
@@ -120,14 +120,14 @@ class ClientHandler implements Runnable {
         saveAuthenticatedTokensToFile();
         outStream.writeObject(true);
         outStream.flush();
-        Platform.runLater(() -> server.textArea.appendText("User logged out successfully.\n"));
+        Platform.runLater(() ->server.appendToLog("User logged out successfully."));
       } else {
         outStream.writeObject(false);
         outStream.flush();
-        Platform.runLater(() -> server.textArea.appendText("Error logging out user.\n"));
+        Platform.runLater(() ->server.appendToLog("Error logging out user."));
       }
     } catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error logging out user.\n"));
+      Platform.runLater(() ->server.appendToLog("Error logging out user."));
     }
   }
 
@@ -151,16 +151,16 @@ class ClientHandler implements Runnable {
           outStream.writeObject(token);
           outStream.flush();
           saveAuthenticatedTokensToFile();
-          Platform.runLater(() -> server.textArea.appendText("Authentication successful for user " + userEmail + ".\n"));
+          Platform.runLater(() ->server.appendToLog("Authentication successful for user " + userEmail + "."));
         } else {
-          Platform.runLater(() -> server.textArea.appendText("Authentication failed for user " + user.getEmail() + ".\n"));
+          Platform.runLater(() ->server.appendToLog("Authentication failed for user " + user.getEmail() + "."));
         }
       } else {
-        Platform.runLater(() -> server.textArea.appendText("Error authenticating user.\n"));
+        Platform.runLater(() ->server.appendToLog("Error authenticating user."));
       }
     } catch (IOException | ClassNotFoundException e) {
       User user = (User) userObject;
-      Platform.runLater(() -> server.textArea.appendText("Authentication error for user " + user.getEmail() + ".\n"));
+      Platform.runLater(() ->server.appendToLog("Authentication error for user " + user.getEmail() + "."));
     }
   }
 
@@ -188,7 +188,7 @@ class ClientHandler implements Runnable {
           emailSessionCount.put(email, sessionCount);
         }
       } catch (IOException e) {
-        Platform.runLater(() -> server.textArea.appendText("Error saving authenticated tokens to file.\n"));
+        Platform.runLater(() ->server.appendToLog("Error saving authenticated tokens to file."));
       }
 
   }
@@ -203,10 +203,10 @@ class ClientHandler implements Runnable {
         outStream.writeObject(isSent);
         outStream.flush();
       } else {
-        Platform.runLater(() -> server.textArea.appendText("Error in sending email.\n"));
+        Platform.runLater(() ->server.appendToLog("Error in sending email."));
       }
     } catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error in sending email.\n"));
+      Platform.runLater(() ->server.appendToLog("Error in sending email."));
     }
   }
 
@@ -219,11 +219,11 @@ class ClientHandler implements Runnable {
       ArrayList<Email> mails;
       if (isinbox) mails = fetchReceivedEmails(userMail, lastEmailDate);
       else mails = fetchSendEmails(userMail, lastEmailDate);
-      Platform.runLater(() -> server.textArea.appendText("Sending email to the client with email: " + userMail + ".\n"));
+      Platform.runLater(() ->server.appendToLog("Sending email to the client with email: " + userMail + "."));
       outStream.writeObject(mails);
       outStream.flush();
     } catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error in sending email to the client.\n"));
+      Platform.runLater(() ->server.appendToLog("Error in sending email to the client."));
       // Gestisci l'eccezione
     }
   }
@@ -242,7 +242,7 @@ class ClientHandler implements Runnable {
         socket.close();
       }
     } catch (IOException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error closing streams.\n"));
+      Platform.runLater(() ->server.appendToLog("Error closing streams."));
     }
   }
 
@@ -316,7 +316,7 @@ class ClientHandler implements Runnable {
           }
         }
       } catch (IOException e) {
-        Platform.runLater(() -> server.textArea.appendText("Error deleting email.\n"));
+        Platform.runLater(() ->server.appendToLog("Error deleting email."));
       }
 
       try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
@@ -325,7 +325,7 @@ class ClientHandler implements Runnable {
           bw.newLine();
         }
       } catch (IOException e) {
-        Platform.runLater(() -> server.textArea.appendText("Error deleting email.\n"));
+        Platform.runLater(() ->server.appendToLog("Error deleting email."));
       }
     }
   }
@@ -339,12 +339,12 @@ class ClientHandler implements Runnable {
         DeletemailByid(userMail, email.getId().toString(),b);
         outStream.writeObject(true);
         outStream.flush();
-        Platform.runLater(() -> server.textArea.appendText("Email deleted successfully.\n"));
+        Platform.runLater(() ->server.appendToLog("Email deleted successfully."));
       } else {
-        Platform.runLater(() -> server.textArea.appendText("Error in deleting email.\n"));
+        Platform.runLater(() ->server.appendToLog("Error in deleting email."));
       }
     } catch (IOException | ClassNotFoundException e) {
-      Platform.runLater(() -> server.textArea.appendText("Error in deleting email.\n"));
+      Platform.runLater(() ->server.appendToLog("Error in deleting email."));
     }
   }
   /**
@@ -377,7 +377,7 @@ class ClientHandler implements Runnable {
           UUID id = UUID.fromString(idString);
           // Se lastEmailDate è null, aggiungi tutte le email senza alcun controllo sulla data
           if (lastEmailDate == null || date.after(lastEmailDate)) {
-            Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->", "\n"), date, id);
+            Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->", ""), date, id);
             emails.add(email);
           }
         }
@@ -385,7 +385,7 @@ class ClientHandler implements Runnable {
       scanner.close();
     } catch (FileNotFoundException | ParseException e) {
       // In caso di eccezione, restituisci l'elenco vuoto
-      Platform.runLater(() -> server.textArea.appendText("Received email list is empty.\n"));
+      Platform.runLater(() ->server.appendToLog("Received email list is empty."));
     }
     return emails;
 
@@ -406,13 +406,13 @@ class ClientHandler implements Runnable {
         bufferedWriter.write(email.emailNoEndLine().toString());
         bufferedWriter.newLine();
         success = true; // L'invio dell'email è riuscito per questo destinatario
-        Platform.runLater(() -> server.textArea.appendText("Email sent successfully to " + destination + ".\n"));
+        Platform.runLater(() ->server.appendToLog("Email sent successfully to " + destination + "."));
       } catch (IOException e) {
-        Platform.runLater(() -> server.textArea.appendText("Error in sending email to " + destination + ".\n"));
+        Platform.runLater(() ->server.appendToLog("Error in sending email to " + destination + "."));
 
       }
     } catch (Exception e) {
-      Platform.runLater(() -> server.textArea.appendText("Error in sending email to " + destination + ".\n"));
+      Platform.runLater(() ->server.appendToLog("Error in sending email to " + destination + "."));
     }
     return success;
   }

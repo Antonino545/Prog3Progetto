@@ -80,12 +80,11 @@ public class LoginController {
         return;
       }
 
-      String host = "127.0.0.1";
-      int port = 4445;
+      String host = "127.0.0.1";//url del server
+      int port = 4445;//porta del server
       spinner.setVisible(true);
-      ClientModel clientModel = new ClientModel(email,host,port);
-
-// Creazione di un nuovo thread per eseguire l'operazione asincrona
+      ClientModel clientModel = new ClientModel(email,host,port);//
+      // Creazione di un nuovo thread per eseguire l'operazione asincrona
       Thread asyncThread = new Thread(() -> {
         if (clientModel.connectToServer()) {
           System.out.println("Connessione al server riuscita");

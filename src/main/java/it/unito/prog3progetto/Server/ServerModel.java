@@ -5,43 +5,51 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.TextArea;
 
 public class ServerModel {
-	private ServerSocket serverSocket;
+	private ServerSocket serverSocket;// Socket del server
 	final ConcurrentHashMap<UUID, String> authenticatedTokens;
-	final TextArea textArea; // TextArea per visualizzare l'output
 
-	// Costruttore che accetta una TextArea per visualizzare l'output
-	public ServerModel(TextArea textArea) {
-		this.textArea = textArea;
-		this.authenticatedTokens = new ConcurrentHashMap<>();
-	}
-
-	// Metodo per avviare il server e metterlo in ascolto su una porta specifica
 	private volatile boolean isRunning = true; // Flag to control the server's running state
 
+	private final StringProperty logText = new SimpleStringProperty(""); // Proprietà osservabile per il testo del log
+	public ServerModel(TextArea textArea) {
+		this.authenticatedTokens = new ConcurrentHashMap<>();
+		// Bind la proprietà del testo della TextArea alla proprietà osservabile logText
+		textArea.textProperty().bind(logText);
+	}
+
+	// Metodi per aggiornare il log
+  void appendToLog(String message) {
+		Platform.runLater(() -> logText.set(logText.get() + message + "\n"));
+	}
+
+	private void clearLog() {
+		Platform.runLater(() -> logText.set(""));
+	}
 	public void listen(int port) {
 		try {
 			serverSocket = new ServerSocket(port);
+			// Rimozione dell'aggiunta diretta al textArea, ora utilizzeremo appendToLog
+			appendToLog("Server avviato sulla porta: " + port + ". In attesa di connessioni...");
 			isRunning = true;
-
-
-			loadAuthenticatedTokensFromFile(); // Carica i token dal file al avvio del server
-			textArea.appendText("Server avviato sulla porta: " + port + ". In attesa di connessioni...\n");
-
 			while (isRunning) {
-				Socket socket = serverSocket.accept(); // Accetta connessioni dai client
-				textArea.appendText("Nuova connessione accettata.\n ");
+				Socket socket = serverSocket.accept();
+				appendToLog("New client connected: " + socket.getInetAddress().getHostAddress());
 				ClientHandler clientHandler = new ClientHandler(this, socket);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
 			}
 
 		} catch (IOException e) {
-			if(isRunning) textArea.appendText("Errore nell'avvio del server sulla porta " + port + ".\n" + e.getMessage() + "\n");
+			if (isRunning) appendToLog("Errore nell'avvio del server sulla porta " + port + ".\n" + e.getMessage() );
 		} finally {
-			close(); // Chiamata al metodo stop per chiudere il socket
+			close();
 		}
 	}
 
@@ -81,7 +89,7 @@ public class ServerModel {
 			} catch (IOException e) {
 				// Se il file non esiste o ci sono altri errori di lettura, semplicemente non carichiamo i token.
 				// Questo può essere gestito diversamente a seconda dei requisiti.
-				textArea.appendText("Impossibile caricare i token degli utenti dal file.\n");
+				appendToLog("Impossibile caricare i token degli utenti dal file.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -92,7 +100,7 @@ public class ServerModel {
 		File serverDirectory = new File("Server");
 		if (!serverDirectory.exists()) {
 			if (serverDirectory.mkdir()) {
-				textArea.appendText("Cartella 'Server' creata con successo.\n");
+				appendToLog("Cartella 'Server' creata con successo.");
 			} else {
 				throw new IOException("Impossibile creare la cartella 'Server'.");
 			}
@@ -143,9 +151,10 @@ public class ServerModel {
 			isRunning = false;
 			if (serverSocket != null && !serverSocket.isClosed()) {
 				serverSocket.close();
+				System.out.println("Server chiuso.");
 			}
 		} catch (IOException e) {
-			textArea.appendText("Errore nella chiusura del server socket.\n");
+			appendToLog("Errore nella chiusura del server socket.");
 		}
 	}
 
