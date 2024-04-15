@@ -13,14 +13,7 @@ public class ServerApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Server.fxml"));
-
         Parent root = loader.load();
-
-        // Get the controller instance
-        ServerController controller = loader.getController();
-
-        // Set the primaryStage reference
-
         Scene scene = new Scene(root, 500, 500);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("server.css")).toExternalForm());
         primaryStage.setScene(scene);

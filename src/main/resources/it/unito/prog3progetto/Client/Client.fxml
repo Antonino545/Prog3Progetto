@@ -4,18 +4,18 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.layout.StackPane?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300" minWidth="300" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unito.prog3progetto.Client.Controller.ClientController">
    <left>
-      <VBox  spacing="10.0" styleClass="left-pannel" stylesheets="@style.css" BorderPane.alignment="CENTER">
+      <VBox spacing="10.0" styleClass="left-pannel" stylesheets="@style.css" BorderPane.alignment="CENTER">
          <children>
             <Label prefHeight="35.0" prefWidth="82.0" text="Inbox " textFill="WHITE">
                <VBox.margin>
@@ -51,7 +51,7 @@
                            <Image url="@img/png-transparent-account-icon-man-icon-person-icon-profile-icon-user-icon-circle-oval-symbol-PhotoRoom.png-PhotoRoom.png" />
                         </image>
                      </ImageView>
-                     <Label alignment="CENTER" prefHeight="18.0"  fx:id="email"  textFill="WHITE">
+                     <Label fx:id="email" alignment="CENTER" prefHeight="18.0" textFill="WHITE">
                         <font>
                            <Font size="11.0" />
                         </font>
@@ -61,39 +61,42 @@
                      <Insets left="10.0" />
                   </VBox.margin>
                </HBox>
-               <VBox prefHeight="145.0" spacing="10" prefWidth="196.0">
-                  <children>
-                     <HBox fx:id="inbox"  nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0" onMouseClicked="#inboxemail">
-                        <children>
-                           <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="33.0" prefWidth="37.0" text="Index" textAlignment="CENTER" textFill="WHITE" />
-                           <Label alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="134.0" fx:id="indexLengthLabel" textFill="WHITE">
-                              <font>
-                                 <Font name="System Bold" size="12.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </HBox>
-                     <HBox fx:id="sendemail"   nodeOrientation="LEFT_TO_RIGHT" prefHeight="33.0" prefWidth="198.0" onMouseClicked="#sendemails" >
-                        <children>
-                           <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="33.0" prefWidth="67.0" text="Mail Inviate" textFill="WHITE" />
-                           <Label alignment="CENTER_RIGHT" prefHeight="33.0" fx:id="sendmaillabel" prefWidth="103.0" text="0" textFill="WHITE">
-                              <font>
-                                 <Font name="System Bold" size="12.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </HBox>
+               <VBox prefHeight="145.0" prefWidth="196.0" spacing="20">
+                  <HBox fx:id="inbox" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#inboxemail" prefHeight="33.0"
+                        prefWidth="198.0" spacing="10.0">
+                     <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="33.0"
+                            prefWidth="37.0" text="Index" textAlignment="CENTER" textFill="WHITE"/>
+                     <Label fx:id="indexLengthLabel" alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="134.0"
+                            textFill="WHITE">
+                        <font>
+                           <Font name="System Bold" size="12.0"/>
+                        </font>
+                     </Label>
+                  </HBox>
+                  <HBox fx:id="sendemail" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#sendemails" prefHeight="33.0"
+                        prefWidth="198.0">
+                     <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="35.0"
+                            prefWidth="67.0" text="Mail Inviate" textFill="WHITE"/>
+                     <Label fx:id="sendmaillabel" alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="103.0"
+                            textFill="WHITE">
+                        <font>
+                           <Font name="System Bold" size="12.0"/>
+                        </font>
+                     </Label>
+                  </HBox>
 
-                     <VBox spacing="10">
-                        <Button onAction="#logout" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Logout" />
-                        <Button onAction="#Refresh" mnemonicParsing="false" prefHeight="26.0" prefWidth="199.0" styleClass="button-primary" text="Refresh" />
+                  <VBox spacing="10">
+                     <Button mnemonicParsing="false" onAction="#logout" prefHeight="26.0" prefWidth="199.0"
+                             styleClass="button-primary" text="Logout"/>
+                     <Button mnemonicParsing="false" onAction="#Refresh" prefHeight="26.0" prefWidth="199.0"
+                             styleClass="button-primary" text="Refresh"/>
 
-                     </VBox>
-                     <StackPane>
-                        <ProgressIndicator style="-fx-min-height: 100px;-fx-min-width: 100px"  fx:id="spinner" visible="false"/>
+                  </VBox>
+                  <StackPane>
+                     <ProgressIndicator fx:id="spinner" style="-fx-min-height: 100px;-fx-min-width: 100px"
+                                        visible="false"/>
 
-                     </StackPane>
-                  </children>
+                  </StackPane>
                </VBox>
             </VBox>
          </children>
@@ -101,7 +104,7 @@
    </left>
    <center>
 
-      <ListView fx:id="mailListView" prefHeight="400" prefWidth="600" styleClass="Listmail" >
+      <ListView fx:id="mailListView" prefHeight="400" prefWidth="600" styleClass="Listmail">
 
       </ListView>
    </center>

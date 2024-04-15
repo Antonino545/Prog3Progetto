@@ -3,6 +3,7 @@ package it.unito.prog3progetto.Client;
 import it.unito.prog3progetto.Client.Controller.ClientController;
 import it.unito.prog3progetto.Client.Controller.MailDetailController;
 import it.unito.prog3progetto.Model.Email;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
@@ -63,15 +64,20 @@ public class MailItemCell extends ListCell<Email> {
       StringProperty subjectProperty = new SimpleStringProperty(email.getSubject());
       String content = email.getContent();
       if (content.length() > 50) {
-        content = content.substring(0, 50);
+        String truncatedContent = content.substring(0, 50);
+        if (truncatedContent.trim().length() < content.trim().length()) {
+          content = truncatedContent + "...";
+        }
       }
 
-      StringProperty contentProperty = new SimpleStringProperty(content + "...");
-      senderLabel.textProperty().bind(senderProperty);
-      toLabel.textProperty().bind(DestinationProperty);
+      StringProperty contentProperty = new SimpleStringProperty(content);
+
+      senderLabel.textProperty().bind(Bindings.concat("Da: ", senderProperty));
+      toLabel.textProperty().bind(Bindings.concat("A: ", DestinationProperty));
       dateLabel.textProperty().bind(dateProperty);
-      subjectLabel.textProperty().bind(subjectProperty);vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
-      contentLabel.textProperty().bind(contentProperty);
+      subjectLabel.textProperty().bind( Bindings.concat("Oggetto: ", subjectProperty));
+      contentLabel.textProperty().bind(Bindings.concat("Contenuto: ", contentProperty));
+      vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
       Button deleteButton = new Button("Cancella");
       deleteButton.getStyleClass().add("button-primary");
       deleteButton.setOnAction(event -> deleteEmail(email));

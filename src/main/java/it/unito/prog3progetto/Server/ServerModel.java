@@ -32,9 +32,10 @@ public class ServerModel {
 	}
 
 
-	private void clearLog() {
+	void clearLog() {
 		Platform.runLater(() -> logText.set(""));
 	}
+
 	public void listen(int port) {
 		try {
 			serverSocket = new ServerSocket(port);
@@ -43,7 +44,7 @@ public class ServerModel {
 			isRunning = true;
 			while (isRunning) {
 				Socket socket = serverSocket.accept();
-				appendToLog("New client connected: " + socket.getInetAddress().getHostAddress());
+				appendToLog("Client connected: " + socket.getInetAddress().getHostAddress());
 				ClientHandler clientHandler = new ClientHandler(this, socket);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
@@ -145,7 +146,7 @@ public class ServerModel {
 				database.add(line); // Aggiunge ogni riga del file al database
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			appendToLog("Errore nella lettura del file 'credentials.txt'.");
 		}
 		return database;
 	}

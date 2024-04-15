@@ -56,9 +56,9 @@ public class ClientController implements MailListObserver {
       FullRefresh();
       inboxemail();
     }
-//    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
-//    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
-//    autoRefreshTimeline.play();
+    autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
+    autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+    autoRefreshTimeline.play();
   }
 
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire l'aggiunta di email
@@ -114,7 +114,13 @@ public class ClientController implements MailListObserver {
     new Thread(() -> {
     if(Client.connectToServer())
       if(Client.logout()){
-        alert("Logout effettuato", Alert.AlertType.INFORMATION);
+      Platform.runLater(() -> {
+        spinner.setVisible(false);
+        if(autoRefreshTimeline.getStatus().equals(Timeline.Status.RUNNING)) autoRefreshTimeline.stop();
+
+        alert("Logout effettuato con successo", Alert.AlertType.INFORMATION);
+        loadLogin(primaryStage);// Carica la schermata di login
+      });
       }
 
     else {
@@ -123,10 +129,7 @@ public class ClientController implements MailListObserver {
     else {
     Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
     }
-    loadLogin(primaryStage);// Carica la schermata di login
 
-    autoRefreshTimeline.stop();// Ferma il refresh automatico
-    Client.closeConnections();// Chiude le connessioni con il server
   }).start();
 
   }
@@ -140,8 +143,6 @@ public class ClientController implements MailListObserver {
       Scene scene = new Scene(root);
       scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/it/unito/prog3progetto/Client/style.css")).toExternalForm());
       primaryStage.setScene(scene);
-      primaryStage.setWidth(500);
-      primaryStage.setHeight(600);
       primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
       primaryStage.show();
     } catch (IOException e) {

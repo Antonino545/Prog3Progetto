@@ -3,14 +3,18 @@ package it.unito.prog3progetto.Server;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 
 public class ServerController {
 
   @FXML
   public TextArea logTextArea;
+  public Button startbutton;
+  public Button closebutton;
 
   private ServerModel server;
+
 
   @FXML
   public void initialize() {
@@ -30,6 +34,7 @@ public class ServerController {
       serverThread.start();
       serverAvviato = true;
 
+
     } else {
       // Se il server è già avviato, segnala che è già in esecuzione
       server.appendToLog("Il server è già attivo.");
@@ -41,5 +46,8 @@ public class ServerController {
     server.close();
     serverAvviato = false;
 
+  }
+  public void clearLog(ActionEvent actionEvent) {
+    server.clearLog();
   }
 }
