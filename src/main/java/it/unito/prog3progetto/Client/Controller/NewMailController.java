@@ -60,7 +60,6 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
         stringBuilder.append(destination).append(",");
       }
       stringBuilder.append(sender);
-      destinations = stringBuilder.toString();
     } else if (Destination.size() == 1) {
       // Se c'è solo un destinatario, concateniamo solo quel destinatario e il mittente
       destinations = Destination.getFirst() + "," + sender;
@@ -116,48 +115,52 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     spinner.setVisible(true);
 
     new Thread(() -> {
-    if (success) {
+      if (success) {
+        Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
 
-      Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
-
-      String host= "127.0.0.1";
-      int port= 4445;
+        String host= "127.0.0.1";
+        int port= 4445;
 
         for(String dest: uniqueDestinations){
-          if(this.clientModel.connectToServer()) System.out.println("Connessione al server riuscita");
-          else {
+          if(this.clientModel.connectToServer()) {
+            System.out.println("Connessione al server riuscita");
+          } else {
             Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
             return;
           }
-          if(this.clientModel.CheckEmail(dest)) System.out.println("Email esistente");
-          else{
+          if(this.clientModel.CheckEmail(dest)) {
+            System.out.println("Email esistente");
+          } else {
             Platform.runLater(() -> alert("Email non esistente: "+ dest, Alert.AlertType.ERROR));
             System.out.println("Email non esistente: "+ dest);
             return;
           }
         }
-      if (this.clientModel.connectToServer()) {
-        System.out.println("Connessione al server riuscita");
-        if (this.clientModel.SendMail( email)) {
-          Stage stage = (Stage) subjectfield.getScene().getWindow();
-          stage.close();
-          clientController.Refresh();
-        Platform.runLater(() -> alert("Email inviata", Alert.AlertType.INFORMATION));
-          System.out.println("Email inviata");
+        if (this.clientModel.connectToServer()) {
+          System.out.println("Connessione al server riuscita");
+          if (this.clientModel.SendMail(email)) {
+            Platform.runLater(() -> {
+              Stage stage = (Stage) subjectfield.getScene().getWindow();
+              spinner.setVisible(false);
+              stage.close();
+              clientController.Refresh();
+              clientController.mailSendListModel.addEmail(email);
+              alert("Email inviata", Alert.AlertType.INFORMATION);
+            });
+            System.out.println("Email inviata");
+          } else {
+            System.out.println("Errore durante l'invio dell'email");
+            Platform.runLater(() -> alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR));
+          }
         } else {
-          System.out.println("Errore durante l'invio dell'email");
-          Platform.runLater(() -> alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR));
+          System.out.println("Connessione al server non riuscita");
+          Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
         }
       } else {
-        System.out.println("Connessione al server non riuscita");
-        Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+        Platform.runLater(() -> alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR));
+        System.out.println("Email non inviata, controllare i destinatari");
       }
-    } else {
-      Platform.runLater(() -> alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR));
-      System.out.println("Email non inviata, controllare i destinatari");
-    }
       Platform.runLater(() -> spinner.setVisible(false));
-
     }).start();
   }
 

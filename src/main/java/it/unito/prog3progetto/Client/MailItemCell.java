@@ -4,8 +4,6 @@ import it.unito.prog3progetto.Client.Controller.ClientController;
 import it.unito.prog3progetto.Client.Controller.MailDetailController;
 import it.unito.prog3progetto.Model.Email;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -58,25 +56,12 @@ public class MailItemCell extends ListCell<Email> {
       Label contentLabel = new Label();
 
       // Bind dei dati dell'email alle label
-      StringProperty senderProperty = new SimpleStringProperty(email.getSender());
-      StringProperty DestinationProperty = new SimpleStringProperty(email.getDestinations().toString());
-      StringProperty dateProperty = new SimpleStringProperty(email.getItalianDate());
-      StringProperty subjectProperty = new SimpleStringProperty(email.getSubject());
-      String content = email.getContent();
-      if (content.length() > 50) {
-        String truncatedContent = content.substring(0, 50);
-        if (truncatedContent.trim().length() < content.trim().length()) {
-          content = truncatedContent + "...";
-        }
-      }
 
-      StringProperty contentProperty = new SimpleStringProperty(content);
-
-      senderLabel.textProperty().bind(Bindings.concat("Da: ", senderProperty));
-      toLabel.textProperty().bind(Bindings.concat("A: ", DestinationProperty));
-      dateLabel.textProperty().bind(dateProperty);
-      subjectLabel.textProperty().bind( Bindings.concat("Oggetto: ", subjectProperty));
-      contentLabel.textProperty().bind(Bindings.concat("Contenuto: ", contentProperty));
+      senderLabel.textProperty().bind(Bindings.concat("Da: ", email.getsenderProprierty()));
+      toLabel.textProperty().bind(Bindings.concat("A: ", email.getDestinationsProprierty()));
+      dateLabel.textProperty().bind(Bindings.concat("Data: ", email.getDatesendMailProprierty()));
+      subjectLabel.textProperty().bind( Bindings.concat("Oggetto: ", email.getSubjectProprierty()));
+      contentLabel.textProperty().bind(Bindings.concat("Contenuto: ", email.getContentProprierty()));
       vbox.getChildren().addAll(senderLabel,toLabel, dateLabel, subjectLabel, contentLabel );
       Button deleteButton = new Button("Cancella");
       deleteButton.getStyleClass().add("button-primary");

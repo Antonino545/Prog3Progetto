@@ -107,7 +107,7 @@ public class LoginController {
               clientController.setPrimaryStage(primaryStage);
               clientController.initialize(clientModel); // Pass the clientModel
               Scene scene = new Scene(root);
-              scene.getStylesheets().add(getClass().getResource("/it/unito/prog3progetto/Client/style.css").toExternalForm());
+              scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/it/unito/prog3progetto/Client/style.css")).toExternalForm());
               primaryStage.setScene(scene);
               primaryStage.setTitle("Client Email - Progetto di Programmazione 3");
               primaryStage.setMinHeight(600);

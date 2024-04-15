@@ -1,5 +1,8 @@
 package it.unito.prog3progetto.Model;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -17,7 +20,7 @@ public class Email implements Serializable {
   private final Date datesendMail;
 
   private final String subject;
-  private  String content;
+  private final String content;
 
   private final  UUID id ;
 
@@ -64,19 +67,35 @@ public class Email implements Serializable {
     return new Email(sender,destinations,subject,content.replace("\n","<--Accapo-->"),datesendMail,id);
   }
 
-  /**
-   * Return the content of the email with the end line character (\n) and replace <--Accapo--> with \n
-   * @return Email
-   */
-  public Email emailEndLine(){
-    return new Email(sender,destinations,subject,content.replace("<--Accapo-->", "\n"),datesendMail,id);
-  }
   public String getContent() {
     return content;
   }
 
   public Date getDatesendMail() {
     return datesendMail;
+  }
+
+  public StringProperty  getsenderProprierty(){
+    return new SimpleStringProperty(getSender());
+  }
+  public StringProperty  getDestinationsProprierty(){
+    return new SimpleStringProperty(getDestinations().toString());
+  }
+  public StringProperty  getSubjectProprierty(){
+    return new SimpleStringProperty(getSubject());
+  }
+  public StringProperty getDatesendMailProprierty(){
+    return new SimpleStringProperty(getItalianDate());
+  }
+  public StringProperty  getContentProprierty() {
+    String content = getContent();
+    if (content.length() > 50) {
+      String truncatedContent = content.substring(0, 50);
+      if (truncatedContent.trim().length() < content.trim().length()) {
+        content = truncatedContent + "...";
+      }
+    }
+    return new SimpleStringProperty(content);
   }
 
   @Override

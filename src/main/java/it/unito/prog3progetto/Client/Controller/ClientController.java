@@ -29,7 +29,7 @@ import static it.unito.prog3progetto.Model.Lib.alert;
 
 public class ClientController implements MailListObserver {
   @FXML
-  public Label indexLengthLabel,email,sendmaillabel;
+  public Label indexLengthLabel,email, SendMailLengthLabel;
   public HBox inbox;
   public ProgressIndicator spinner;
   @FXML
@@ -39,7 +39,8 @@ public class ClientController implements MailListObserver {
   public boolean isInbox ;
   private Stage primaryStage;
   private ClientModel Client;
-  private MailListModel mailReceivedListModel,mailSendListModel;
+  private MailListModel mailReceivedListModel;
+  MailListModel mailSendListModel;
 
   private Timeline autoRefreshTimeline;
 
@@ -52,7 +53,7 @@ public class ClientController implements MailListObserver {
       mailReceivedListModel.addObserver(this); // Registra il controller come osservatore
       mailSendListModel.addObserver(this);
       indexLengthLabel.textProperty().bind(mailReceivedListModel.sizeProperty().asString());
-      sendmaillabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
+      SendMailLengthLabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
       FullRefresh();
       inboxemail();
     }

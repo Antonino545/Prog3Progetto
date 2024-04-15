@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
-public class ClientApplication extends Application {
+public class ClientView extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         loadLogin(primaryStage);

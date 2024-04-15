@@ -46,7 +46,7 @@ public class MailListModel {
 
   public void clear() {
     emails.clear();
-    sizeProperty.set(emails.size());
+    sizeProperty.set(0);
     for (MailListObserver observer : observers) {
       observer.onAllEmailsRemoved();
     }

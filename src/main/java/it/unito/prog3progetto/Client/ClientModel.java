@@ -296,7 +296,7 @@ public class ClientModel {
       }
       return success;
     } catch (IOException | ClassNotFoundException e) {
-      System.out.println("Errore durante la cancellazione dell'email.\n Errore:" + e.getMessage());
+      System.out.println("Errore durante la cancellazione dell'email.\nErrore:" + e.getMessage());
       return false;
     }
     finally {
@@ -321,7 +321,7 @@ public class ClientModel {
       if (socket != null)
         socket.close();
     } catch (IOException e) {
-      System.out.println("Errore durante la chiusura delle connessioni.+ Errore:" + e.getMessage());
+      System.out.println("Errore durante la chiusura delle connessioni.\nErrore:" + e.getMessage());
     }
   }
 }

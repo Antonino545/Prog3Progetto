@@ -57,7 +57,6 @@ class ClientHandler implements Runnable {
         outStream.flush();
         return;
       }
-      assert clientObject instanceof UUID;
       userMail = getUserEmail((UUID) clientObject);
       clientObject = inStream.readObject();
       switch (clientObject.toString()) {
