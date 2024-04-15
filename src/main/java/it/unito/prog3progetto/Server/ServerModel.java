@@ -41,6 +41,7 @@ public class ServerModel {
 			serverSocket = new ServerSocket(port);
 			// Rimozione dell'aggiunta diretta al textArea, ora utilizzeremo appendToLog
 			appendToLog("Server avviato sulla porta: " + port + ". In attesa di connessioni...");
+			loadAuthenticatedTokensFromFile();
 			isRunning = true;
 			while (isRunning) {
 				Socket socket = serverSocket.accept();
