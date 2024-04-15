@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -117,7 +118,7 @@ class ClientHandler implements Runnable {
       Object tokenObject = inStream.readObject();
       if (tokenObject instanceof UUID token) {
         server.authenticatedTokens.remove(token);
-        saveAuthenticatedTokensToFile();
+        saveAuthenticatedTokensToFile(token);
         outStream.writeObject(true);
         outStream.flush();
         Platform.runLater(() ->server.appendToLog("User logged out successfully."));
@@ -147,10 +148,12 @@ class ClientHandler implements Runnable {
           String userEmail = user.getEmail();
           synchronized (server.authenticatedTokens) { // Synchronize on the map itself
             server.authenticatedTokens.put(token, userEmail);
+            server.tokenCreation.put(token, new Date(Date.from(Instant.now()).getTime()));
+            saveAuthenticatedTokensToFile(token);
+
           }
           outStream.writeObject(token);
           outStream.flush();
-          saveAuthenticatedTokensToFile();
           Platform.runLater(() ->server.appendToLog("Authentication successful for user " + userEmail + "."));
         } else {
           Platform.runLater(() ->server.appendToLog("Authentication failed for user " + user.getEmail() + "."));
@@ -166,45 +169,42 @@ class ClientHandler implements Runnable {
 
 
 
-  private void saveAuthenticatedTokensToFile() {
-    // Map to keep track of session count for each email
-    Map<String, Integer> emailSessionCount = new HashMap<>();
+  private void saveAuthenticatedTokensToFile(UUID token) {
+    synchronized (server.authenticatedTokens) {
+      // Controlla se l'email associata al token ha già 10 token registrati
+      String userEmail = server.authenticatedTokens.get(token);
+      int tokenCount = (int) server.authenticatedTokens.values().stream()
+              .filter(email -> email.equals(userEmail))
+              .count();
 
-    try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
-      // Load existing tokens from file
-      Map<UUID, String> existingTokens = loadTokensFromFile();
+      if (tokenCount > 10) {
+        // Trova il token più vecchio associato a questa email
+        UUID oldestToken = server.authenticatedTokens.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(userEmail))
+                .min(Comparator.comparing(entry -> server.tokenCreation.get(entry.getKey())))
+                .map(Map.Entry::getKey)
+                .orElse(null);
 
-      for (UUID token : server.authenticatedTokens.keySet()) {
-        String email = server.authenticatedTokens.get(token);
-
-        // Remove existing sessions for this email from loaded tokens
-        existingTokens.values().removeIf(e -> e.equals(email));
-
-        // Increment session count for the current email
-        int sessionCount = 1;
-
-        // Check if the session count exceeds the limit
-        if (server.authenticatedTokens.containsValue(email)) {
-          sessionCount = emailSessionCount.getOrDefault(email, 0) + 1;
-          if (sessionCount > 10) {
-            continue; // Skip saving this token if the session count exceeds the limit
-          }
+        if (oldestToken != null) {
+          // Rimuovi il token più vecchio
+          server.authenticatedTokens.remove(oldestToken);
+          server.tokenCreation.remove(oldestToken);
         }
-
-        // Save the token to the file
-        writer.println(token + "," + email);
-
-        // Update session count for the current email
-        emailSessionCount.put(email, sessionCount);
       }
 
-      // Save remaining existing tokens (with removed sessions) back to the file
-      for (UUID token : existingTokens.keySet()) {
-        String email = existingTokens.get(token);
-        writer.println(token + "," + email);
+      // Aggiungi il nuovo token alla mappa
+      server.authenticatedTokens.put(token, userEmail);
+      server.tokenCreation.put(token, new Date());
+
+      // Aggiorna il file di testo con i token autenticati
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter("Server/tokens.txt"))) {
+        for (Map.Entry<UUID, String> entry : server.authenticatedTokens.entrySet()) {
+          writer.write(entry.getKey().toString() + "," + entry.getValue()+ "," + server.tokenCreation.get(entry.getKey()).getTime());
+          writer.newLine();
+        }
+      } catch (IOException e) {
+        e.printStackTrace(); // Gestione dell'errore di scrittura su file
       }
-    } catch (IOException e) {
-      Platform.runLater(() -> server.appendToLog("Error saving authenticated tokens to file."));
     }
   }
 

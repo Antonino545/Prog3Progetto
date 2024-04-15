@@ -14,12 +14,14 @@ import javafx.scene.control.TextArea;
 public class ServerModel {
 	private ServerSocket serverSocket;// Socket del server
 	final ConcurrentHashMap<UUID, String> authenticatedTokens;
+	final ConcurrentHashMap<UUID,Date> tokenCreation ;
 
 	volatile boolean isRunning = true; // Flag to control the server's running state
 	TextArea textArea;
 	private final StringProperty logText = new SimpleStringProperty(""); // Proprietà osservabile per il testo del log
 	public ServerModel(TextArea textArea) {
 		this.authenticatedTokens = new ConcurrentHashMap<>();
+		this.tokenCreation = new ConcurrentHashMap<>();
 		textArea.textProperty().bind(logText);
 		this.textArea = textArea;
 	}
@@ -70,10 +72,12 @@ public class ServerModel {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(",");
-				if (parts.length == 2) {
+				if (parts.length == 3) {
 					authenticatedTokens.put(UUID.fromString(parts[0]), parts[1]);
+					tokenCreation.put(UUID.fromString(parts[0]), new Date(Long.parseLong(parts[2])));
 				}
 			}
+			appendToLog("Caricati " + authenticatedTokens.size() + " token dal file 'tokens.txt'.");
 			System.out.println("Caricati " + authenticatedTokens.size() + " token dal file 'tokens.txt'.");
 		} catch (IOException e) {
 			appendToLog("Errore nella lettura del file 'tokens.txt'.");
@@ -91,31 +95,6 @@ public class ServerModel {
 		}
 	}
 
-	private void removeLinesFromFile(String filePath, List<String> linesToRemove) {
-		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-			List<String> lines = new ArrayList<>();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				// Aggiungi tutte le righe tranne quelle da rimuovere
-				if (!linesToRemove.contains(line)) {
-					lines.add(line);
-				}
-			}
-
-			// Sovrascrivi il file con le righe aggiornate
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-				for (String l : lines) {
-					writer.write(l);
-					writer.newLine();
-				}
-			} catch (IOException e) {
-				appendToLog("Errore nella scrittura del file: " + filePath);
-			}
-		} catch (IOException e) {
-			appendToLog("Errore nella lettura del file: " + filePath);
-
-		}
-	}
 
 	List<String> readDatabaseFromFile() {
 		List<String> database = new ArrayList<>();
