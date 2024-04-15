@@ -49,10 +49,11 @@ class ClientHandler implements Runnable {
         handleLoginRequest();
         return;
       }
+
       // Verifica se l'utente è autenticato
       if (!isAuthenticated(clientObject instanceof UUID ? (UUID) clientObject : null)) {
         Platform.runLater(() -> server.appendToLog("User is not authenticated"));
-        // Invia false al client per indicare che l'utente non è autenticato
+        System.out.println(clientObject);
         outStream.writeObject(false);
         outStream.flush();
         return;
@@ -166,30 +167,61 @@ class ClientHandler implements Runnable {
 
 
   private void saveAuthenticatedTokensToFile() {
+    // Map to keep track of session count for each email
+    Map<String, Integer> emailSessionCount = new HashMap<>();
 
-      try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
-        Map<String, Integer> emailSessionCount = new HashMap<>(); // Map to keep track of session count for each email
-        for (UUID token : server.authenticatedTokens.keySet()) {
-          String email = server.authenticatedTokens.get(token);
+    try (PrintWriter writer = new PrintWriter(new FileWriter("Server/tokens.txt"))) {
+      // Load existing tokens from file
+      Map<UUID, String> existingTokens = loadTokensFromFile();
 
-          // Increment session count for the current email
-          int sessionCount = emailSessionCount.getOrDefault(email, 0) + 1;
+      for (UUID token : server.authenticatedTokens.keySet()) {
+        String email = server.authenticatedTokens.get(token);
 
-          // Check if the session count exceeds the limit
-          if (sessionCount > 5) {
+        // Remove existing sessions for this email from loaded tokens
+        existingTokens.values().removeIf(e -> e.equals(email));
+
+        // Increment session count for the current email
+        int sessionCount = 1;
+
+        // Check if the session count exceeds the limit
+        if (server.authenticatedTokens.containsValue(email)) {
+          sessionCount = emailSessionCount.getOrDefault(email, 0) + 1;
+          if (sessionCount > 10) {
             continue; // Skip saving this token if the session count exceeds the limit
           }
-
-          // Save the token to the file
-          writer.println(token + "," + email);
-
-          // Update session count for the current email
-          emailSessionCount.put(email, sessionCount);
         }
-      } catch (IOException e) {
-        Platform.runLater(() ->server.appendToLog("Error saving authenticated tokens to file."));
+
+        // Save the token to the file
+        writer.println(token + "," + email);
+
+        // Update session count for the current email
+        emailSessionCount.put(email, sessionCount);
       }
 
+      // Save remaining existing tokens (with removed sessions) back to the file
+      for (UUID token : existingTokens.keySet()) {
+        String email = existingTokens.get(token);
+        writer.println(token + "," + email);
+      }
+    } catch (IOException e) {
+      Platform.runLater(() -> server.appendToLog("Error saving authenticated tokens to file."));
+    }
+  }
+
+  private Map<UUID, String> loadTokensFromFile() throws IOException {
+    Map<UUID, String> tokens = new HashMap<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        String[] parts = line.split(",");
+        if (parts.length == 2) {
+          UUID token = UUID.fromString(parts[0]);
+          String email = parts[1];
+          tokens.put(token, email);
+        }
+      }
+    }
+    return tokens;
   }
 
   private synchronized void handleSendMailRequest() {

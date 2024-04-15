@@ -58,46 +58,25 @@ public class ServerModel {
 		}
 	}
 
-	private void loadAuthenticatedTokensFromFile() {
-		try {
-			createServerDirectoryIfNotExists(); // Assicura che la cartella "Server" esista
-
-			try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
-				String line;
-				Map<String, Integer> emailSessionCount = new HashMap<>(); // Mappa per tenere traccia del numero di sessioni per ogni email
-				List<String> linesToRemove = new ArrayList<>(); // Lista per tenere traccia delle righe da rimuovere dal file
-				while ((line = reader.readLine()) != null) {
-					String[] parts = line.split(",");
-					if (parts.length == 2) {
-						UUID token = UUID.fromString(parts[0]);
-						String email = parts[1];
-
-						// Controlla se l'email ha già raggiunto il limite di sessioni
-						int sessionCount = emailSessionCount.getOrDefault(email, 0);
-						if (sessionCount >= 5) {
-							// Se ha raggiunto il limite, aggiungi la riga alla lista delle righe da rimuovere
-							linesToRemove.add(line);
-							continue; // Passa alla riga successiva
-						}
-
-						// Aggiungi il token all'elenco dei token autenticati
-						authenticatedTokens.put(token, email);
-
-						// Aggiorna il conteggio delle sessioni per l'email corrente
-						emailSessionCount.put(email, sessionCount + 1);
-					}
-				}
-
-				// Rimuovi le righe obsolete dal file
-				removeLinesFromFile("Server/tokens.txt", linesToRemove);
-
-			} catch (IOException e) {
-				// Se il file non esiste o ci sono altri errori di lettura, semplicemente non carichiamo i token.
-				// Questo può essere gestito diversamente a seconda dei requisiti.
-				appendToLog("Impossibile caricare i token degli utenti dal file.");
+	public void loadAuthenticatedTokensFromFile() throws IOException {
+		createServerDirectoryIfNotExists(); // Assicura che la cartella "Server" esista
+		File tokensFile = new File("Server/tokens.txt");
+		if (!tokensFile.exists()) {
+			if (!tokensFile.createNewFile()) {
+				throw new IOException("Impossibile creare il file 'tokens.txt'.");
 			}
+		}
+		try (BufferedReader reader = new BufferedReader(new FileReader(tokensFile))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length == 2) {
+					authenticatedTokens.put(UUID.fromString(parts[0]), parts[1]);
+				}
+			}
+			System.out.println("Caricati " + authenticatedTokens.size() + " token dal file 'tokens.txt'.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			appendToLog("Errore nella lettura del file 'tokens.txt'.");
 		}
 	}
 
