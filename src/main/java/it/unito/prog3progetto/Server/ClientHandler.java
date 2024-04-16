@@ -117,8 +117,9 @@ class ClientHandler implements Runnable {
       outStream.flush();
       Object tokenObject = inStream.readObject();
       if (tokenObject instanceof UUID token) {
+        String userEmail = server.authenticatedTokens.get(token);
         server.authenticatedTokens.remove(token);
-        saveAuthenticatedTokensToFile(token);
+        saveAuthenticatedTokensToFile(token,userEmail);
         outStream.writeObject(true);
         outStream.flush();
         Platform.runLater(() ->server.appendToLog("User logged out successfully."));
@@ -149,7 +150,7 @@ class ClientHandler implements Runnable {
           synchronized (server.authenticatedTokens) { // Synchronize on the map itself
             server.authenticatedTokens.put(token, userEmail);
             server.tokenCreation.put(token, new Date(Date.from(Instant.now()).getTime()));
-            saveAuthenticatedTokensToFile(token);
+            saveAuthenticatedTokensToFile(token,userEmail);
 
           }
           outStream.writeObject(token);
@@ -169,24 +170,21 @@ class ClientHandler implements Runnable {
 
 
 
-  private void saveAuthenticatedTokensToFile(UUID token) {
+  private void saveAuthenticatedTokensToFile(UUID token,String userEmail) {
     synchronized (server.authenticatedTokens) {
       // Controlla se l'email associata al token ha già 10 token registrati
-      String userEmail = server.authenticatedTokens.get(token);
       int tokenCount = (int) server.authenticatedTokens.values().stream()
               .filter(email -> email.equals(userEmail))
               .count();
 
       if (tokenCount > 10) {
-        // Trova il token più vecchio associato a questa email
         UUID oldestToken = server.authenticatedTokens.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(userEmail))
-                .min(Comparator.comparing(entry -> server.tokenCreation.get(entry.getKey())))
-                .map(Map.Entry::getKey)
+                .filter(tokenEntry -> tokenEntry.getValue().equals(userEmail)) // Filtra solo gli elementi associati all'email specificata
+                .min(Comparator.comparing(tokenEntry -> server.tokenCreation.get(tokenEntry.getKey()))) // Trova il token più vecchio tra gli elementi filtrati
+                .map(Map.Entry::getKey) // Estrai la chiave (UUID del token) del token più vecchio, se presente
                 .orElse(null);
 
         if (oldestToken != null) {
-          // Rimuovi il token più vecchio
           server.authenticatedTokens.remove(oldestToken);
           server.tokenCreation.remove(oldestToken);
         }
@@ -208,23 +206,8 @@ class ClientHandler implements Runnable {
     }
   }
 
-  private Map<UUID, String> loadTokensFromFile() throws IOException {
-    Map<UUID, String> tokens = new HashMap<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader("Server/tokens.txt"))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        String[] parts = line.split(",");
-        if (parts.length == 2) {
-          UUID token = UUID.fromString(parts[0]);
-          String email = parts[1];
-          tokens.put(token, email);
-        }
-      }
-    }
-    return tokens;
-  }
 
-  private synchronized void handleSendMailRequest() {
+  private  void handleSendMailRequest() {
     try {
       outStream.writeObject(true);
       outStream.flush();
@@ -299,7 +282,7 @@ class ClientHandler implements Runnable {
     return false; // Se le credenziali non corrispondono, restituisce false
   }
 
-  private boolean sendMail(Email email) {
+  private synchronized boolean sendMail(Email email) {
     boolean success = false; // Variabile per tenere traccia dello stato di invio dell'email
     writeswmail(email.getSender(), email, true);
     for (String destination : email.getDestinations()) {
@@ -333,7 +316,7 @@ class ClientHandler implements Runnable {
     }
   }
 
-  public synchronized  void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
+  public void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
 
     synchronized (lock) {
 
@@ -383,7 +366,7 @@ class ClientHandler implements Runnable {
    * @param lastEmailDate The date of the last email received
    * @return An ArrayList of Email objects
    */
-  public  ArrayList<Email> readEmails(String usermail, Date lastEmailDate, boolean sendemail)  {
+  public ArrayList<Email> readEmails(String usermail, Date lastEmailDate, boolean sendemail)  {
     SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
     ArrayList<Email> emails = new ArrayList<>();
     try {

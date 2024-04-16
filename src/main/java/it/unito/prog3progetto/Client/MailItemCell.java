@@ -54,9 +54,7 @@ public class MailItemCell extends ListCell<Email> {
       Label subjectLabel = new Label();
       Label dateLabel = new Label();
       Label contentLabel = new Label();
-
       // Bind dei dati dell'email alle label
-
       senderLabel.textProperty().bind(Bindings.concat("Da: ", email.getsenderProprierty()));
       toLabel.textProperty().bind(Bindings.concat("A: ", email.getDestinationsProprierty()));
       dateLabel.textProperty().bind(Bindings.concat("Data: ", email.getDatesendMailProprierty()));
@@ -101,7 +99,6 @@ public class MailItemCell extends ListCell<Email> {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("MailDetailView.fxml"));
       Parent root = loader.load();
-
       MailDetailController controller = loader.getController();
       controller.initialize(client, email);
       Scene scene = new Scene(root);

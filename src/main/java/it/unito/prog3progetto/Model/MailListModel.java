@@ -1,5 +1,6 @@
 package it.unito.prog3progetto.Model;
 
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -57,8 +58,11 @@ public class MailListModel {
   }
 
   public void addEmails(ArrayList<Email> emails) {
+    Platform.runLater(() -> {
     this.emails.addAll(emails);
-    sizeProperty.set(this.emails.size());
+
+      sizeProperty.set(this.emails.size());
+    });
     for (Email email : emails) {
       notifyEmailAdded(email);
     }

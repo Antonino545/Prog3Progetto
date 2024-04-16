@@ -131,6 +131,8 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
           if(this.clientModel.CheckEmail(dest)) {
             System.out.println("Email esistente");
           } else {
+            spinner.setVisible(false);
+
             Platform.runLater(() -> alert("Email non esistente: "+ dest, Alert.AlertType.ERROR));
             System.out.println("Email non esistente: "+ dest);
             return;

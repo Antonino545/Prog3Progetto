@@ -207,6 +207,8 @@ public class ClientController implements MailListObserver {
         mailSendListModel.clear();
         mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), null, true));
       }
+      Platform.runLater(() -> spinner.setVisible(false));
+
     }
   }
 
