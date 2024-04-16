@@ -13,9 +13,10 @@ import javafx.scene.control.TextArea;
 
 public class ServerModel {
 	private ServerSocket serverSocket;// Socket del server
+	// Mappa dei token autenticati uso una ConcurrentHashMap per garantire la sicurezza in caso di accessi concorrenti
 	final ConcurrentHashMap<UUID, String> authenticatedTokens;
+	// Mappa dei token autenticati con data di creazione  uso una ConcurrentHashMap per garantire la sicurezza in caso di accessi concorrenti
 	final ConcurrentHashMap<UUID,Date> tokenCreation ;
-
 	volatile boolean isRunning = true; // Flag to control the server's running state
 	TextArea textArea;
 	private final StringProperty logText = new SimpleStringProperty(""); // Proprietà osservabile per il testo del log
