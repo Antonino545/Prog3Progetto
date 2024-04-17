@@ -74,16 +74,22 @@ class ClientHandler implements Runnable {
           break;
         case "CLOSE_CONNECTION":
           closeStreams();
+          Thread.currentThread().interrupt(); // Interrompi il thread corrente
+
           break;
         default:
           outStream.writeObject(false);
           outStream.flush();
+          Thread.currentThread().interrupt(); // Interrompi il thread corrente
+
           break;
       }
     } catch (IOException  | ClassNotFoundException e) {
       if(e.getMessage()!=null) server.appendToLog("Error communicating with the client: " + e.getMessage() + ".");
     } finally {
       closeStreams();
+      Thread.currentThread().interrupt(); // Interrompi il thread corrente
+
     }
   }
 
