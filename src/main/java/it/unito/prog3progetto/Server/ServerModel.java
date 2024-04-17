@@ -83,7 +83,6 @@ public class ServerModel {
 				}
 			}
 			appendToLog("Caricati " + authenticatedTokens.size() + " token dal file 'tokens.txt'.");
-			System.out.println("Caricati " + authenticatedTokens.size() + " token dal file 'tokens.txt'.");
 		} catch (IOException e) {
 			appendToLog("Errore nella lettura del file 'tokens.txt'.");
 		}
@@ -101,7 +100,7 @@ public class ServerModel {
 	}
 
 	public ConcurrentHashMap<String,String> readDatabaseFromFile() {
-		ConcurrentHashMap<String,String> newdatabase = new ConcurrentHashMap<>();
+		ConcurrentHashMap<String,String> db = new ConcurrentHashMap<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader("Server/credentials.txt"))) {
 			String line;
@@ -112,7 +111,7 @@ public class ServerModel {
 					String password = parts[1].trim();
 					sendMailLocks.computeIfAbsent(userEmail, k -> new Object());
 					receiveMailLocks.computeIfAbsent(userEmail, k -> new Object());
-					newdatabase.put(userEmail, password); // Aggiunge la coppia chiave-valore alla mappa
+					db.put(userEmail, password); // Aggiunge la coppia chiave-valore alla mappa
 				} else {
 					appendToLog("Linea non valida nel file 'credentials.txt': " + line);
 				}
@@ -120,8 +119,8 @@ public class ServerModel {
 		} catch (IOException e) {
 			appendToLog("Errore nella lettura del file 'credentials.txt'.");
 		}
-		appendToLog("Caricate " + newdatabase.size() + " credenziali dal file 'credentials.txt'.");
-		return newdatabase;
+		appendToLog("Caricate " + db.size() + " credenziali dal file 'credentials.txt'.");
+		return db;
 	}
 
 	public void close() {
@@ -136,6 +135,12 @@ public class ServerModel {
 		}
 	}
 
+	/**
+	 * Restituisce la mappa dei token autenticati
+	 * @param email Email dell'utente in cui si vuole effettuare l'operazione di scrittura o lettura delle email
+	 * @param send Flag per indicare se si tratta del file di invio o di ricezione delle email
+	 * @return lock del file indicato
+	 */
 	public Object getLock(String email, boolean send) {
 		return send ? sendMailLocks.get(email) : receiveMailLocks.get(email);
 	}

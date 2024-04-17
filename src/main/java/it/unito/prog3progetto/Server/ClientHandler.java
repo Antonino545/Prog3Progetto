@@ -263,8 +263,7 @@ class ClientHandler implements Runnable {
 
   private  boolean sendMail(Email email) {
     boolean success = false;
-    Object lock=  server.getLock(email.getSender(), true);
-    synchronized (lock) {
+    synchronized (server.getLock(email.getSender(), true)) {
       success = writeswmail(email.getSender(), email, true);
     }
     for (String destination : email.getDestinations()) {
@@ -282,24 +281,22 @@ class ClientHandler implements Runnable {
   }
 
   private ArrayList<Email> fetchReceivedEmails(String usermail, Date lastEmailDate) throws IOException {
-   Object lock=  server.getLock(usermail, false);
-    synchronized (lock) {
+
+    synchronized (server.getLock(usermail, false)) {
       return readEmails(usermail, lastEmailDate, false);
     }
   }
 
   private ArrayList<Email> fetchSendEmails(String usermail, Date lastEmailDate) throws IOException {
-    Object lock=  server.getLock(usermail, true);
 
-    synchronized (lock) {
+    synchronized (server.getLock(usermail, true)) {
       return readEmails(usermail, lastEmailDate, true);
 
     }
   }
 
   public void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
-    Object lock=  server.getLock(usermail, sendmail);
-    synchronized (lock) {
+    synchronized (server.getLock(usermail, true)) {
 
       List<String> linesToKeep = new ArrayList<>();
       String filename = sendmail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
