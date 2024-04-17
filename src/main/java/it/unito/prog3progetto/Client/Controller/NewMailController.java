@@ -150,7 +150,6 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
               Stage stage = (Stage) subjectfield.getScene().getWindow();
               spinner.setVisible(false);
               stage.close();
-              clientController.Refresh();
               clientController.mailSendListModel.addEmail(email);
               alert("Email inviata", Alert.AlertType.INFORMATION);
             });

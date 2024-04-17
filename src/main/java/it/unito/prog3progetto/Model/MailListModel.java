@@ -30,6 +30,7 @@ public class MailListModel {
    * @param email Email da aggiungere
    */
   public void addEmail(Email email) {
+    if(emails.contains(email)) return; // Se l'email è già presente nella lista, non la aggiungiamo (non dovrebbe mai accadere
     emails.add(email);
     sizeProperty.set(emails.size());
     notifyEmailAdded(email);

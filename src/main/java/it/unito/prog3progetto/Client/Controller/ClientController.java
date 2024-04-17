@@ -52,6 +52,7 @@ public class ClientController implements MailListObserver {
       indexLengthLabel.textProperty().bind(mailReceivedListModel.sizeProperty().asString());
       SendMailLengthLabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
       FullRefresh();
+      isInbox = false;
       inboxemail();
     }
     autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> Refresh()));
@@ -242,7 +243,7 @@ public class ClientController implements MailListObserver {
     changeButton(sendemail, inbox);
     if (mailSendListModel.getEmails().isEmpty()) {
       FullRefresh();
-      mailListView.getItems().setAll(mailSendListModel.getEmails());
+Platform.runLater(() -> mailListView.getItems().setAll(mailSendListModel.getEmails()));
     } else {
       mailListView.setItems(mailSendListModel.getEmails());
       mailListView.refresh();
@@ -259,7 +260,7 @@ public class ClientController implements MailListObserver {
     changeButton(inbox, sendemail);
     if (mailReceivedListModel.getEmails().isEmpty()) {
       FullRefresh();
-      mailListView.getItems().setAll(mailReceivedListModel.getEmails());
+      Platform.runLater(() -> mailListView.getItems().setAll(mailReceivedListModel.getEmails()));
     } else {
       mailListView.setItems(mailReceivedListModel.getEmails());
       mailListView.refresh();
