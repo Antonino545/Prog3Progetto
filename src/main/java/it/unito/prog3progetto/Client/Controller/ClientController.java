@@ -1,5 +1,4 @@
 package it.unito.prog3progetto.Client.Controller;
-
 import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Client.MailItemCell;
 import it.unito.prog3progetto.Model.Email;
@@ -19,11 +18,9 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
-
 import static it.unito.prog3progetto.Model.Lib.alert;
 
 
@@ -186,10 +183,8 @@ public class ClientController implements MailListObserver {
 
       // Nasconde lo spinner
       Platform.runLater(() -> spinner.setVisible(false));
-
       if (!connectionSuccessful) {
         autoRefreshTimeline.setDelay(autoRefreshTimeline.getCurrentTime().add(autoRefreshTimeline.getCurrentTime()));
-
         Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
       }
     }).start();

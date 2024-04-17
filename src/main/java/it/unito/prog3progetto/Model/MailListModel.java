@@ -13,6 +13,10 @@ public class MailListModel {
   private final ArrayList<MailListObserver> observers = new ArrayList<>();
   private final IntegerProperty sizeProperty = new SimpleIntegerProperty();
 
+  /**
+   * Aggiunge un osservatore alla lista
+   * @param observer Osservatore da aggiungere
+   */
   public void addObserver(MailListObserver observer) {
     observers.add(observer);
   }
@@ -21,30 +25,49 @@ public class MailListModel {
     observers.remove(observer);
   }
 
+  /**
+   * Aggiunge un'email alla lista
+   * @param email Email da aggiungere
+   */
   public void addEmail(Email email) {
     emails.add(email);
     sizeProperty.set(emails.size());
     notifyEmailAdded(email);
   }
 
+  /**
+   * Rimuove un'email dalla lista
+   * @param email Email da rimuovere
+   */
   public void removeEmail(Email email) {
     emails.remove(email);
     sizeProperty.set(emails.size());
-    notifyEmailRemoved(email);
+    notifyEmailRemoved(email);// Notifica l'osservatore
   }
 
+  /**
+   * Notifica l'aggiunta di un'email
+   * @param email Email aggiunta
+   */
   private void notifyEmailAdded(Email email) {
     for (MailListObserver observer : observers) {
       observer.onEmailAdded(email);
     }
   }
 
+  /**
+   * Notifica la rimozione di un'email
+   * @param email Email rimossa
+   */
   private void notifyEmailRemoved(Email email) {
     for (MailListObserver observer : observers) {
       observer.onEmailRemoved(email);
     }
   }
 
+  /**
+   * Rimuove tutte le email dalla lista
+   */
   public void clear() {
     emails.clear();
     sizeProperty.set(0);
@@ -53,14 +76,21 @@ public class MailListModel {
     }
   }
 
+  /**
+   * Restituisce la lista di email
+   * @return  Lista di email
+   */
   public ObservableList<Email> getEmails() {
     return emails;
   }
 
+  /**
+   * Aggiunge una lista di email alla lista
+   * @param emails Lista di email da aggiungere
+   */
   public void addEmails(ArrayList<Email> emails) {
     Platform.runLater(() -> {
     this.emails.addAll(emails);
-
       sizeProperty.set(this.emails.size());
     });
     for (Email email : emails) {
@@ -68,10 +98,18 @@ public class MailListModel {
     }
   }
 
+  /**
+   * Restituisce il numero di email presenti nella lista
+   * @return Numero di email presenti nella lista
+   */
   public int size() {
     return emails.size();
   }
 
+  /**
+   * Restituisce la proprietà che rappresenta il numero di email presenti nella lista
+   * @return Proprietà che rappresenta il numero di email presenti nella lista
+   */
   public IntegerProperty sizeProperty() {
     return sizeProperty;
   }

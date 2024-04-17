@@ -51,20 +51,25 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     this.clientModel = clientModel;
     String prefix = action.equals("reply") ? "Re: " : action.equals("forward") ? "Fwd: " : "ReALL: ";
   String destinations;
+  System.out.println("replyall");
 
   if (action.equals("replyall")) {
-    if (Destination.size() > 1) {
+    if (Destination.size() >1) {
       // Se ci sono più di un destinatario, li concateniamo con il mittente
       StringBuilder stringBuilder = new StringBuilder();
       for (String destination : Destination) {
+        if(destination.equals(clientModel.getEMail())) continue;
         stringBuilder.append(destination).append(",");
       }
       stringBuilder.append(sender);
+      destinations = stringBuilder.toString();
+      destinationsfield.setText(destinations);
+
     } else if (Destination.size() == 1) {
       // Se c'è solo un destinatario, concateniamo solo quel destinatario e il mittente
       destinations = Destination.getFirst() + "," + sender;
+      System.out.println(destinations);
       destinationsfield.setText(destinations);
-
     } else {
       // Se non ci sono destinatari, usiamo solo il mittente
       destinations = sender;

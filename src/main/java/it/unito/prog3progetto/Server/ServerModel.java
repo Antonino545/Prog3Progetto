@@ -50,6 +50,7 @@ public class ServerModel {
 				Socket socket = serverSocket.accept();
 				appendToLog("Client connected: " + socket.getInetAddress().getHostAddress());
 				ClientHandler clientHandler = new ClientHandler(this, socket);
+				if(clientHandler.database==null)
 				clientHandler.database = readDatabaseFromFile();
 				Thread thread = new Thread(clientHandler);
 				thread.start();
