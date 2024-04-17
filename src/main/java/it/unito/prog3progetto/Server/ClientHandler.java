@@ -158,11 +158,9 @@ class ClientHandler implements Runnable {
       outStream.flush();
       Object mailObject = inStream.readObject();
       if (mailObject instanceof Email email) {
-        Object lock=  server.getLock(userMail, true);
-        boolean isSent;
-        synchronized (lock) {
-       isSent = sendMail(email);
-        }
+
+       boolean isSent = sendMail(email);
+
         outStream.writeObject(isSent);
         outStream.flush();
       } else {
@@ -265,9 +263,15 @@ class ClientHandler implements Runnable {
 
   private  boolean sendMail(Email email) {
     boolean success = false;
-    writeswmail(email.getSender(), email, true);
+    Object lock=  server.getLock(email.getSender(), true);
+    synchronized (lock) {
+      success = writeswmail(email.getSender(), email, true);
+    }
     for (String destination : email.getDestinations()) {
+      synchronized (server.getLock(destination, false))
+      {
       success = writeswmail(destination, email, false);
+      }
     }
 
     return success;
@@ -295,7 +299,6 @@ class ClientHandler implements Runnable {
 
   public void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
     Object lock=  server.getLock(usermail, sendmail);
-
     synchronized (lock) {
 
       List<String> linesToKeep = new ArrayList<>();
