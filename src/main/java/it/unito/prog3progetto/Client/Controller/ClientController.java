@@ -33,7 +33,7 @@ public class ClientController implements MailListObserver {
   private ListView<Email> mailListView;
   public HBox sendemail;
 
-  public boolean isInbox ;
+  public boolean isInbox  ;
   private Stage primaryStage;
   private ClientModel Client;
   private MailListModel mailReceivedListModel;

@@ -9,19 +9,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 class ClientHandler implements Runnable {
-  private static final Object lock = new Object();
   private final ServerModel server;
   private final Socket socket;
   private ObjectInputStream inStream;
   private ObjectOutputStream outStream;
   private String userMail;
-  List<String> database;
+  private final ConcurrentHashMap<String, String> database;
 
-  public ClientHandler(ServerModel server, Socket socket) {
+  public ClientHandler(ServerModel server, Socket socket,ConcurrentHashMap <String,String> database) {
     this.server = server;
     this.socket = socket;
+    this.database = database;
   }
 
   private boolean isAuthenticated(UUID token) {
@@ -151,7 +152,11 @@ class ClientHandler implements Runnable {
       outStream.flush();
       Object mailObject = inStream.readObject();
       if (mailObject instanceof Email email) {
-        boolean isSent = sendMail(email);
+        Object lock=  server.getLock(userMail, true);
+        boolean isSent;
+        synchronized (lock) {
+       isSent = sendMail(email);
+        }
         outStream.writeObject(isSent);
         outStream.flush();
       } else {
@@ -248,17 +253,11 @@ class ClientHandler implements Runnable {
   }
 
   private boolean authenticateUser(User user) {
-    if (database == null) database = server.readDatabaseFromFile();
-    for (String entry : database) {
-      String[] parts = entry.split(",");
-      if (parts.length == 2 && parts[0].trim().equals(user.getEmail()) && parts[1].trim().equals(user.getPassword())) {
-        return true;
-      }
-    }
-    return false;
+    String password = database.get(user.getEmail());
+    return password != null && password.equals(user.getPassword());
   }
 
-  private synchronized boolean sendMail(Email email) {
+  private  boolean sendMail(Email email) {
     boolean success = false;
     writeswmail(email.getSender(), email, true);
     for (String destination : email.getDestinations()) {
@@ -269,23 +268,19 @@ class ClientHandler implements Runnable {
   }
 
   boolean Checkemail(String usermail){
-    if(database==null) database = server.readDatabaseFromFile();
-    for (String entry : database) {
-      String[] parts = entry.split(",");
-      if (parts.length == 2 && parts[0].trim().equals(usermail)) {
-        return true;
-      }
-    }
-    return false;
+    return database.containsKey(usermail);
   }
 
   private ArrayList<Email> fetchReceivedEmails(String usermail, Date lastEmailDate) throws IOException {
+   Object lock=  server.getLock(usermail, false);
     synchronized (lock) {
       return readEmails(usermail, lastEmailDate, false);
     }
   }
 
   private ArrayList<Email> fetchSendEmails(String usermail, Date lastEmailDate) throws IOException {
+    Object lock=  server.getLock(usermail, true);
+
     synchronized (lock) {
       return readEmails(usermail, lastEmailDate, true);
 
@@ -293,6 +288,7 @@ class ClientHandler implements Runnable {
   }
 
   public void DeletemailByid(String usermail, String uuidToDelete,boolean sendmail) {
+    Object lock=  server.getLock(usermail, sendmail);
 
     synchronized (lock) {
 

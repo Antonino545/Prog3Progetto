@@ -12,6 +12,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.TextArea;
 
 public class ServerModel {
+	ConcurrentHashMap<String,String> database ;
 	private ServerSocket serverSocket;// Socket del server
 	// Mappa dei token autenticati uso una ConcurrentHashMap per garantire la sicurezza in caso di accessi concorrenti
 	final ConcurrentHashMap<UUID, String> authenticatedTokens;
@@ -19,6 +20,8 @@ public class ServerModel {
 	final ConcurrentHashMap<UUID,Date> tokenCreation ;
 	volatile boolean isRunning = true; // Flag to control the server's running state
 	TextArea textArea;
+	private final Map<String, Object> sendMailLocks = new ConcurrentHashMap<>();
+	private final Map<String, Object> receiveMailLocks = new ConcurrentHashMap<>();
 	private final StringProperty logText = new SimpleStringProperty(""); // Proprietà osservabile per il testo del log
 	public ServerModel(TextArea textArea) {
 		this.authenticatedTokens = new ConcurrentHashMap<>();
@@ -45,13 +48,12 @@ public class ServerModel {
 			// Rimozione dell'aggiunta diretta al textArea, ora utilizzeremo appendToLog
 			appendToLog("Server avviato sulla porta: " + port + ". In attesa di connessioni...");
 			loadAuthenticatedTokensFromFile();
+			database= readDatabaseFromFile();
 			isRunning = true;
 			while (isRunning) {
 				Socket socket = serverSocket.accept();
 				appendToLog("Client connected: " + socket.getInetAddress().getHostAddress());
-				ClientHandler clientHandler = new ClientHandler(this, socket);
-				if(clientHandler.database==null)
-				clientHandler.database = readDatabaseFromFile();
+				ClientHandler clientHandler = new ClientHandler(this, socket,database);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
 			}
@@ -98,19 +100,28 @@ public class ServerModel {
 		}
 	}
 
-
-	List<String> readDatabaseFromFile() {
-		List<String> database = new ArrayList<>();
+	public ConcurrentHashMap<String,String> readDatabaseFromFile() {
+		ConcurrentHashMap<String,String> newdatabase = new ConcurrentHashMap<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader("Server/credentials.txt"))) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				database.add(line); // Aggiunge ogni riga del file al database
+				String[] parts = line.split(","); // Supponendo che il delimitatore sia ":"
+				if (parts.length == 2) {
+					String userEmail = parts[0].trim();
+					String password = parts[1].trim();
+					sendMailLocks.computeIfAbsent(userEmail, k -> new Object());
+					receiveMailLocks.computeIfAbsent(userEmail, k -> new Object());
+					newdatabase.put(userEmail, password); // Aggiunge la coppia chiave-valore alla mappa
+				} else {
+					appendToLog("Linea non valida nel file 'credentials.txt': " + line);
+				}
 			}
 		} catch (IOException e) {
 			appendToLog("Errore nella lettura del file 'credentials.txt'.");
 		}
-		return database;
+		appendToLog("Caricate " + newdatabase.size() + " credenziali dal file 'credentials.txt'.");
+		return newdatabase;
 	}
 
 	public void close() {
@@ -123,6 +134,10 @@ public class ServerModel {
 		} catch (IOException e) {
 			appendToLog("Errore nella chiusura del server socket.");
 		}
+	}
+
+	public Object getLock(String email, boolean send) {
+		return send ? sendMailLocks.get(email) : receiveMailLocks.get(email);
 	}
 
 }
