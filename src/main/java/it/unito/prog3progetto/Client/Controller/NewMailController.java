@@ -84,7 +84,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
   }
     subjectfield.setText(prefix + subject);
-    ContentField.setText("\n++++++++++++++++++++++++++++\n Data invia mail " + date + " da" + sender + "\n" + content);
+    ContentField.setText("\n++++++++++++++++++++++++++++\n| Data invia mail: " + date + " da " + sender +"\n"+"| Oggetto:"+subject+ "\n| Contenuto:\n|" + content);
     sendmailbutton.setOnAction(handler);
 }
 
