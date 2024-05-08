@@ -24,10 +24,8 @@ public class NewMailController {
   public Button sendmailbutton;
   private ClientModel clientModel;
 
-  private static ClientController clientController;
 
   public void initialize( ClientModel clientModel,ClientController clientController) throws IOException {
-    NewMailController.clientController = clientController;
   this.clientModel = clientModel;
     destinationsfield.setEditable(true);
       sendmailbutton.setOnAction(event -> {
@@ -61,7 +59,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
         if(destination.equals(clientModel.getEMail())) continue;
         stringBuilder.append(destination).append(",");
       }
-      stringBuilder.append(sender);
+      if(!Objects.equals(sender, clientModel.getEMail())) stringBuilder.append(sender);
       destinations = stringBuilder.toString();
       destinationsfield.setText(destinations);
 
@@ -123,8 +121,6 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
       if (success) {
         Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
 
-        String host= "127.0.0.1";
-        int port= 4445;
 
         for(String dest: uniqueDestinations){
           if(this.clientModel.connectToServer()) {
@@ -150,7 +146,6 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
               Stage stage = (Stage) subjectfield.getScene().getWindow();
               spinner.setVisible(false);
               stage.close();
-              clientController.mailSendListModel.addEmail(email);
               alert("Email inviata", Alert.AlertType.INFORMATION);
             });
             System.out.println("Email inviata");

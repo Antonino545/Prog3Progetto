@@ -363,7 +363,7 @@ class ClientHandler implements Runnable {
           Date date = dateFormat.parse(dateString);
           UUID id = UUID.fromString(idString);
           if (lastEmailDate == null || date.after(lastEmailDate)) {
-            Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->", ""), date, id);
+            Email email = new Email(sender, destinations, subject, content.replace("<--Accapo-->", "\n"), date, id);
             emails.add(email);
           }
         }

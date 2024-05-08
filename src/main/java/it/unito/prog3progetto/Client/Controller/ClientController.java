@@ -77,7 +77,16 @@ public class ClientController implements MailListObserver {
   // Implementazione del metodo dell'interfaccia MailListObserver per gestire la rimozione di tutte le email
   @Override
   public void onAllEmailsRemoved() {
-    mailListView.getItems().clear();
+
+    if (!Platform.isFxApplicationThread()) {
+      Platform.runLater(() -> {
+        mailListView.getItems().clear();
+        mailListView.refresh();
+      });
+    } else {
+      mailListView.getItems().clear();
+      mailListView.refresh();
+    }
   }
 
   // Metodo per impostare il riferimento alla finestra principale

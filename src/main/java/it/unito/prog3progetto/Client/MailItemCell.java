@@ -3,6 +3,7 @@ package it.unito.prog3progetto.Client;
 import it.unito.prog3progetto.Client.Controller.ClientController;
 import it.unito.prog3progetto.Client.Controller.MailDetailController;
 import it.unito.prog3progetto.Model.Email;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -70,9 +71,15 @@ public class MailItemCell extends ListCell<Email> {
       getStyleClass().add("emailitem");
       setOnMouseClicked(event -> openMailDetailView(email));
     } else {
-      setText(null);
-      setGraphic(null);
-      setOnMouseClicked(null);
+      if (!Platform.isFxApplicationThread()) {
+        Platform.runLater(() -> {
+          setGraphic(null);
+          setText(null);
+        });
+      } else {
+        setGraphic(null);
+        setText(null);
+        }
     }
   }
 

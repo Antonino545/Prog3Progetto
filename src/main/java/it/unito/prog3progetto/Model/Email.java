@@ -67,6 +67,8 @@ public class Email implements Serializable {
     return new Email(sender,destinations,subject,content.replace("\n","<--Accapo-->"),datesendMail,id);
   }
 
+
+
   public String getContent() {
     return content;
   }
