@@ -112,7 +112,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     String[] destinationsArray = destination.split(",");
     Set<String> uniqueDestinations = new HashSet<>(Arrays.asList(destinationsArray));
 
-    String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    String emailPattern = "^[A-Za-z0-9]+\\.[A-Za-z0-9]+@progmail\\.com$";
     boolean success = uniqueDestinations.stream().allMatch(dest -> dest.matches(emailPattern));
     // Mostra lo spinner
     spinner.setVisible(true);
@@ -159,7 +159,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
         }
       } else {
         Platform.runLater(() -> alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR));
-        System.out.println("Email non inviata, controllare i destinatari");
+        System.out.println("Email non inviata,destinatari non sono nel formato corretto");
       }
       Platform.runLater(() -> spinner.setVisible(false));
     }).start();
