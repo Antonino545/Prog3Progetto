@@ -31,11 +31,7 @@ public class MailDetailController {
   @FXML
   private Label dateLabel;
 
-  private final SimpleStringProperty senderProperty = new SimpleStringProperty();
-  private final SimpleStringProperty subjectProperty = new SimpleStringProperty();
-  private final SimpleStringProperty contentProperty = new SimpleStringProperty();
-  private final SimpleListProperty<String> destinationsProperty = new SimpleListProperty<>();
-  private final SimpleStringProperty dateProperty = new SimpleStringProperty();
+
 
   private ClientModel clientModel;
   ArrayList<String> destinations;
@@ -47,18 +43,13 @@ public class MailDetailController {
    */
   public void initialize(ClientModel clientModel, Email email) {
     this.clientModel = clientModel;
-    senderProperty.set(email.getSender());
-    subjectProperty.set(email.getSubject());
-    contentProperty.set(email.getContent());
-    dateProperty.set(email.getItalianDate());
-    destinationsProperty.set(FXCollections.observableArrayList(email.getDestinations()));
-    destinationsLabel.textProperty().bind(destinationsProperty.asString());
-    senderLabel.textProperty().bind(senderProperty);
-    subjectLabel.textProperty().bind(subjectProperty);
-    contentLabel.textProperty().bind(contentProperty);
-    destinationsLabel.textProperty().bind(destinationsProperty.asString());
-    dateLabel.textProperty().bind(dateProperty);
-    destinations=email.getDestinations();
+
+    destinationsLabel.setText(email.getDestinations().toString());
+    senderLabel.setText(email.getSender());
+    subjectLabel.setText(email.getSubject());
+    contentLabel.setText(email.getContent());
+    dateLabel.setText(email.getItalianDate());
+    destinations = email.getDestinations();
 
   }
 
