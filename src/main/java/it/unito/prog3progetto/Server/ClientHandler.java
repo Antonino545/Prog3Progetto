@@ -45,7 +45,6 @@ class ClientHandler implements Runnable {
       }
 
       if (!isAuthenticated(clientObject instanceof UUID ? (UUID) clientObject : null)) {
-        System.out.println(clientObject);
         outStream.writeObject(false);
         outStream.flush();
         return;
@@ -224,7 +223,7 @@ class ClientHandler implements Runnable {
   }
 
   private void saveAuthenticatedTokensToFile(UUID token,String userEmail) {
-    synchronized (server.authenticatedTokens) {
+    synchronized (server.authenticatedTokens) {//serve ad evitare che due thread scrivano contemporaneamente sul file tokens.txt
       int tokenCount = (int) server.authenticatedTokens.values().stream()
               .filter(email -> email.equals(userEmail))
               .count();
@@ -345,7 +344,6 @@ class ClientHandler implements Runnable {
     ArrayList<Email> emails = new ArrayList<>();
     try {
       String filename = sendemail ? "Server/" + usermail + "_sent.txt" : "Server/" + usermail + "_received.txt";
-
       File file = new File(filename);
       Scanner scanner = new Scanner(file);
       while (scanner.hasNextLine()) {

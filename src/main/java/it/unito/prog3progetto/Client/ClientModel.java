@@ -2,7 +2,6 @@ package it.unito.prog3progetto.Client;
 
 import it.unito.prog3progetto.Model.Email;
 import it.unito.prog3progetto.Model.User;
-
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -136,7 +135,6 @@ public class ClientModel {
       outputStream.flush();
       outputStream.writeObject(isSend ? "RECEIVESENDEMAIL" : "RECEIVEEMAIL");
       outputStream.flush();
-
       if (inputStream.readObject().equals(true)) {
         System.out.println("Server pronto a inviare le mail ricevere le email");
       } else {
@@ -150,6 +148,7 @@ public class ClientModel {
       Object receivedObject = inputStream.readObject();
       if (receivedObject instanceof ArrayList) {
         System.out.println("Email ricevute con successo.");
+
         return (ArrayList<Email>) receivedObject;
       } else {
         System.out.println("Il dato ricevuto non è un ArrayList<Email>.");

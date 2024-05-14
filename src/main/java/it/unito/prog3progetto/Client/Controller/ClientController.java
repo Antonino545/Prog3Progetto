@@ -221,7 +221,6 @@ public class ClientController implements MailListObserver {
   public void deleteEmail(Email email) {
     if (Client.connectToServer()) {
       if (Client.DeleteMail(email,isInbox)) {
-        System.out.println(isInbox);
         if(isInbox) {
           mailReceivedListModel.removeEmail(email); // Rimuovi l'email dalla lista
         } else{
@@ -244,7 +243,7 @@ public class ClientController implements MailListObserver {
   }
 
   @FXML
-  public void sendemails() {
+  public void sendMails() {
 
     if (!isInbox)
       return;

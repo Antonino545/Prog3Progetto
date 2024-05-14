@@ -58,10 +58,7 @@ public class LoginController {
 
   }
 
-    public String getEmailFieldValue() {
-        return emailTextField.getText();
 
-    }
 
     @FXML
 
