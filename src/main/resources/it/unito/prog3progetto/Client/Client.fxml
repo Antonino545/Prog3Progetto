@@ -68,7 +68,7 @@
                         </font>
                      </Label>
                   </HBox>
-                  <HBox fx:id="sendemail" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#sendemails" prefHeight="33.0"
+                  <HBox fx:id="sendemail" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#sendMails" prefHeight="33.0"
                         prefWidth="198.0">
                      <Label contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="35.0"
                             prefWidth="67.0" text="Mail Inviate" textFill="WHITE"/>

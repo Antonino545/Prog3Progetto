@@ -13,12 +13,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
-import static it.unito.prog3progetto.Model.Lib.alert;
+import static it.unito.prog3progetto.Model.Lib.Alert;
 
 
 public class LoginController {
@@ -67,13 +66,13 @@ public class LoginController {
       String password = passwordField.getText();
 
       if (Objects.equals(email, "") || Objects.equals(password, "")) {
-        Platform.runLater(() -> alert("Inserire email e password", Alert.AlertType.ERROR));
+        Platform.runLater(() -> Alert("Inserire email e password", Alert.AlertType.ERROR));
         return;
       }
 
       String emailPattern = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
       if (!email.matches(emailPattern)) {
-        Platform.runLater(() -> alert("Inserire un indirizzo email valido, Formato non valido", Alert.AlertType.ERROR));
+        Platform.runLater(() -> Alert("Inserire un indirizzo email valido, Formato non valido", Alert.AlertType.ERROR));
         return;
       }
 
@@ -88,7 +87,7 @@ public class LoginController {
           UUID token = clientModel.sendAndCheckCredentials(email, password);
           if(token == null){
             Platform.runLater(() -> {
-              alert("Credenziali errate", Alert.AlertType.ERROR);
+              Alert("Credenziali errate", Alert.AlertType.ERROR);
               spinner.setVisible(false);
             });
             return;
@@ -116,7 +115,7 @@ public class LoginController {
           });
         } else {
           Platform.runLater(() -> {
-            alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+            Alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
             spinner.setVisible(false);
           });
         }

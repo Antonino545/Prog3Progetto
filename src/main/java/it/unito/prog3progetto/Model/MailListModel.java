@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 
 public class MailListModel {
-  private final ObservableList<Email> emails = FXCollections.observableArrayList();
+  private final ObservableList<Email> emailList = FXCollections.observableArrayList();
   private final ArrayList<MailListObserver> observers = new ArrayList<>();
   private final IntegerProperty sizeProperty = new SimpleIntegerProperty();
 
@@ -30,9 +30,9 @@ public class MailListModel {
    * @param email Email da aggiungere
    */
   public void addEmail(Email email) {
-    if(emails.contains(email)) return; // Se l'email è già presente nella lista, non la aggiungiamo (non dovrebbe mai accadere
-    emails.add(email);
-    sizeProperty.set(emails.size());
+    if(emailList.contains(email)) return; // Se l'email è già presente nella lista, non la aggiungiamo (non dovrebbe mai accadere
+    emailList.add(email);
+    sizeProperty.set(emailList.size());
     notifyEmailAdded(email);
   }
 
@@ -41,8 +41,8 @@ public class MailListModel {
    * @param email Email da rimuovere
    */
   public void removeEmail(Email email) {
-    emails.remove(email);
-    sizeProperty.set(emails.size());
+    emailList.remove(email);
+    sizeProperty.set(emailList.size());
     notifyEmailRemoved(email);// Notifica l'osservatore
   }
 
@@ -70,7 +70,7 @@ public class MailListModel {
    * Rimuove tutte le email dalla lista
    */
   public void clear() {
-    emails.clear();
+    emailList.clear();
     sizeProperty.set(0);
     for (MailListObserver observer : observers) {
       observer.onAllEmailsRemoved();
@@ -81,8 +81,8 @@ public class MailListModel {
    * Restituisce la lista di email
    * @return  Lista di email
    */
-  public ObservableList<Email> getEmails() {
-    return emails;
+  public ObservableList<Email> getEmailList() {
+    return emailList;
   }
 
   /**
@@ -91,8 +91,8 @@ public class MailListModel {
    */
   public void addEmails(ArrayList<Email> emails) {
     Platform.runLater(() -> {
-    this.emails.addAll(emails);
-      sizeProperty.set(this.emails.size());
+    this.emailList.addAll(emails);
+      sizeProperty.set(this.emailList.size());
     });
     for (Email email : emails) {
       notifyEmailAdded(email);
@@ -104,7 +104,7 @@ public class MailListModel {
    * @return Numero di email presenti nella lista
    */
   public int size() {
-    return emails.size();
+    return emailList.size();
   }
 
   /**

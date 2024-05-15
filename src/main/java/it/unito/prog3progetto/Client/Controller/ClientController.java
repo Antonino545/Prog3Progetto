@@ -21,7 +21,7 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
-import static it.unito.prog3progetto.Model.Lib.alert;
+import static it.unito.prog3progetto.Model.Lib.Alert;
 
 
 public class ClientController implements MailListObserver {
@@ -51,7 +51,7 @@ public class ClientController implements MailListObserver {
       mailSendListModel.addObserver(this);
       indexLengthLabel.textProperty().bind(mailReceivedListModel.sizeProperty().asString());
       SendMailLengthLabel.textProperty().bind(mailSendListModel.sizeProperty().asString());
-      FullRefresh();
+      InitialRefresh();
       isInbox = false;
       inboxemail();
     }
@@ -110,7 +110,7 @@ public class ClientController implements MailListObserver {
       stage.setMinWidth(600);
       stage.show();
     } catch (IOException e) {
-    alert("Errore durante l'apertura della finestra per la creazione di una nuova email", Alert.AlertType.ERROR);
+    Alert("Errore durante l'apertura della finestra per la creazione di una nuova email", Alert.AlertType.ERROR);
     }
   }
 /*
@@ -126,16 +126,16 @@ public class ClientController implements MailListObserver {
         spinner.setVisible(false);
         if(autoRefreshTimeline.getStatus().equals(Timeline.Status.RUNNING)) autoRefreshTimeline.stop();
 
-        alert("Logout effettuato con successo", Alert.AlertType.INFORMATION);
+        Alert("Logout effettuato con successo", Alert.AlertType.INFORMATION);
         loadLogin(primaryStage);// Carica la schermata di login
       });
       }
 
     else {
-      Platform.runLater(() -> alert("Errore durante il logout", Alert.AlertType.ERROR));
+      Platform.runLater(() -> Alert("Errore durante il logout", Alert.AlertType.ERROR));
     }
     else {
-    Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+    Platform.runLater(() -> Alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
     }
 
   }).start();
@@ -154,7 +154,7 @@ public class ClientController implements MailListObserver {
       primaryStage.setTitle("Email Client - Progetto di Programmazione 3");
       primaryStage.show();
     } catch (IOException e) {
-      alert("Errore durante il caricamento della schermata di login", Alert.AlertType.ERROR);
+      Alert("Errore durante il caricamento della schermata di login", Alert.AlertType.ERROR);
     }
   }
 
@@ -174,17 +174,17 @@ public class ClientController implements MailListObserver {
         connectionSuccessful = true;
 
         if (isInbox) {
-          Email lastEmail = mailReceivedListModel.getEmails().isEmpty() ? null : mailReceivedListModel.getEmails().getLast();
+          Email lastEmail = mailReceivedListModel.getEmailList().isEmpty() ? null : mailReceivedListModel.getEmailList().getLast();
           if (lastEmail == null) {
-            FullRefresh();
+            InitialRefresh();
             return;
           }
           Platform.runLater(() -> mailReceivedListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), false)));
 
         } else {
-          Email lastEmail = mailSendListModel.getEmails().isEmpty() ? null : mailSendListModel.getEmails().getLast();
+          Email lastEmail = mailSendListModel.getEmailList().isEmpty() ? null : mailSendListModel.getEmailList().getLast();
           if (lastEmail == null) {
-            FullRefresh();
+            InitialRefresh();
             return;
           }
           Platform.runLater(() ->   mailSendListModel.addEmails(Client.receiveEmail(Client.getEMail(), lastEmail.getDatesendMail(), true)));
@@ -195,7 +195,7 @@ public class ClientController implements MailListObserver {
       Platform.runLater(() -> spinner.setVisible(false));
       if (!connectionSuccessful) {
         autoRefreshTimeline.setDelay(autoRefreshTimeline.getCurrentTime().add(autoRefreshTimeline.getCurrentTime()));
-        Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+        Platform.runLater(() -> Alert("Connessione al server non riuscita impossibile aggiornare la lista delle email", Alert.AlertType.ERROR));
       }
     }).start();
   }
@@ -203,7 +203,7 @@ public class ClientController implements MailListObserver {
 
 
 
-  public void FullRefresh() {
+  public void InitialRefresh() {
     if (Client != null && Client.connectToServer()) {
       if (isInbox) {
         mailReceivedListModel.clear();
@@ -230,14 +230,14 @@ public class ClientController implements MailListObserver {
         }
         mailListView.refresh(); // Aggiorna la visualizzazione nella ListView
 
-        alert("Email eliminata", Alert.AlertType.INFORMATION);
+        Alert("Email eliminata", Alert.AlertType.INFORMATION);
         System.out.println("Email eliminata");
       } else {
-        alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
+        Alert("Errore durante l'eliminazione dell'email", Alert.AlertType.ERROR);
         System.out.println("Errore durante l'eliminazione dell'email");
       }
     } else {
-      alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
+      Alert("Connessione al server non riuscita", Alert.AlertType.ERROR);
       System.out.println("Connessione al server non riuscita");
     }
   }
@@ -249,11 +249,11 @@ public class ClientController implements MailListObserver {
       return;
     isInbox = false;
     changeButton(sendemail, inbox);
-    if (mailSendListModel.getEmails().isEmpty()) {
-      FullRefresh();
-Platform.runLater(() -> mailListView.getItems().setAll(mailSendListModel.getEmails()));
+    if (mailSendListModel.getEmailList().isEmpty()) {
+      InitialRefresh();
+Platform.runLater(() -> mailListView.getItems().setAll(mailSendListModel.getEmailList()));
     } else {
-      mailListView.setItems(mailSendListModel.getEmails());
+      mailListView.setItems(mailSendListModel.getEmailList());
       mailListView.refresh();
     }
 
@@ -266,11 +266,11 @@ Platform.runLater(() -> mailListView.getItems().setAll(mailSendListModel.getEmai
       return;
     isInbox = true;
     changeButton(inbox, sendemail);
-    if (mailReceivedListModel.getEmails().isEmpty()) {
-      FullRefresh();
-      Platform.runLater(() -> mailListView.getItems().setAll(mailReceivedListModel.getEmails()));
+    if (mailReceivedListModel.getEmailList().isEmpty()) {
+      InitialRefresh();
+      Platform.runLater(() -> mailListView.getItems().setAll(mailReceivedListModel.getEmailList()));
     } else {
-      mailListView.setItems(mailReceivedListModel.getEmails());
+      mailListView.setItems(mailReceivedListModel.getEmailList());
       mailListView.refresh();
     }
   }

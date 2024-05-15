@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
-import static it.unito.prog3progetto.Model.Lib.alert;
+import static it.unito.prog3progetto.Model.Lib.Alert;
 
 /**
  * Classe per la rappresentazione grafica di una singola email nella lista delle email
@@ -117,7 +117,7 @@ public class MailItemCell extends ListCell<Email> {
       stage.setMinWidth(600);
       stage.show();
     } catch (IOException e) {
-      alert("Errore durante l'apertura della finestra di dettaglio email", Alert.AlertType.ERROR);
+      Alert("Errore durante l'apertura della finestra di dettaglio email", Alert.AlertType.ERROR);
     }
   }
 }

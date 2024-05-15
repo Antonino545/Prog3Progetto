@@ -2,9 +2,6 @@ package it.unito.prog3progetto.Client.Controller;
 
 import it.unito.prog3progetto.Client.ClientModel;
 import it.unito.prog3progetto.Model.Email;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static it.unito.prog3progetto.Model.Lib.alert;
+import static it.unito.prog3progetto.Model.Lib.Alert;
 
 public class MailDetailController {
   @FXML
@@ -69,7 +66,7 @@ public class MailDetailController {
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-      alert("Errore durante l'apertura della finestra di REPLY :"+e.getMessage() , Alert.AlertType.ERROR);
+      Alert("Errore durante l'apertura della finestra di REPLY :"+e.getMessage() , Alert.AlertType.ERROR);
     }
   }
 
@@ -89,7 +86,7 @@ public class MailDetailController {
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-     alert("Errore durante l'apertura della finestra di REPLY ALL:"+e.getMessage() , Alert.AlertType.ERROR);
+     Alert("Errore durante l'apertura della finestra di REPLY ALL:"+e.getMessage() , Alert.AlertType.ERROR);
     }
   }
 
@@ -108,7 +105,7 @@ public class MailDetailController {
       stage.setResizable(false);
       stage.show();
     } catch (IOException e) {
-      alert("Errore durante l'apertura della finestra di Forward:"+e.getMessage() , Alert.AlertType.ERROR);
+      Alert("Errore durante l'apertura della finestra di Forward:"+e.getMessage() , Alert.AlertType.ERROR);
     }
   }
 

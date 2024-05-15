@@ -8,8 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
-import static it.unito.prog3progetto.Model.Lib.alert;
+import static it.unito.prog3progetto.Model.Lib.Alert;
 
 public class NewMailController {
   @FXML
@@ -38,7 +39,7 @@ public class NewMailController {
 
   }
 
-public void initialize(String action, String sender, ArrayList<String> Destination, String subject, String content, String date, ClientModel clientModel) {
+public void initialize(String action, String sender, ArrayList<String> DestinationList, String subject, String content, String date, ClientModel clientModel) {
     EventHandler<ActionEvent> handler = event -> {
         try {
             sendMail();
@@ -48,29 +49,30 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     };
     this.clientModel = clientModel;
     String prefix = action.equals("reply") ? "Re: " : action.equals("forward") ? "Fwd: " : "ReALL: ";
-  String destinations;
+  String destinations = "";
   System.out.println("replyall");
 
   if (action.equals("replyall")) {
-    if (Destination.size() >1) {
+    if (DestinationList.size() >1) {
       // Se ci sono più di un destinatario, li concateniamo con il mittente
       StringBuilder stringBuilder = new StringBuilder();
-      for (String destination : Destination) {
-        if(destination.equals(clientModel.getEMail())) continue;
-        stringBuilder.append(destination).append(",");
+      for (String destination : DestinationList) {
+        if(!destination.equals(clientModel.getEMail()))stringBuilder.append(destination).append(",");
       }
       if(!Objects.equals(sender, clientModel.getEMail())) stringBuilder.append(sender);
       destinations = stringBuilder.toString();
       destinationsfield.setText(destinations);
 
-    } else if (Destination.size() == 1) {
+    } else if (DestinationList.size() == 1) {
       // Se c'è solo un destinatario, concateniamo solo quel destinatario e il mittente
-      destinations = Destination.getFirst() + "," + sender;
+
+      destinations = DestinationList.getFirst() + "," + sender;
       System.out.println(destinations);
       destinationsfield.setText(destinations);
     } else {
       // Se non ci sono destinatari, usiamo solo il mittente
-      destinations = sender;
+      if(!Objects.equals(sender, clientModel.getEMail()))
+        destinations = sender;
       destinationsfield.setText(destinations);
 
     }
@@ -88,7 +90,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
   public void sendMail() throws IOException {
     if(this.clientModel == null){
-     alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
+     Alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR);
       System.out.println("Errore durante l'invio dell'email il Client e null");
       return;
     }
@@ -99,7 +101,7 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
     String content = ContentField.getText();
 
     if (destination.isEmpty()) {
-      alert("Inserire il destinatario o i destinatari", Alert.AlertType.ERROR);
+      Alert("Inserire il destinatario o i destinatari", Alert.AlertType.ERROR);
       return;
     }
 
@@ -119,22 +121,23 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
 
     new Thread(() -> {
       if (success) {
-        Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(java.time.Instant.now()));
+        Email email = new Email(clientModel.getEMail(), new ArrayList<>(uniqueDestinations), subject, content, Date.from(Instant.now()));
 
 
         for(String dest: uniqueDestinations){
           if(this.clientModel.connectToServer()) {
             System.out.println("Connessione al server riuscita");
           } else {
-            Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+            Platform.runLater(() -> Alert("Connessione al server non riuscita. Impossibile inviare email", Alert.AlertType.ERROR));
+            Platform.runLater(() -> spinner.setVisible(false));
             return;
           }
           if(this.clientModel.CheckEmail(dest)) {
             System.out.println("Email esistente");
           } else {
-            spinner.setVisible(false);
+            Platform.runLater(() -> spinner.setVisible(false));
 
-            Platform.runLater(() -> alert("Email non esistente: "+ dest, Alert.AlertType.ERROR));
+            Platform.runLater(() -> Alert("Email non esistente: "+ dest, Alert.AlertType.ERROR));
             System.out.println("Email non esistente: "+ dest);
             return;
           }
@@ -144,21 +147,26 @@ public void initialize(String action, String sender, ArrayList<String> Destinati
           if (this.clientModel.SendMail(email)) {
             Platform.runLater(() -> {
               Stage stage = (Stage) subjectfield.getScene().getWindow();
-              spinner.setVisible(false);
+              Platform.runLater(() -> spinner.setVisible(false));
               stage.close();
-              alert("Email inviata", Alert.AlertType.INFORMATION);
+              Alert("Email inviata", Alert.AlertType.INFORMATION);
             });
             System.out.println("Email inviata");
+
           } else {
             System.out.println("Errore durante l'invio dell'email");
-            Platform.runLater(() -> alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR));
+            Platform.runLater(() -> Alert("Errore durante l'invio dell'email", Alert.AlertType.ERROR));
+            Platform.runLater(() -> spinner.setVisible(false));
+
           }
         } else {
           System.out.println("Connessione al server non riuscita");
-          Platform.runLater(() -> alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+          Platform.runLater(() -> Alert("Connessione al server non riuscita", Alert.AlertType.ERROR));
+          Platform.runLater(() -> spinner.setVisible(false));
+
         }
       } else {
-        Platform.runLater(() -> alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR));
+        Platform.runLater(() -> Alert("Email non inviata, controllare i destinatari", Alert.AlertType.ERROR));
         System.out.println("Email non inviata,destinatari non sono nel formato corretto");
       }
       Platform.runLater(() -> spinner.setVisible(false));
